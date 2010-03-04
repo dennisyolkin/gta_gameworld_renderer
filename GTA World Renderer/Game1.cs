@@ -11,6 +11,8 @@ using Microsoft.Xna.Framework.Media;
 using Microsoft.Xna.Framework.Net;
 using Microsoft.Xna.Framework.Storage;
 
+// тест
+
 namespace GTA_World_Renderer
 {
    /// <summary>
