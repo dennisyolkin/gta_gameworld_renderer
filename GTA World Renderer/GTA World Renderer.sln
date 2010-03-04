@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GTA World Renderer", "GTA World Renderer.csproj", "{0C01CC8A-68B7-4E62-A7E7-50F5A30E5232}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0C01CC8A-68B7-4E62-A7E7-50F5A30E5232}.Debug|x86.ActiveCfg = Debug|x86
+		{0C01CC8A-68B7-4E62-A7E7-50F5A30E5232}.Debug|x86.Build.0 = Debug|x86
+		{0C01CC8A-68B7-4E62-A7E7-50F5A30E5232}.Release|x86.ActiveCfg = Release|x86
+		{0C01CC8A-68B7-4E62-A7E7-50F5A30E5232}.Release|x86.Build.0 = Release|x86
+		{E43B3F3C-A9BF-40BA-8EC2-F525407DD392}.Debug|x86.ActiveCfg = Debug|x86
+		{E43B3F3C-A9BF-40BA-8EC2-F525407DD392}.Release|x86.ActiveCfg = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
