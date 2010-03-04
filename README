@@ -3,5 +3,7 @@ GTA GameWorld Renderer README
 
 author: Dennis Yolkin [dennisyolkin (=a.t=) gmail.com]
 
+[Note] encoding in most of files is cp1251 (Windows-Cyrillic).
+
 Directories structure:
 GTA World Renderer -- Visual Studio 2008 project folder
