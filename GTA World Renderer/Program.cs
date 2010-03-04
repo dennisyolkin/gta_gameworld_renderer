@@ -1,6 +1,6 @@
 using System;
 
-namespace GTA_World_Renderer
+namespace GTAWorldRenderer
 {
    static class Program
    {
@@ -9,7 +9,7 @@ namespace GTA_World_Renderer
       /// </summary>
       static void Main(string[] args)
       {
-         using (Game1 game = new Game1())
+         using (Main game = new Main())
          {
             game.Run();
          }
