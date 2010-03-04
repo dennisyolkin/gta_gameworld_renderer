@@ -20,19 +20,7 @@ namespace GTAWorldRenderer
 
       public Main()
       {
-
-         using (ConsoleLogger.Instance.EnterStage("stage 1"))
-         {
-            ConsoleLogger.Instance.Print("vasya");
-            ConsoleLogger.Instance.Print("petya");
-            ConsoleLogger.Instance.Print("masha", MessageType.Warning);
-            using (ConsoleLogger.Instance.EnterStage("stage 2"))
-            {
-               ConsoleLogger.Instance.Print("vova", MessageType.Error);
-            }
-         }
-         ConsoleLogger.Instance.Print("dasha");
-         ConsoleLogger.Instance.PrintStatistic();
+         Config cfg = Config.Instance;
 
          graphics = new GraphicsDeviceManager(this);
          Content.RootDirectory = "Content";

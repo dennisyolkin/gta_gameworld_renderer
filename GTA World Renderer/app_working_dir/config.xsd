@@ -1,0 +1,15 @@
+<xsd:schema
+   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+   xmlns="gta-gameworld-renderer"
+   elementFormDefault="qualified"
+   targetNamespace="gta-gameworld-renderer"
+>
+   <xsd:element name="GlobalConfig" type="GlobalConfigType"/>
+
+   <xsd:complexType name="GlobalConfigType">
+      <xsd:sequence>
+         <xsd:element name="GtaFolder" type="xsd:string"/>
+      </xsd:sequence>
+   </xsd:complexType>
+
+</xsd:schema>
