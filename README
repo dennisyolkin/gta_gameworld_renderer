@@ -7,3 +7,4 @@ author: Dennis Yolkin [dennisyolkin (=a.t=) gmail.com]
 
 Directories structure:
 GTA World Renderer -- Visual Studio 2008 project folder
+GTA World Renderer\app_working_dir -- Program working directory. Now it contains of only configuration xml file and its schema.
