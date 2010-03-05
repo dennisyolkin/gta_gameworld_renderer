@@ -21,8 +21,9 @@ namespace GTAWorldRenderer
 
       public Main()
       {
-         Log.Instance.SetOutputFilter(MessagesFilter.InfoError);
+         ConsoleLogWriter.Instance.SetMessagesFilter(MessagesFilter.InfoError);
          Log.Instance.AddLogWriter(ConsoleLogWriter.Instance);
+         Log.Instance.AddLogWriter(new FileLogWriter("log.log"));
          Scene scene = new Scene();
          scene.LoadScene();
          Log.Instance.PrintStatistic();
