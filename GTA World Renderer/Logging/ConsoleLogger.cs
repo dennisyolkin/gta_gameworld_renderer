@@ -8,7 +8,9 @@ namespace GTAWorldRenderer.Logging
 {
    enum MessageType
    {
-      Info, Warning, Error,
+      Info = 1, 
+      Warning = 2, 
+      Error = 4,
    }
 
 
@@ -48,7 +50,7 @@ namespace GTAWorldRenderer.Logging
       private int indent = 0;
       private int errors = 0;
       private int warnings = 0;
-
+      private int messagesTypesToOutput = (int)MessageType.Info | (int)MessageType.Error | (int)MessageType.Warning;
 
       public static ConsoleLogger Instance
       {
@@ -100,23 +102,35 @@ namespace GTAWorldRenderer.Logging
 
       public void Print(string message, MessageType type)
       {
-         PrintIndent();
-         
          if (type == MessageType.Info)
-            Console.ForegroundColor = ConsoleColor.Gray;
+         {
+            if ((messagesTypesToOutput & (int)type) != 0)
+            {
+               PrintIndent();
+               Console.ForegroundColor = ConsoleColor.Gray;
+               Console.WriteLine(message);
+            }
+         }
          else if (type == MessageType.Warning)
          {
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.Write("[Warning] ");
+            if ((messagesTypesToOutput & (int)type) != 0)
+            {
+               PrintIndent();
+               Console.ForegroundColor = ConsoleColor.Yellow;
+               Console.WriteLine("[Warning] " + message);
+            }
             ++warnings;
          }
          else if (type == MessageType.Error)
          {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.Write("[Error] ");
+            if ((messagesTypesToOutput & (int)type) != 0)
+            {
+               PrintIndent();
+               Console.ForegroundColor = ConsoleColor.Red;
+               Console.WriteLine("[Error] " + message);
+            }
             ++errors;
          }
-         Console.WriteLine(message);
       }
 
 
@@ -125,11 +139,13 @@ namespace GTAWorldRenderer.Logging
          Print(message, MessageType.Info);
       }
 
+
       private void PrintIndent()
       {
          Console.Write(new String(' ', indent * INDENT_SIZE));
       }
-      
+
+
       public void PrintStatistic()
       {
          PrintIndent();
@@ -144,6 +160,12 @@ namespace GTAWorldRenderer.Logging
 
          Console.ForegroundColor = ConsoleColor.Green;
          Console.WriteLine(" ===");
+      }
+
+      // for example, MessageType.Info | MessageType.Error
+      public void SetMessagesTypeToOutput(int types)
+      {
+         messagesTypesToOutput = types;
       }
 
    }
