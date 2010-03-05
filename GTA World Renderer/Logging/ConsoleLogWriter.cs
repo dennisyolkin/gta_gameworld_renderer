@@ -36,6 +36,10 @@ namespace GTAWorldRenderer.Logging
       {
          AllocConsole();
          Console.Title = "GTA GameWorld Renderer. Console logger.";
+         Console.BufferWidth = 100;
+         Console.BufferHeight = 500;
+         Console.WindowWidth = 100;
+         Console.WindowHeight = 40;
 
          Console.BackgroundColor = ConsoleColor.Black;
          Console.ForegroundColor = ConsoleColor.Green;
