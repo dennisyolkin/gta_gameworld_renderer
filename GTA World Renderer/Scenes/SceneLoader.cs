@@ -117,6 +117,9 @@ namespace GTAWorldRenderer.Scenes
                   }
                   else if (line.StartsWith("IPL"))
                   {
+                     string fileName = line.Substring(4);
+                     var objs = new IPLFileLoader(fileName, gtaVersion).Load();
+
                      //LoadDatFile(line.Substring(4), DataFileType.IPL);
                   }
                   else if (line.StartsWith("SPLASH") || line.StartsWith("COLFILE") || line.StartsWith("MAPZONE") || line.StartsWith("MODELFILE"))

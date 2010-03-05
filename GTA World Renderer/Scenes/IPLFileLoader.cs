@@ -28,10 +28,22 @@ namespace GTAWorldRenderer.Scenes
             END,
          }
 
+         private static readonly int[] INST_REQUIRED_TOKENS = null;
+
          private Log Logger = Log.Instance;
          private IPLSection currentSection = IPLSection.END;
          private string filePath;
          private GtaVersion gtaVersion;
+
+
+         static IPLFileLoader()
+         {
+            INST_REQUIRED_TOKENS = new int[3];
+            INST_REQUIRED_TOKENS[(int)GtaVersion.III] = 12;
+            INST_REQUIRED_TOKENS[(int)GtaVersion.ViceCity] = 13;
+            INST_REQUIRED_TOKENS[(int)GtaVersion.SanAndreas] = 11;
+         }
+
 
          public IPLFileLoader(string filePath, GtaVersion gtaVersion)
          {
@@ -67,6 +79,7 @@ namespace GTAWorldRenderer.Scenes
                }
             }
 
+            Logger.Print(String.Format("Loaded {0} scene object definitions from IPL file {1}", objects.Count, filePath));
             return objects;
          }
 
@@ -93,23 +106,10 @@ namespace GTAWorldRenderer.Scenes
             if (currentSection != IPLSection.INST)
                return null;
 
-            string[] toks = line.Split(new char[] { ' ', ',' });
+            string[] toks = line.Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
             bool bad_num_of_tokens = false;
-            switch (gtaVersion)
-            {
-               case GtaVersion.III:
-               case GtaVersion.SanAndreas:
-                  if (toks.Length != 13)
-                     bad_num_of_tokens = true;
-                  break;
 
-               case GtaVersion.ViceCity:
-                  if (toks.Length != 12)
-                     bad_num_of_tokens = true;
-                  break;
-            }
-
-            if (bad_num_of_tokens)
+            if (toks.Length != INST_REQUIRED_TOKENS[(int)gtaVersion])
             {
                string msg = "Incorrect number of tokens in INST section: " + toks.Length.ToString();
                Log.Instance.Print(msg, MessageType.Error);
@@ -120,7 +120,7 @@ namespace GTAWorldRenderer.Scenes
             obj.Id = Int32.Parse(toks[0]);
             obj.Name = toks[1];
             obj.Scale = Vector3.One;
-
+            
             switch (gtaVersion) 
             {
                case GtaVersion.III:
