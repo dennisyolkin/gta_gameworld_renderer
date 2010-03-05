@@ -8,7 +8,7 @@ using System.IO;
 namespace GTAWorldRenderer.Scenes
 {
 
-   class SceneLoader
+   partial class SceneLoader
    {
       class LoadingException : ApplicationException
       {
@@ -20,12 +20,6 @@ namespace GTAWorldRenderer.Scenes
       enum GtaVersion
       {
          III, ViceCity, SanAndreas
-      }
-
-
-      enum DataFileType
-      {
-         DAT, IPL, IDE,
       }
 
 
@@ -43,8 +37,8 @@ namespace GTAWorldRenderer.Scenes
                System.Environment.CurrentDirectory = Config.Instance.GTAFolderPath;
 
                DetermineGtaVersion();
-               LoadDataFile("data/default.dat", DataFileType.DAT);
-               LoadDataFile(GetVersionSpecificDataFile(), DataFileType.DAT);
+               LoadDatFile("data/default.dat");
+               LoadDatFile(GetVersionSpecificDatFile());
 
             } catch (Exception)
             {
@@ -81,7 +75,7 @@ namespace GTAWorldRenderer.Scenes
       }
 
 
-      private string GetVersionSpecificDataFile()
+      private string GetVersionSpecificDatFile()
       {
          switch(gtaVersion)
          {
@@ -99,9 +93,9 @@ namespace GTAWorldRenderer.Scenes
       }
 
 
-      private void LoadDataFile(string path, DataFileType type)
+      private void LoadDatFile(string path)
       {
-         using (Logger.EnterStage("Reading file: " + path))
+         using (Logger.EnterStage("Reading DAT file: " + path))
          {
             using (StreamReader fin = new StreamReader(path))
             {
@@ -111,59 +105,38 @@ namespace GTAWorldRenderer.Scenes
                   line = line.Trim();
                   if (line.Length == 0 || line.StartsWith("#"))
                      continue;
-                  if (type == DataFileType.DAT)
-                     processDatLine(line);
-                  else if (type == DataFileType.IPL)
-                     processIplLine(line);
-                  else if (type == DataFileType.IDE)
-                     processIdeLine(line);
+
+                  if (line.StartsWith("TEXDICTION"))
+                  {
+                     // Device->getFileSystem()->registerFileArchive(inStr.subString(11, inStr.size() - 11), true, false); // " 11 = "TEXDICTION "
+                     Logger.Print("TEXDICTION: not implemented yet", MessageType.Warning);
+                  }
+                  else if (line.StartsWith("IDE"))
+                  {
+                     //LoadDatFile(line.Substring(4), DataFileType.IDE);
+                  }
+                  else if (line.StartsWith("IPL"))
+                  {
+                     //LoadDatFile(line.Substring(4), DataFileType.IPL);
+                  }
+                  else if (line.StartsWith("SPLASH") || line.StartsWith("COLFILE") || line.StartsWith("MAPZONE") || line.StartsWith("MODELFILE"))
+                  {
+                     // Ignoring this commands
+                  }
                   else
-                     Logger.Print("Unsupported data file type: " + type.ToString(), MessageType.Warning);
+                  {
+                     int sep_idx = line.IndexOf(' ');
+                     if (sep_idx == -1)
+                        sep_idx = line.IndexOf('\t');
+                     if (sep_idx == -1)
+                        sep_idx = line.Length;
+                     string command = line.Substring(0, sep_idx);
+                     Logger.Print("Unsupported command in DAT file: " + command, MessageType.Error);
+                  }
+
                }
             }
          }
-      }
-
-
-      void processDatLine(string line)
-      {
-         if (line.StartsWith("TEXDICTION"))
-         {
-            // Device->getFileSystem()->registerFileArchive(inStr.subString(11, inStr.size() - 11), true, false); // " 11 = "TEXDICTION "
-            Logger.Print("TEXDICTION: not implemented yet", MessageType.Warning);
-         }
-         else if (line.StartsWith("IDE"))
-         {
-            LoadDataFile(line.Substring(4), DataFileType.IDE);
-         } else if (line.StartsWith("IPL"))
-         {
-            LoadDataFile(line.Substring(4), DataFileType.IPL);
-         }
-         else if (line.StartsWith("SPLASH") || line.StartsWith("COLFILE") || line.StartsWith("MAPZONE") || line.StartsWith("MODELFILE"))
-         {
-            // Ignoring this commands
-         } else
-         {
-            int sep_idx = line.IndexOf(' ');
-            if (sep_idx == -1)
-               sep_idx = line.IndexOf('\t');
-            if (sep_idx == -1)
-               sep_idx = line.Length;
-            string command = line.Substring(0, sep_idx);
-            Logger.Print("Unsupported command in DAT file: " + command, MessageType.Error);
-         }
-      }
-
-
-      void processIplLine(string line)
-      {
-         Logger.Print("processIplLine: not implemented yet!", MessageType.Warning);
-      }
-
-
-      void processIdeLine(string line)
-      {
-         Logger.Print("processIdeLine: not implemented yet!", MessageType.Warning);
       }
 
 
