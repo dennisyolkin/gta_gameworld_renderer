@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework.Media;
 using Microsoft.Xna.Framework.Net;
 using Microsoft.Xna.Framework.Storage;
 using GTAWorldRenderer.Logging;
+using GTAWorldRenderer.Scenes;
 
 namespace GTAWorldRenderer
 {
@@ -20,7 +21,10 @@ namespace GTAWorldRenderer
 
       public Main()
       {
-         Config cfg = Config.Instance;
+         ConsoleLogger.Instance.SetMessagesTypeToOutput((int)MessageType.Info | (int)MessageType.Error);
+         Scene scene = new Scene();
+         scene.LoadScene();
+         ConsoleLogger.Instance.PrintStatistic();
 
          graphics = new GraphicsDeviceManager(this);
          Content.RootDirectory = "Content";
