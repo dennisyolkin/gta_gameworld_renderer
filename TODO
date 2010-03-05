@@ -1,0 +1,5 @@
+TODO list
+=========
+
+ConsoleLogger: extract interface, implement FileLogger and LoggerChain
+ConsoleLogger: rewrite cpp-style enum-elements combinations to cs-style
