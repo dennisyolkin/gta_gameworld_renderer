@@ -12,6 +12,8 @@ using Microsoft.Xna.Framework.Net;
 using Microsoft.Xna.Framework.Storage;
 using GTAWorldRenderer.Logging;
 using GTAWorldRenderer.Scenes;
+using System.Threading;
+using System.Globalization;
 
 namespace GTAWorldRenderer
 {
@@ -21,7 +23,8 @@ namespace GTAWorldRenderer
 
       public Main()
       {
-         ConsoleLogWriter.Instance.SetMessagesFilter(MessagesFilter.InfoError);
+         Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+
          Log.Instance.AddLogWriter(ConsoleLogWriter.Instance);
          Log.Instance.AddLogWriter(new FileLogWriter("log.log"));
          Scene scene = new Scene();
