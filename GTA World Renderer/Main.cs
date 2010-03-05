@@ -25,12 +25,16 @@ namespace GTAWorldRenderer
       {
          Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
+         // настраиваем лог
          Log.Instance.AddLogWriter(ConsoleLogWriter.Instance);
          Log.Instance.AddLogWriter(new FileLogWriter("log.log"));
          Scene scene = new Scene();
+
+         // загружаем сцену
          scene.LoadScene();
          Log.Instance.PrintStatistic();
 
+         // настраиваем графическое устройство
          graphics = new GraphicsDeviceManager(this);
          Content.RootDirectory = "Content";
       }

@@ -6,6 +6,10 @@ using Microsoft.Xna.Framework;
 
 namespace GTAWorldRenderer.Scenes
 {
+   /// <summary>
+   /// Определяет объект сцены (его позицию, масштаб, поворт)
+   /// Данные берутся из *.ipl файлов
+   /// </summary>
    class SceneObject // from IPL files
    {
       public int Id{ get; set; }
@@ -15,7 +19,12 @@ namespace GTAWorldRenderer.Scenes
       public Vector3 Scale { get; set; }
    }
 
-   class SceneObjectDefinition // from IDE files
+
+   /// <summary>
+   /// Определяет описание объекта (текстуру и растояние отрисовки).
+   /// Данные берутся из *.ipl файлов
+   /// </summary>
+   class SceneObjectDefinition 
    {
       public string Name { get; set; }
       public string TextureFolder { get; set; }

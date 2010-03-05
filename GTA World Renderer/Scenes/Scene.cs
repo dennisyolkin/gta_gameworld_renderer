@@ -11,6 +11,9 @@ namespace GTAWorldRenderer.Scenes
    /// </summary>
    class Scene
    {
+      /// <summary>
+      /// Загружает игровой мир GTA
+      /// </summary>
       public void LoadScene()
       {
          SceneLoader sceneLoader = new SceneLoader();

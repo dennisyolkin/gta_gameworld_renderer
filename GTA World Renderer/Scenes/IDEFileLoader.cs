@@ -9,6 +9,9 @@ namespace GTAWorldRenderer.Scenes
 {
    partial class SceneLoader
    {
+      /// <summary>
+      /// Загрузчик файлов .ide (Item Description)
+      /// </summary>
       class IDEFileLoader
       {
          enum IDESection
@@ -62,7 +65,6 @@ namespace GTAWorldRenderer.Scenes
 
          private void ProcessNewSectionStart(string line)
          {
-            //Trace.Assert(currentSection == IPLSection.END);
             if (line.StartsWith("objs"))
                currentSection = IDESection.OBJS;
          }
