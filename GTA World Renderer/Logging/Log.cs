@@ -98,6 +98,11 @@ namespace GTAWorldRenderer.Logging
 
       public void Print(string msg, MessageType type)
       {
+         if (type == MessageType.Error)
+            ++errors;
+         else if (type == MessageType.Warning)
+            ++warnings;
+
          foreach (ILogWriter writer in writers)
             if (((int)type & (int)messageTypesToOutput) != 0)
                writer.Print(msg, indent, type);
