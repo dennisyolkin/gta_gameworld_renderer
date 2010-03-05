@@ -26,6 +26,8 @@ namespace GTAWorldRenderer.Scenes
       private Log Logger = Log.Instance;
       private GtaVersion gtaVersion;
 
+      private Dictionary<int, SceneObjectDefinition> objDefinitions = new Dictionary<int, SceneObjectDefinition>();
+      private List<SceneObject> sceneObjects= new List<SceneObject>();
 
       public void LoadScene()
       {
@@ -113,14 +115,17 @@ namespace GTAWorldRenderer.Scenes
                   }
                   else if (line.StartsWith("IDE"))
                   {
-                     //LoadDatFile(line.Substring(4), DataFileType.IDE);
+                     string fileName = line.Substring(4);
+                     var objs = new IDEFileLoader(fileName, gtaVersion).Load();
+                     foreach (var obj in objs)
+                        objDefinitions.Add(obj.Key, obj.Value);
                   }
                   else if (line.StartsWith("IPL"))
                   {
                      string fileName = line.Substring(4);
                      var objs = new IPLFileLoader(fileName, gtaVersion).Load();
-
-                     //LoadDatFile(line.Substring(4), DataFileType.IPL);
+                     foreach (var obj in objs)
+                        sceneObjects.Add(obj);
                   }
                   else if (line.StartsWith("SPLASH") || line.StartsWith("COLFILE") || line.StartsWith("MAPZONE") || line.StartsWith("MODELFILE"))
                   {

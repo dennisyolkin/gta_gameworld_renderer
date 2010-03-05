@@ -35,7 +35,6 @@ namespace GTAWorldRenderer.Scenes
          private string filePath;
          private GtaVersion gtaVersion;
 
-
          static IPLFileLoader()
          {
             INST_REQUIRED_TOKENS = new int[3];
@@ -52,9 +51,9 @@ namespace GTAWorldRenderer.Scenes
          }
 
 
-         public IEnumerable<SceneObjectDefinition> Load()
+         public IEnumerable<SceneObject> Load()
          {
-            List<SceneObjectDefinition> objects = new List<SceneObjectDefinition>();
+            List<SceneObject> objects = new List<SceneObject>();
 
             using (Logger.EnterStage("Reading IPL file: " + filePath))
             {
@@ -79,14 +78,14 @@ namespace GTAWorldRenderer.Scenes
                }
             }
 
-            Logger.Print(String.Format("Loaded {0} scene object definitions from IPL file {1}", objects.Count, filePath));
+            Logger.Print(String.Format("Loaded {0} scene objects from IPL file {1}", objects.Count, filePath));
             return objects;
          }
 
 
          private void ProcessNewSectionStart(string line)
          {
-            Trace.Assert(currentSection == IPLSection.END);
+            //Trace.Assert(currentSection == IPLSection.END);
             if (line.StartsWith("inst"))
                currentSection = IPLSection.INST;
             else if (line.StartsWith("cull"))
@@ -96,7 +95,7 @@ namespace GTAWorldRenderer.Scenes
          }
 
 
-         private SceneObjectDefinition ProcessSectionItem(string line)
+         private SceneObject ProcessSectionItem(string line)
          {
             if (line.StartsWith("end"))
             {
@@ -107,7 +106,6 @@ namespace GTAWorldRenderer.Scenes
                return null;
 
             string[] toks = line.Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
-            bool bad_num_of_tokens = false;
 
             if (toks.Length != INST_REQUIRED_TOKENS[(int)gtaVersion])
             {
@@ -116,7 +114,7 @@ namespace GTAWorldRenderer.Scenes
                throw new LoadingException(msg);
             }
 
-            SceneObjectDefinition obj = new SceneObjectDefinition();
+            SceneObject obj = new SceneObject();
             obj.Id = Int32.Parse(toks[0]);
             obj.Name = toks[1];
             obj.Scale = Vector3.One;
@@ -138,15 +136,9 @@ namespace GTAWorldRenderer.Scenes
                case GtaVersion.SanAndreas:
                   obj.Position = new Vector3(float.Parse(toks[3]), float.Parse(toks[4]), float.Parse(toks[5]));
                   obj.Rotation = new Quaternion(float.Parse(toks[6]), float.Parse(toks[7]), float.Parse(toks[8]), float.Parse(toks[9]));
-                  // toks[10] -- LOD -- is demporary ignored
+                  // toks[10] -- LOD -- is temporary ignored
                   break;
             }
-
-            /*
-            // TODO :: 
-             * setTextureDir(Definitions[iplTempId].getTextureDir());
-             * setDrawDistance(Definitions[iplTempId].getDrawDistance());
-            */
 
             return obj;
 
