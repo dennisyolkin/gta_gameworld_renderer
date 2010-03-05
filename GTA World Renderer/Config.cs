@@ -30,7 +30,7 @@ namespace GTAWorldRenderer
       }
 
       private static Config instance = new Config();
-      private ConsoleLogger Logger = ConsoleLogger.Instance;
+      private Log Logger = Log.Instance;
 
       public static Config Instance
       {
@@ -85,7 +85,7 @@ namespace GTAWorldRenderer
 
       void TerminateWithError(string msg, Exception innerException)
       {
-         ConsoleLogger.Instance.Print(msg, MessageType.Error);
+         Log.Instance.Print(msg, MessageType.Error);
          throw new ConfigInitializationFailedException(msg, innerException);
       }
 

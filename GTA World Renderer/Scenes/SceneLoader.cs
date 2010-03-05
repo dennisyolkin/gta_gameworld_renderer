@@ -29,7 +29,7 @@ namespace GTAWorldRenderer.Scenes
       }
 
 
-      private ConsoleLogger Logger = ConsoleLogger.Instance;
+      private Log Logger = Log.Instance;
       private GtaVersion gtaVersion;
 
 

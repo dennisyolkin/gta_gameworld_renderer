@@ -21,10 +21,11 @@ namespace GTAWorldRenderer
 
       public Main()
       {
-         ConsoleLogger.Instance.SetMessagesTypeToOutput((int)MessageType.Info | (int)MessageType.Error);
+         Log.Instance.SetOutputFilter(MessagesFilter.InfoError);
+         Log.Instance.AddLogWriter(ConsoleLogWriter.Instance);
          Scene scene = new Scene();
          scene.LoadScene();
-         ConsoleLogger.Instance.PrintStatistic();
+         Log.Instance.PrintStatistic();
 
          graphics = new GraphicsDeviceManager(this);
          Content.RootDirectory = "Content";
