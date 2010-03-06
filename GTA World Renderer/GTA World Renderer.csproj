@@ -97,6 +97,7 @@
     <Compile Include="Scenes\Scene.cs" />
     <Compile Include="Scenes\SceneLoader.cs" />
     <Compile Include="Scenes\SceneObjectDefinition.cs" />
+    <Compile Include="Scenes\TXDArchive.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />
