@@ -3,8 +3,19 @@ GTA GameWorld Renderer README
 
 author: Dennis Yolkin [dennisyolkin (=a.t=) gmail.com]
 
+Articles about file formats that were used: http://gtamodding.ru/wiki
+
+Here is GtaLight project that also can render GTA gameworld:
+http://b66883.com/projects/gtalight/gtalight_20090416_23-10.zip
+(this link was found here: 
+http://irrlicht.sourceforge.net/phpBB2/viewtopic.php?t=30439&postdays=0&postorder=asc&start=75).
+
+-------------------------------------------------------------------------------------------------------------------------------
+
 [Note] encoding in most of files is cp1251 (Windows-Cyrillic).
 
+
 Directories structure:
+----------------------
 GTA World Renderer -- Visual Studio 2008 project folder
 GTA World Renderer\app_working_dir -- Program working directory. Now it contains of only configuration xml file and its schema.
