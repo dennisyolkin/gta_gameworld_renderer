@@ -92,6 +92,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="Scenes\GTATexture.cs" />
     <Compile Include="Scenes\IDEFileLoader.cs" />
     <Compile Include="Scenes\IPLFileLoader.cs" />
     <Compile Include="Scenes\Scene.cs" />
