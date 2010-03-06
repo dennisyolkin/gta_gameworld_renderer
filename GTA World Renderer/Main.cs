@@ -34,6 +34,8 @@ namespace GTAWorldRenderer
          scene.LoadScene();
          Log.Instance.PrintStatistic();
 
+         GC.Collect();
+
          // настраиваем графическое устройство
          graphics = new GraphicsDeviceManager(this);
          Content.RootDirectory = "Content";
