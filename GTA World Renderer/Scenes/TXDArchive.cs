@@ -41,16 +41,25 @@ namespace GTAWorldRenderer.Scenes
       }
 
       private BinaryReader fin;
-      private string txdName;
+      private string txdName, filePath;
       private List<TxdFileDescriptor> files = new List<TxdFileDescriptor>();
 
-      public void Load(string fileName)
+
+      public TXDArchive(string filePath)
+      {
+         this.filePath = filePath;
+      }
+
+
+      public void Load()
       {
          using (Log.Instance.EnterStage("Loading TXD archive: "))
          {
-            txdName = Path.GetFileNameWithoutExtension(fileName);
-            fin = new BinaryReader(new FileStream(fileName, FileMode.Open));
+            txdName = Path.GetFileNameWithoutExtension(filePath);
+            fin = new BinaryReader(new FileStream(filePath, FileMode.Open));
             ParseSection((int)fin.BaseStream.Length, SectionType.Unknown);
+
+            Log.Instance.Print(String.Format("Loaded {0} entries", files.Count));
          }
       }
 
@@ -104,7 +113,7 @@ namespace GTAWorldRenderer.Scenes
          int headerSize = sizeof(int) + 4 + diffuseTextureName.Length + alphaTextureName.Length; // TODO :: or +8 ?
          fin.BaseStream.Seek(size - headerSize, SeekOrigin.Current);
 
-         Func<byte[], string> ToFullName = (x) => txdName + "/" + Encoding.ASCII.GetString(x) + ".gtatexture";
+         Func<byte[], string> ToFullName = (x) => (txdName + "/" + Encoding.ASCII.GetString(x) + ".gtatexture").ToLower();
 
          files.Add(new TxdFileDescriptor(ToFullName(diffuseTextureName), position, size));
          files.Add(new TxdFileDescriptor(ToFullName(alphaTextureName), position, size));
