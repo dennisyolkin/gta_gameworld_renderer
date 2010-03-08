@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using GTAWorldRenderer.Logging;
+using GTAWorldRenderer.Scenes.ArchivesCommon;
 
 namespace GTAWorldRenderer.Scenes
 {
@@ -16,21 +17,6 @@ namespace GTAWorldRenderer.Scenes
    class TXDArchive
    {
 
-      class TxdFileDescriptor
-      {
-         public TxdFileDescriptor(string name, int offset, int size)
-         {
-            Name = name;
-            Offset = offset;
-            Size = size;
-         }
-
-         public string Name { get; private set; }
-         public int Offset {get; private set;}
-         public int Size { get; private set; }
-      }
-
-
       enum SectionType
       {
          Data = 1,
@@ -42,7 +28,7 @@ namespace GTAWorldRenderer.Scenes
 
       private BinaryReader fin;
       private string txdName, filePath;
-      private List<TxdFileDescriptor> files = new List<TxdFileDescriptor>();
+      private List<ArchiveEntry> files = new List<ArchiveEntry>();
 
 
       public TXDArchive(string filePath)
@@ -115,8 +101,8 @@ namespace GTAWorldRenderer.Scenes
 
          Func<byte[], string> ToFullName = (x) => (txdName + "/" + Encoding.ASCII.GetString(x) + ".gtatexture").ToLower();
 
-         files.Add(new TxdFileDescriptor(ToFullName(diffuseTextureName), position, size));
-         files.Add(new TxdFileDescriptor(ToFullName(alphaTextureName), position, size));
+         files.Add(new ArchiveEntry(ToFullName(diffuseTextureName), position, size));
+         files.Add(new ArchiveEntry(ToFullName(alphaTextureName), position, size));
       }
 
    }
