@@ -87,7 +87,6 @@ namespace GTAWorldRenderer.Scenes
          }
 
 
-
          void ParseDataSection(int size, SectionType type)
          {
             int position = (int)fin.BaseStream.Position;
@@ -101,7 +100,12 @@ namespace GTAWorldRenderer.Scenes
             int headerSize = sizeof(int) + 4 + diffuseTextureName.Length + alphaTextureName.Length; // TODO :: or +8 ?
             fin.BaseStream.Seek(size - headerSize, SeekOrigin.Current);
 
-            Func<byte[], string> ToFullName = (x) => (txdName + "/" + Encoding.ASCII.GetString(x) + ".gtatexture").ToLower();
+            Func<byte[], string> ToFullName = delegate(byte[] name) 
+            {
+               int nilIdx = Array.IndexOf(name, 0);
+               int nameLen = nilIdx == -1 ? name.Length : nilIdx;
+               return txdName + "/" + (Encoding.ASCII.GetString(name, 0, nameLen) + ".gtatexture").ToLower();
+            };
 
             files.Add(new ArchiveEntry(ToFullName(diffuseTextureName), position, size));
             files.Add(new ArchiveEntry(ToFullName(alphaTextureName), position, size));
