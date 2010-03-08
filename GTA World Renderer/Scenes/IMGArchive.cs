@@ -46,7 +46,7 @@ namespace GTAWorldRenderer.Scenes
                   case GtaVersion.III:
                   case GtaVersion.ViceCity:
                      string dirFilePath = filePath.Substring(0, filePath.Length - 3) + "dir";
-                     using (BinaryReader inputDir = new BinaryReader(new FileStream(filePath, FileMode.Open)))
+                     using (BinaryReader inputDir = new BinaryReader(new FileStream(dirFilePath, FileMode.Open)))
                      {
                         int entries = (int)inputDir.BaseStream.Length / 32;
                         LoadArchiveContents(inputDir, entries);
@@ -79,12 +79,17 @@ namespace GTAWorldRenderer.Scenes
          {
             for (int i = 0; i != entriesInArchive; ++i)
             {
-               int pos = input.ReadInt32();
-               int length = input.ReadInt32();
+               int pos = input.ReadInt32() * 2048;
+               int length = input.ReadInt32() * 2048;
                byte[] name = new byte[24];
                input.Read(name, 0, name.Length);
 
-               ArchiveEntry entry = new ArchiveEntry(Encoding.ASCII.GetString(name), pos, length);
+               int nameLen = name.Length;
+               while (nameLen > 0 && name[nameLen - 1] == 0)
+                  --nameLen;
+
+               ArchiveEntry entry = new ArchiveEntry(Encoding.ASCII.GetString(name, 0, nameLen), pos, length);
+               files.Add(entry);
             }
          }
 
