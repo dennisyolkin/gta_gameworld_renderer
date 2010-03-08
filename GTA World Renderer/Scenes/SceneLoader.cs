@@ -72,7 +72,7 @@ namespace GTAWorldRenderer.Scenes
          else
          {
             Logger.Print("Can not determine game version!", MessageType.Error);
-            throw new LoadingException("Unknown or unsopported version of GTA");
+            throw new LoadingException("Unknown or unsopported version of GTA.");
          }
       }
 
@@ -88,7 +88,7 @@ namespace GTAWorldRenderer.Scenes
             case GtaVersion.SanAndreas:
                return "data/gra.dat";
             default:
-               string msg = "Unsopported GTA version: " + gtaVersion.ToString();
+               string msg = "Unsopported GTA version: " + gtaVersion.ToString() + ".";
                Logger.Print(msg, MessageType.Error);
                throw new LoadingException(msg);
          }

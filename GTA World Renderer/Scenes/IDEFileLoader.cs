@@ -82,7 +82,7 @@ namespace GTAWorldRenderer.Scenes
 
             if (toks.Length < 5)
             {
-               string msg = "Incorrect number of tokens in OBJS section: " + toks.Length.ToString();
+               string msg = "Incorrect number of tokens in OBJS section: " + toks.Length.ToString() + ".";
                Log.Instance.Print(msg, MessageType.Error);
                throw new LoadingException(msg);
             }

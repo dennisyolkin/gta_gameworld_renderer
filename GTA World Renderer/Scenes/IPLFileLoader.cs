@@ -109,7 +109,7 @@ namespace GTAWorldRenderer.Scenes
 
             if (toks.Length != INST_REQUIRED_TOKENS[(int)gtaVersion])
             {
-               string msg = "Incorrect number of tokens in INST section: " + toks.Length.ToString();
+               string msg = "Incorrect number of tokens in INST section: " + toks.Length.ToString() + ".";
                Log.Instance.Print(msg, MessageType.Error);
                throw new LoadingException(msg);
             }
