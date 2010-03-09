@@ -1,6 +1,10 @@
 GTA GameWorld Renderer README
 =============================
 
+The current goal of this project is to implement a Windows Application (using Microsoft XNA 
+Game Studio), that allows you to render GTA III, Gta ViceCity and GTA SanAndreas 
+game world. 
+
 author: Dennis Yolkin [dennisyolkin (=a.t=) gmail.com]
 
 Articles about file formats that were used: http://gtamodding.ru/wiki
@@ -21,4 +25,5 @@ It is MooMapper project that allows to view and modify GTA gameworld. Writeen in
 Directories structure:
 ----------------------
 GTA World Renderer -- Visual Studio 2008 project folder
-GTA World Renderer\app_working_dir -- Program working directory. Now it contains of only configuration xml file and its schema.
+GTA World Renderer\app_working_dir -- Program working directory. Now it contains 
+   of only configuration xml file and its schema.
