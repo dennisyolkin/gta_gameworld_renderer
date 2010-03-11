@@ -17,6 +17,17 @@ namespace GTAWorldRenderer.Scenes
          }
       }
 
+      /// <summary>
+      /// Пишет в текущий Stage лога текст ошибки и кидает исключение LoadingException
+      /// </summary>
+      /// <param name="msg"></param>
+      private static void TerminateWithError(string msg)
+      {
+         Log.Instance.Print(msg, MessageType.Error);
+         throw new LoadingException(msg);
+      }
+
+
       enum GtaVersion
       {
          III, ViceCity, SanAndreas

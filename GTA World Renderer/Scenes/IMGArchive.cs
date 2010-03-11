@@ -30,13 +30,6 @@ namespace GTAWorldRenderer.Scenes
          }
 
 
-         private void TerminateWithError(string msg)
-         {
-            Log.Instance.Print(msg, MessageType.Error);
-            throw new LoadingException(msg);
-         }
-
-
          public void Load()
          {
             using (Log.Instance.EnterStage("Loading IMG archive: " + filePath))
