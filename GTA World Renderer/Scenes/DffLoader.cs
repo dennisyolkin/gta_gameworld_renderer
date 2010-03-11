@@ -175,7 +175,7 @@ namespace GTAWorldRenderer.Scenes
             {
                if (data.Length > 0)
                {
-                  
+                  textures[textures.Count - 1] = data;
                } else 
                {
                   Log.Instance.Print("String section of texture information is empty", MessageType.Warning);
