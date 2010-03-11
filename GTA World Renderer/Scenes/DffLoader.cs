@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using GTAWorldRenderer.Logging;
+using Microsoft.Xna.Framework;
+using System.Diagnostics;
 
 namespace GTAWorldRenderer.Scenes
 {
@@ -38,12 +40,18 @@ namespace GTAWorldRenderer.Scenes
             Frame = 39056126,
          }
 
-
-         enum SectionFlags
+         [Flags]
+         enum GeometrySectionFlags
          {
-            HasTextureCoords = 4,
-            HasColorInfo = 8,
-            HasNormalsInfo = 16,
+            None = 0,
+            TrianglesStrip = 1 << 0,
+            HasVertexPositions = 1 << 1,
+            HasTextureCoords = 1 << 2,
+            HasColorInfo = 1 << 3,
+            HasNormalsInfo = 1 << 4,
+            // unknown = 1 << 5 (GeometryLight)
+            // unknown = 1 << 6 
+            MultipleTextureCoords = 1 << 7,
          }
 
 
@@ -74,11 +82,24 @@ namespace GTAWorldRenderer.Scenes
          }
 
 
+         class ModelData
+         {
+            public List<string> Textures { get; set; }
+            public List<Vector2> TextureCoords { get; set; }
+            public List<short> Faces { get; set; }
+            public List<Vector3> Vertices { get; set; }
+            public List<Vector3> Normals { get; set; }
+
+            public ModelData()
+            {
+               Textures = new List<string>();
+            }
+         }
+
+
          private string fileName;
          BinaryReader input;
-
-         private List<string> textures = new List<string>();
-
+         ModelData model = new ModelData();
 
          public DffLoader(string fileName)
          {
@@ -175,7 +196,7 @@ namespace GTAWorldRenderer.Scenes
             {
                if (data.Length > 0)
                {
-                  textures[textures.Count - 1] = data;
+                  model.Textures[model.Textures.Count - 1] = data;
                } else 
                {
                   Log.Instance.Print("String section of texture information is empty", MessageType.Warning);
@@ -186,9 +207,126 @@ namespace GTAWorldRenderer.Scenes
 
          private void ParseGeometry(int sectionSize, SectionType parent, DffVersion version)
          {
+            GeometrySectionFlags flags = (GeometrySectionFlags)input.ReadInt16();
+            input.BaseStream.Seek(sizeof(short), SeekOrigin.Current); // unknown
+            int trianglesCount = input.ReadInt32();
+            int verticesCount = input.ReadInt32();
+            input.BaseStream.Seek(sizeof(short), SeekOrigin.Current); // morphTargetCount aka frameCount
 
+            if (version < DffVersion.GTA_VC_2)
+            {
+               // geometry has lighting data. Ignoring it. 
+               // TODO :: we can use it for rendering!!!
+               input.BaseStream.Seek(12, SeekOrigin.Current);
+            }
+
+            if ((flags & GeometrySectionFlags.TrianglesStrip) != GeometrySectionFlags.None)
+               TerminateWithError("Model use triangle strip, but it is not implemented yet");
+
+            if ((flags & GeometrySectionFlags.MultipleTextureCoords) != GeometrySectionFlags.None)
+               Log.Instance.Print("Multiple TexCoords sets are provided but used only the first of it!", MessageType.Warning);
+
+            if ((flags & GeometrySectionFlags.HasColorInfo) != GeometrySectionFlags.None)
+            {
+               // ignoring color info
+               // TODO :: we can use it for rendering, if there is no texture
+               Log.Instance.Print("Ignoring color info", MessageType.Warning);
+            }
+
+            if ((flags & GeometrySectionFlags.HasTextureCoords) != GeometrySectionFlags.None)
+               ReadTextureCoords(verticesCount);
+
+            ReadTriangles(trianglesCount);
+
+            input.BaseStream.Seek(4 * sizeof(float), SeekOrigin.Current); // ignoring bounding sphere (x, y, z, radius)
+            input.BaseStream.Seek(2 * sizeof(int), SeekOrigin.Current); // hasPosition, hasNormal (not used)
+
+            ReadVertices(verticesCount);
+
+            // TODO :: возможно, здесь нужно создать нормали, если их нет изначально в файле. А возможно, это нужно делать в шейдере.
+            if ((flags & GeometrySectionFlags.HasNormalsInfo) != GeometrySectionFlags.None)
+               ReadNormals(verticesCount);
          }
+
+
+         private void ReadTextureCoords(int verticesCount)
+         {
+            model.TextureCoords = new List<Vector2>(verticesCount);
+            for (var i = 0; i != model.TextureCoords.Count; ++i)
+            {
+               float x = input.ReadSingle();
+               float y = input.ReadSingle();
+
+               // flip x coordinate
+               // TODO :: а оно надо?
+               /*
+               if (x > 0.5f)
+                  x = (float)(0.5f + (0.5 - x));
+               else
+                  x = (float)(0.5f + (x + 0.5));
+                */
+
+               model.TextureCoords.Add(new Vector2(x, y));
+            }
+         }
+
+
+         private void ReadTriangles(int trianglesCount)
+         {
+            // TODO :: remove; it is for debugging purposes
+            if (model.Faces != null)
+               TerminateWithError("DebugAssertionFailed: recreating Faces buffer!");
+
+            model.Faces = new List<short>(trianglesCount * 3);
+
+            for (var i = 0; i != trianglesCount; ++i)
+            {
+               model.Faces.Add(input.ReadInt16());
+               model.Faces.Add(input.ReadInt16());
+               input.BaseStream.Seek(sizeof(short), SeekOrigin.Current); // skip index flags
+               model.Faces.Add(input.ReadInt16());
+
+            }
+         }
+
+
+         private void ReadVertices(int verticesCount)
+         {
+            // TODO :: remove; it is for debugging purposes
+            if (model.Faces != null)
+               TerminateWithError("DebugAssertionFailed: recreating Vertices buffer!");
+
+            model.Vertices = new List<Vector3>(verticesCount);
+
+            for (var i = 0; i != verticesCount; ++i)
+            {
+               var x = input.ReadSingle();
+               var y = input.ReadSingle();
+               var z = input.ReadSingle();
+               model.Vertices.Add(new Vector3(x, y, z));
+            }
+         }
+
+
+         private void ReadNormals(int verticesCount)
+         {
+            // TODO :: remove; it is for debugging purposes
+            if (model.Faces != null)
+               TerminateWithError("DebugAssertionFailed: recreating Normals buffer!");
+
+            model.Normals = new List<Vector3>(verticesCount);
+
+            for (var i = 0; i != verticesCount; ++i)
+            {
+               var x = input.ReadSingle();
+               var y = input.ReadSingle();
+               var z = input.ReadSingle();
+               model.Normals.Add(new Vector3(x, y, z));
+            }
+         }
+
       }
+
 
    }
 }
