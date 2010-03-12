@@ -49,6 +49,11 @@ namespace GTAWorldRenderer
       TextInfoPanel textInfoPanel;
       MouseState originalMouseState;
 
+      VertexBuffer vertexBuffer; // TODO :: temporary!
+      IndexBuffer indexBuffer; // TODO :: temporary!
+      VertexDeclaration vertexDeclaration; // TODO :: temporary
+      Effect effect;
+
       protected override void Initialize()
       {
          camera = new Camera();
@@ -65,6 +70,14 @@ namespace GTAWorldRenderer
 
          Mouse.SetPosition(device.Viewport.Width / 2, device.Viewport.Height / 2);
          originalMouseState = Mouse.GetState();
+
+         // TODO :: temporary
+         Scenes.SceneLoader.DffLoader dff = new Scenes.SceneLoader.DffLoader(@"c:\Program Files\GTAIII\models\Generic\arrow.DFF");
+         dff.Load();
+         vertexBuffer = dff.GetVertexBuffer(device);
+         indexBuffer = dff.GetIndexBuffer(device);
+         vertexDeclaration = new VertexDeclaration(device, Scenes.SceneLoader.DffLoader.VertexPositionNormalFormat.VertexElements);
+         effect = Content.Load<Effect>("effect");
       }
 
 
@@ -85,6 +98,25 @@ namespace GTAWorldRenderer
          GraphicsDevice.Clear(Color.Black);
 
          textInfoPanel.Draw();
+
+         // TODO :: temporary
+         //////////////////////////////////////////////////////////////////////////
+         effect.CurrentTechnique = effect.Techniques["Simple"];
+         effect.Parameters["xWorld"].SetValue(Matrix.Identity);
+         effect.Parameters["xView"].SetValue(camera.viewMatrix);
+         effect.Parameters["xProjection"].SetValue(Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, device.Viewport.AspectRatio, 1.0f, 200.0f));
+         effect.Begin();
+         foreach (var pass in effect.CurrentTechnique.Passes)
+         {
+            pass.Begin();
+            device.VertexDeclaration = vertexDeclaration;
+            device.Vertices[0].SetSource(vertexBuffer, 0, Scenes.SceneLoader.DffLoader.VertexPositionNormalFormat.SizeInBytes);
+            device.Indices = indexBuffer;
+            device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, vertexBuffer.SizeInBytes / Scenes.SceneLoader.DffLoader.VertexPositionNormalFormat.SizeInBytes, 0, indexBuffer.SizeInBytes / sizeof(short));
+            pass.End();
+         }
+         effect.End();
+         //////////////////////////////////////////////////////////////////////////
 
          base.Draw(gameTime);
       }

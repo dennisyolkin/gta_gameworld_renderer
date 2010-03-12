@@ -7,6 +7,7 @@ using GTAWorldRenderer.Logging;
 using Microsoft.Xna.Framework;
 using System.Diagnostics;
 using System.Collections;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace GTAWorldRenderer.Scenes
 {
@@ -20,7 +21,7 @@ namespace GTAWorldRenderer.Scenes
       /// http://www.gtamodding.com/index.php?title=RenderWare_binary_stream_file
       /// http://www.chronetal.co.uk/gta/index.php?page=dff#GeometryList.MaterialSplit
       /// </summary>
-      class DffLoader
+      public class DffLoader // TODO :: remove 'public'
       {
 
          enum SectionType
@@ -341,6 +342,48 @@ namespace GTAWorldRenderer.Scenes
                var z = input.ReadSingle();
                model.Normals.Add(new Vector3(x, y, z));
             }
+         }
+
+         // ----------------------------------------------------------------------------------------------------------------------------------------------
+         // TODO :: following code is temporary! I need it to test is something renders!
+
+         public IndexBuffer GetIndexBuffer(GraphicsDevice device)
+         {
+            IndexBuffer buff = new IndexBuffer(device, model.Indices.Count * sizeof(short), BufferUsage.WriteOnly, IndexElementSize.SixteenBits);
+            buff.SetData(model.Indices.ToArray());
+            return buff;
+         }
+
+
+         public struct VertexPositionNormalFormat
+         {
+            private Vector3 position;
+            private Vector3 normal;
+
+            public VertexPositionNormalFormat(Vector3 position, Vector3 normal)
+            {
+               this.position = position;
+               this.normal = normal;
+            }
+
+            public static VertexElement[] VertexElements = 
+            {
+               new VertexElement(0, 0, VertexElementFormat.Vector3, VertexElementMethod.Default, VertexElementUsage.Position, 0),
+               new VertexElement(0, sizeof(float) * 3, VertexElementFormat.Vector3, VertexElementMethod.Default, VertexElementUsage.Normal, 0)
+            };
+
+            public static int SizeInBytes = sizeof(float) * (3 + 3);
+         }
+
+
+         public VertexBuffer GetVertexBuffer(GraphicsDevice device)
+         {
+            VertexPositionNormalFormat[] data = new VertexPositionNormalFormat[model.Vertices.Count];
+            for (var i = 0; i != model.Vertices.Count; ++i)
+               data[i] = new VertexPositionNormalFormat(model.Vertices[i], model.Normals[i]);
+            VertexBuffer buff =  new VertexBuffer(device, model.Vertices.Count * VertexPositionNormalFormat.SizeInBytes, BufferUsage.WriteOnly);
+            buff.SetData(data);
+            return buff;
          }
 
       }
