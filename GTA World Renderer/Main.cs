@@ -21,19 +21,20 @@ namespace GTAWorldRenderer
    public class Main : Microsoft.Xna.Framework.Game
    {
       GraphicsDeviceManager graphics;
+      GraphicsDevice device;
 
       public Main()
       {
          Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-
+         
          // настраиваем лог
-         Log.Instance.AddLogWriter(ConsoleLogWriter.Instance);
+         //Log.Instance.AddLogWriter(ConsoleLogWriter.Instance);
          Log.Instance.AddLogWriter(new FileLogWriter("log.log"));
          Scene scene = new Scene();
 
          // загружаем сцену
-         scene.LoadScene();
-         Log.Instance.PrintStatistic();
+         //scene.LoadScene();
+         //Log.Instance.PrintStatistic();
 
          GC.Collect();
 
@@ -42,9 +43,11 @@ namespace GTAWorldRenderer
          Content.RootDirectory = "Content";
       }
 
+      private const float rotationSpeed = 0.3f;
 
       Camera camera;
-
+      TextInfoPanel textInfoPanel;
+      MouseState originalMouseState;
 
       protected override void Initialize()
       {
@@ -56,6 +59,12 @@ namespace GTAWorldRenderer
 
       protected override void LoadContent()
       {
+         device = graphics.GraphicsDevice;
+         textInfoPanel = new TextInfoPanel(Content, device);
+         textInfoPanel.Camera = camera;
+
+         Mouse.SetPosition(device.Viewport.Width / 2, device.Viewport.Height / 2);
+         originalMouseState = Mouse.GetState();
       }
 
 
@@ -66,6 +75,7 @@ namespace GTAWorldRenderer
          ProcessMouse(gameTime, timeDifference);
          ProcessKeyboard(gameTime, timeDifference);
 
+
          base.Update(gameTime);
       }
 
@@ -73,13 +83,25 @@ namespace GTAWorldRenderer
       protected override void Draw(GameTime gameTime)
       {
          GraphicsDevice.Clear(Color.Black);
+
+         textInfoPanel.Draw();
+
          base.Draw(gameTime);
       }
 
 
       private void ProcessMouse(GameTime gameTime, float amount)
       {
-
+         MouseState currentMouseState = Mouse.GetState();
+         if (currentMouseState != originalMouseState && currentMouseState.LeftButton == ButtonState.Pressed)
+         {
+            float xDifference = currentMouseState.X - originalMouseState.X;
+            float yDifference = -currentMouseState.Y + originalMouseState.Y;
+            float leftrightRot = rotationSpeed * xDifference * amount;
+            float updownRot = rotationSpeed * yDifference * amount;
+            Mouse.SetPosition(device.Viewport.Width / 2, device.Viewport.Height / 2);
+            camera.UpdateRotation(leftrightRot, updownRot);
+         }
       }
 
 
