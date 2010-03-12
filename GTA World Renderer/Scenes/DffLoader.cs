@@ -6,6 +6,7 @@ using System.IO;
 using GTAWorldRenderer.Logging;
 using Microsoft.Xna.Framework;
 using System.Diagnostics;
+using System.Collections;
 
 namespace GTAWorldRenderer.Scenes
 {
@@ -86,13 +87,27 @@ namespace GTAWorldRenderer.Scenes
          {
             public List<string> Textures { get; set; }
             public List<Vector2> TextureCoords { get; set; }
-            public List<short> Faces { get; set; }
+            public List<short> Indices { get; set; }
             public List<Vector3> Vertices { get; set; }
             public List<Vector3> Normals { get; set; }
 
             public ModelData()
             {
                Textures = new List<string>();
+            }
+
+
+            public string Info
+            {
+               get
+               {
+                  Func<IList, string> ToStr = x => (x == null? "no" : x.Count.ToString());
+
+                  return String.Format("Vertices: {0}, Triangles: {1}", 
+                     ToStr(Vertices), 
+                     Indices == null? "no" : (Indices.Count / 3).ToString() // TODO :: не учитывается TrianglesStrip
+                     );
+               }
             }
          }
 
@@ -123,6 +138,10 @@ namespace GTAWorldRenderer.Scenes
 
                   ProcessRenderwareSection(header.SectionSize, 0, header.SectionType);
                }
+
+               Log.Instance.Print("Model loaded!");
+               Log.Instance.Print(model.Info);
+
             }
          }
 
@@ -183,7 +202,6 @@ namespace GTAWorldRenderer.Scenes
 
                default:
                   input.BaseStream.Seek(sectionSize, SeekOrigin.Current);
-                  Log.Instance.Print("ParseDataSection was invoked for unknown section", MessageType.Warning);
                   break;
             }
          }
@@ -274,17 +292,17 @@ namespace GTAWorldRenderer.Scenes
          private void ReadTriangles(int trianglesCount)
          {
             // TODO :: remove; it is for debugging purposes
-            if (model.Faces != null)
+            if (model.Indices != null)
                TerminateWithError("DebugAssertionFailed: recreating Faces buffer!");
 
-            model.Faces = new List<short>(trianglesCount * 3);
+            model.Indices = new List<short>(trianglesCount * 3);
 
             for (var i = 0; i != trianglesCount; ++i)
             {
-               model.Faces.Add(input.ReadInt16());
-               model.Faces.Add(input.ReadInt16());
+               model.Indices.Add(input.ReadInt16());
+               model.Indices.Add(input.ReadInt16());
                input.BaseStream.Seek(sizeof(short), SeekOrigin.Current); // skip index flags
-               model.Faces.Add(input.ReadInt16());
+               model.Indices.Add(input.ReadInt16());
 
             }
          }
@@ -293,7 +311,7 @@ namespace GTAWorldRenderer.Scenes
          private void ReadVertices(int verticesCount)
          {
             // TODO :: remove; it is for debugging purposes
-            if (model.Faces != null)
+            if (model.Vertices != null)
                TerminateWithError("DebugAssertionFailed: recreating Vertices buffer!");
 
             model.Vertices = new List<Vector3>(verticesCount);
@@ -311,7 +329,7 @@ namespace GTAWorldRenderer.Scenes
          private void ReadNormals(int verticesCount)
          {
             // TODO :: remove; it is for debugging purposes
-            if (model.Faces != null)
+            if (model.Normals != null)
                TerminateWithError("DebugAssertionFailed: recreating Normals buffer!");
 
             model.Normals = new List<Vector3>(verticesCount);
