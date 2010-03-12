@@ -21,6 +21,7 @@ namespace GTAWorldRenderer
    {
       GraphicsDeviceManager graphics;
 
+
       public Main()
       {
          Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
@@ -41,7 +42,8 @@ namespace GTAWorldRenderer
          Content.RootDirectory = "Content";
       }
 
-      
+
+
       protected override void Initialize()
       {
          base.Initialize();
@@ -61,7 +63,7 @@ namespace GTAWorldRenderer
 
       protected override void Draw(GameTime gameTime)
       {
-         GraphicsDevice.Clear(Color.CornflowerBlue);
+         GraphicsDevice.Clear(Color.Black);
          base.Draw(gameTime);
       }
    }
