@@ -248,6 +248,7 @@ namespace GTAWorldRenderer.Scenes
             {
                // ignoring color info
                // TODO :: we can use it for rendering, if there is no texture
+               input.BaseStream.Seek(4 * verticesCount, SeekOrigin.Current);
                Log.Instance.Print("Ignoring color info", MessageType.Warning);
             }
 
