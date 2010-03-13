@@ -83,35 +83,6 @@ namespace GTAWorldRenderer.Scenes
          }
 
 
-         class ModelData
-         {
-            public List<string> Textures { get; set; }
-            public List<Vector2> TextureCoords { get; set; }
-            public List<short> Indices { get; set; }
-            public List<Vector3> Vertices { get; set; }
-            public List<Vector3> Normals { get; set; }
-
-            public ModelData()
-            {
-               Textures = new List<string>();
-            }
-
-
-            public string Info
-            {
-               get
-               {
-                  Func<IList, string> ToStr = x => (x == null? "no" : x.Count.ToString());
-
-                  return String.Format("Vertices: {0}, Triangles: {1}", 
-                     ToStr(Vertices), 
-                     Indices == null? "no" : (Indices.Count / 3).ToString() // TODO :: не учитывается TrianglesStrip
-                     );
-               }
-            }
-         }
-
-
          private string fileName;
          BinaryReader input;
          ModelData model = new ModelData();
@@ -122,7 +93,7 @@ namespace GTAWorldRenderer.Scenes
          }
 
 
-         public void Load()
+         public Model3D Load()
          {
             using (Log.Instance.EnterStage("Loading model from DFF file: " + fileName))
             {
@@ -142,6 +113,7 @@ namespace GTAWorldRenderer.Scenes
                Log.Instance.Print("Model loaded!");
                Log.Instance.Print(model.Info);
 
+               return null;
             }
          }
 

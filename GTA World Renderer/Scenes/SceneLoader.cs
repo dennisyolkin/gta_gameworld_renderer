@@ -36,11 +36,12 @@ namespace GTAWorldRenderer.Scenes
 
       private Log Logger = Log.Instance;
       private GtaVersion gtaVersion;
+      
 
       private Dictionary<int, SceneObjectDefinition> objDefinitions = new Dictionary<int, SceneObjectDefinition>();
       private List<SceneObject> sceneObjects= new List<SceneObject>();
 
-      public void LoadScene()
+      public IEnumerable<Model3D> LoadScene()
       {
          using (Logger.EnterStage("Loading scene"))
          {
@@ -52,6 +53,12 @@ namespace GTAWorldRenderer.Scenes
                DetermineGtaVersion();
                LoadDatFile("data/default.dat");
                LoadDatFile(GetVersionSpecificDatFile());
+
+               var models = new List<Model3D>();
+               var dffLoader = new DffLoader(@"c:\Program Files\GTAIII\models\Generic\arrow.DFF");
+               Model3D model = dffLoader.Load();
+               models.Add(model);
+               return models;
 
             } catch (Exception)
             {

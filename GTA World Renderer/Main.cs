@@ -20,27 +20,18 @@ namespace GTAWorldRenderer
 {
    public class Main : Microsoft.Xna.Framework.Game
    {
-      GraphicsDeviceManager graphics;
       GraphicsDevice device;
 
       public Main()
       {
          Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
          
+         GraphicsDeviceHolder.DeviceManager = new GraphicsDeviceManager(this);
+         Content.RootDirectory = "Content";
+
          // настраиваем лог
          //Log.Instance.AddLogWriter(ConsoleLogWriter.Instance);
          Log.Instance.AddLogWriter(new FileLogWriter("log.log"));
-         Scene scene = new Scene();
-
-         // загружаем сцену
-         //scene.LoadScene();
-         //Log.Instance.PrintStatistic();
-
-         GC.Collect();
-
-         // настраиваем графическое устройство
-         graphics = new GraphicsDeviceManager(this);
-         Content.RootDirectory = "Content";
       }
 
       private const float rotationSpeed = 0.3f;
@@ -59,7 +50,14 @@ namespace GTAWorldRenderer
 
       protected override void LoadContent()
       {
-         device = graphics.GraphicsDevice;
+         device = GraphicsDeviceHolder.Device;
+
+         // загружаем сцену
+         Scene scene = new Scene();
+         scene.LoadScene();
+         Log.Instance.PrintStatistic();
+         GC.Collect();
+
          textInfoPanel = new TextInfoPanel(Content, device);
          textInfoPanel.Camera = camera;
 

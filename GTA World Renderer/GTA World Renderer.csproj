@@ -85,6 +85,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Config.cs" />
+    <Compile Include="GraphicsDeviceHolder.cs" />
     <Compile Include="Logging\ConsoleLogWriter.cs" />
     <Compile Include="Logging\FileLogWriter.cs" />
     <Compile Include="Logging\ILogWriter.cs" />
@@ -101,10 +102,13 @@
     <Compile Include="Scenes\IMGArchive.cs" />
     <Compile Include="Scenes\IPLFileLoader.cs" />
     <Compile Include="Scenes\Model3D.cs" />
+    <Compile Include="Scenes\Model3dFactory.cs" />
+    <Compile Include="Scenes\ModelData.cs" />
     <Compile Include="Scenes\Scene.cs" />
     <Compile Include="Scenes\SceneLoader.cs" />
     <Compile Include="Scenes\SceneObjectDefinition.cs" />
     <Compile Include="Scenes\TXDArchive.cs" />
+    <Compile Include="Scenes\VertexFormats.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />
