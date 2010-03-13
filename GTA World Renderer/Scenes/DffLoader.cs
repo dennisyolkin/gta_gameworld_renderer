@@ -201,7 +201,7 @@ namespace GTAWorldRenderer.Scenes
             input.BaseStream.Seek(sizeof(short), SeekOrigin.Current); // unknown
             int trianglesCount = input.ReadInt32();
             int verticesCount = input.ReadInt32();
-            input.BaseStream.Seek(sizeof(short), SeekOrigin.Current); // morphTargetCount aka frameCount
+            input.BaseStream.Seek(sizeof(int), SeekOrigin.Current); // morphTargetCount aka frameCount
 
             if (version < DffVersion.GTA_VC_2)
             {

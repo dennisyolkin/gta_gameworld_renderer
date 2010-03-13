@@ -14,7 +14,7 @@ namespace GTAWorldRenderer.Rendering
       public  Vector3 Position { get; private set; }
       public float LeftRightRotation { get; private set; }
       public float UpDownRotation { get; private set; }
-      public Matrix viewMatrix { get; private set; }
+      public Matrix ViewMatrix { get; private set; }
 
 
       public Camera()
@@ -22,7 +22,7 @@ namespace GTAWorldRenderer.Rendering
          Position = Vector3.Zero;
          LeftRightRotation = 0.0f;
          UpDownRotation = 0.0f;
-         viewMatrix = Matrix.CreateLookAt(Vector3.Zero, Vector3.Forward, Vector3.Up);
+         ViewMatrix = Matrix.CreateLookAt(Vector3.Zero, Vector3.Forward, Vector3.Up);
       }
 
 
@@ -51,7 +51,7 @@ namespace GTAWorldRenderer.Rendering
          Vector3 target = Vector3.Transform(new Vector3(0, 0, -1), rotation) + Position;
          Vector3 up = Vector3.Transform(Vector3.Up, rotation);
 
-         viewMatrix = Matrix.CreateLookAt(Position, target, up);
+         ViewMatrix = Matrix.CreateLookAt(Position, target, up);
       }
 
 

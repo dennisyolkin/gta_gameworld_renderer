@@ -41,6 +41,7 @@ namespace GTAWorldRenderer
       TextInfoPanel textInfoPanel;
       MouseState originalMouseState;
       Effect effect; // TODO :: возможно, он должен создаваться и загружаться в сцене...
+      Matrix projection;
 
       protected override void Initialize()
       {
@@ -64,6 +65,7 @@ namespace GTAWorldRenderer
          textInfoPanel = new TextInfoPanel(Content, device);
          textInfoPanel.Camera = camera;
 
+         projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, device.Viewport.AspectRatio, .1f, 2000.0f);
          effect = Content.Load<Effect>("effect");
 
          Mouse.SetPosition(device.Viewport.Width / 2, device.Viewport.Height / 2);
@@ -88,6 +90,8 @@ namespace GTAWorldRenderer
       {
          GraphicsDevice.Clear(Color.Black);
 
+         effect.Parameters["xView"].SetValue(camera.ViewMatrix);
+         effect.Parameters["xProjection"].SetValue(camera.ViewMatrix);
          scene.Draw(effect);
          textInfoPanel.Draw();
 
