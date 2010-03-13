@@ -30,15 +30,17 @@ namespace GTAWorldRenderer
          Content.RootDirectory = "Content";
 
          // настраиваем лог
-         //Log.Instance.AddLogWriter(ConsoleLogWriter.Instance);
+         Log.Instance.AddLogWriter(ConsoleLogWriter.Instance);
          Log.Instance.AddLogWriter(new FileLogWriter("log.log"));
       }
 
       private const float rotationSpeed = 0.3f;
 
+      Scene scene;
       Camera camera;
       TextInfoPanel textInfoPanel;
       MouseState originalMouseState;
+      Effect effect; // TODO :: возможно, он должен создаваться и загружаться в сцене...
 
       protected override void Initialize()
       {
@@ -54,7 +56,7 @@ namespace GTAWorldRenderer
          device = GraphicsDeviceHolder.Device;
 
          // загружаем сцену
-         Scene scene = new Scene();
+         scene = new Scene();
          scene.LoadScene();
          Log.Instance.PrintStatistic();
          GC.Collect();
@@ -62,8 +64,11 @@ namespace GTAWorldRenderer
          textInfoPanel = new TextInfoPanel(Content, device);
          textInfoPanel.Camera = camera;
 
+         effect = Content.Load<Effect>("effect");
+
          Mouse.SetPosition(device.Viewport.Width / 2, device.Viewport.Height / 2);
          originalMouseState = Mouse.GetState();
+
       }
 
 
@@ -83,6 +88,7 @@ namespace GTAWorldRenderer
       {
          GraphicsDevice.Clear(Color.Black);
 
+         scene.Draw(effect);
          textInfoPanel.Draw();
 
          base.Draw(gameTime);

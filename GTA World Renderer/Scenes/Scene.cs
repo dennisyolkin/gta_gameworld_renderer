@@ -12,7 +12,7 @@ namespace GTAWorldRenderer.Scenes
    /// </summary>
    class Scene
    {
-
+      IEnumerable<Model3D> sceneModels;
 
       /// <summary>
       /// Загружает игровой мир GTA
@@ -20,7 +20,16 @@ namespace GTAWorldRenderer.Scenes
       public void LoadScene()
       {
          SceneLoader sceneLoader = new SceneLoader();
-         sceneLoader.LoadScene();
+         sceneModels = sceneLoader.LoadScene();
+      }
+
+      /// <summary>
+      /// Отрисовывает сцену
+      /// </summary>
+      public void Draw(Effect effect)
+      {
+         foreach (var model in sceneModels)
+            model.Draw(effect);
       }
    }
 }

@@ -113,7 +113,7 @@ namespace GTAWorldRenderer.Scenes
                Log.Instance.Print("Model loaded!");
                Log.Instance.Print(model.Info);
 
-               return null;
+               return Model3dFactory.CreateModel(model);
             }
          }
 
