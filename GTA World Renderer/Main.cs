@@ -50,6 +50,7 @@ namespace GTAWorldRenderer
 
       protected override void LoadContent()
       {
+         GraphicsDeviceHolder.InitDevice();
          device = GraphicsDeviceHolder.Device;
 
          // загружаем сцену

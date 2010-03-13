@@ -26,10 +26,19 @@ namespace GTAWorldRenderer
          set
          {
             deviceManager = value;
-            Device = deviceManager.GraphicsDevice;
          }
       }
 
       public static GraphicsDevice Device { get; set; }
+
+
+      /// <summary>
+      /// Инициализирует поле Device
+      /// Метод должен вызываться из Game.LoadContent.
+      /// </summary>
+      public static void InitDevice()
+      {
+         Device = deviceManager.GraphicsDevice;
+      }
    }
 }
