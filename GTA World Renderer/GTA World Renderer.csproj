@@ -100,6 +100,7 @@
     <Compile Include="Scenes\IDEFileLoader.cs" />
     <Compile Include="Scenes\IMGArchive.cs" />
     <Compile Include="Scenes\IPLFileLoader.cs" />
+    <Compile Include="Scenes\Model3D.cs" />
     <Compile Include="Scenes\Scene.cs" />
     <Compile Include="Scenes\SceneLoader.cs" />
     <Compile Include="Scenes\SceneObjectDefinition.cs" />
