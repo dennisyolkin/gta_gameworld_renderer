@@ -15,7 +15,7 @@ namespace GTAWorldRenderer.Scenes
       {
 
 
-         static Model3D CreateModel(ModelData modelData)
+         public static Model3D CreateModel(ModelData modelData)
          {
             /*
              * TOTO :: здесь должен быть большоя switch, по которому должен определяться VertexFormat.
