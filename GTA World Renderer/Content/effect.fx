@@ -15,13 +15,13 @@ struct VertexShaderOutput
 
 VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 {
-    VertexShaderOutput output;
+   VertexShaderOutput output;
+   float4x4 preViewProjection = mul(xView, xProjection);
+   float4x4 preWorldViewProjection = mul(xWorld, preViewProjection);
 
-    float4 worldPosition = mul(input.Position, xWorld);
-    float4 viewPosition = mul(worldPosition, xView);
-    output.Position = mul(viewPosition, xProjection);
+   output.Position = mul(input.Position, preWorldViewProjection);
 
-    return output;
+   return output;
 }
 
 float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
