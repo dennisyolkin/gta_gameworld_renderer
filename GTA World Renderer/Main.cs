@@ -2,13 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
-using Microsoft.Xna.Framework.Net;
 using Microsoft.Xna.Framework.Storage;
 using GTAWorldRenderer.Logging;
 using GTAWorldRenderer.Scenes;
@@ -65,7 +62,7 @@ namespace GTAWorldRenderer
          textInfoPanel = new TextInfoPanel(Content, device);
          textInfoPanel.Camera = camera;
 
-         projectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, device.Viewport.AspectRatio, 1.0f, 200.0f);
+         projectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, device.Viewport.AspectRatio, 0.1f, 200.0f);
          effect = Content.Load<Effect>("effect");
 
          Mouse.SetPosition(device.Viewport.Width / 2, device.Viewport.Height / 2);

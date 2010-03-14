@@ -31,6 +31,7 @@ namespace GTAWorldRenderer.Rendering
 
       public void Draw()
       {
+         GraphicsDeviceHolder.Device.RenderState.DepthBufferEnable = false;
          spriteBatch.Begin();
 
          int y = 5;
@@ -45,6 +46,7 @@ namespace GTAWorldRenderer.Rendering
          }
 
          spriteBatch.End();
+         GraphicsDeviceHolder.Device.RenderState.DepthBufferEnable = true;
       }
    }
 }
