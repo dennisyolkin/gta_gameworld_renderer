@@ -11,31 +11,36 @@ namespace GTAWorldRenderer.Rendering
    /// <summary>
    /// Реализация панели, на которой будет выводиться текстовая информация
    /// </summary>
-   class TextInfoPanel
+   class TextInfoPanel : DrawableGameComponent
    {
       private const int LINE_HEIGHT = 20;
 
-      public int FPS { get; set; }
       public Camera Camera{ get; set; }
+      private int fps;
+
+      private SpriteFont font;
+      private SpriteBatch spriteBatch;
 
 
-      private readonly SpriteFont font;
-      private readonly SpriteBatch spriteBatch;
-
-
-      public TextInfoPanel(ContentManager content, GraphicsDevice device)
+      public TextInfoPanel(Game game) : base(game)
       {
-         spriteBatch = new SpriteBatch(device);
-         font = content.Load<SpriteFont>("font");
       }
 
-      public void Draw()
+
+      protected override void LoadContent()
+      {
+         spriteBatch = new SpriteBatch(GraphicsDeviceHolder.Device);
+         font = Game.Content.Load<SpriteFont>("font");
+      }
+
+
+      public override void Draw(GameTime gameTime)
       {
          GraphicsDeviceHolder.Device.RenderState.DepthBufferEnable = false;
          spriteBatch.Begin();
 
          int y = 5;
-         spriteBatch.DrawString(font, String.Format("FPS: {0}", FPS), new Vector2(5, y), Color.Yellow);
+         spriteBatch.DrawString(font, String.Format("FPS: {0}", fps), new Vector2(5, y), Color.Yellow);
 
          if (Camera != null)
          {

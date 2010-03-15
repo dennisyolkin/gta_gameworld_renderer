@@ -1,17 +1,13 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Globalization;
+using System.Threading;
+using GTAWorldRenderer.Logging;
+using GTAWorldRenderer.Rendering;
+using GTAWorldRenderer.Scenes;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
-using Microsoft.Xna.Framework.Storage;
-using GTAWorldRenderer.Logging;
-using GTAWorldRenderer.Scenes;
-using System.Threading;
-using System.Globalization;
-using GTAWorldRenderer.Rendering;
+using System.Diagnostics;
 
 namespace GTAWorldRenderer
 {
@@ -27,8 +23,16 @@ namespace GTAWorldRenderer
          Content.RootDirectory = "Content";
 
          // настраиваем лог
-         Log.Instance.AddLogWriter(ConsoleLogWriter.Instance);
          Log.Instance.AddLogWriter(new FileLogWriter("log.log"));
+         if (!Debugger.IsAttached)
+         {
+            // При приаттаченном дебаггере почему-то падает любое обращение к консоли,
+            // поэтому используем ConsoleWriter только когда запускаемся без отладчика
+            Log.Instance.AddLogWriter(ConsoleLogWriter.Instance);
+         }
+
+         textInfoPanel = new TextInfoPanel(this);
+         Components.Add(textInfoPanel);
       }
 
       private const float rotationSpeed = 0.3f;
@@ -43,14 +47,13 @@ namespace GTAWorldRenderer
       protected override void Initialize()
       {
          camera = new Camera();
-
+         GraphicsDeviceHolder.InitDevice();
          base.Initialize();
       }
 
 
       protected override void LoadContent()
       {
-         GraphicsDeviceHolder.InitDevice();
          device = GraphicsDeviceHolder.Device;
 
          // загружаем сцену
@@ -59,7 +62,6 @@ namespace GTAWorldRenderer
          Log.Instance.PrintStatistic();
          GC.Collect();
 
-         textInfoPanel = new TextInfoPanel(Content, device);
          textInfoPanel.Camera = camera;
 
          projectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, device.Viewport.AspectRatio, 0.1f, 200.0f);
@@ -90,7 +92,7 @@ namespace GTAWorldRenderer
          effect.Parameters["xView"].SetValue(camera.ViewMatrix);
          effect.Parameters["xProjection"].SetValue(projectionMatrix);
          scene.Draw(effect);
-         textInfoPanel.Draw();
+         //textInfoPanel.Draw();
 
          base.Draw(gameTime);
       }
