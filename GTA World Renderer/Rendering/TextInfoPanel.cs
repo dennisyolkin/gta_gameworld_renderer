@@ -16,7 +16,11 @@ namespace GTAWorldRenderer.Rendering
       private const int LINE_HEIGHT = 20;
 
       public Camera Camera{ get; set; }
-      private int fps;
+
+      private int fps = 0;
+      private int frameCounter = 0;
+      private TimeSpan elapsedTime = TimeSpan.Zero;
+      private readonly TimeSpan oneSecond = TimeSpan.FromSeconds(1);
 
       private SpriteFont font;
       private SpriteBatch spriteBatch;
@@ -34,8 +38,31 @@ namespace GTAWorldRenderer.Rendering
       }
 
 
+      /// <summary>
+      /// Обновляет счётчик кадров.
+      /// Этот метод должен вызываться из Draw (т.е. при отрисовке каждого кадра)
+      /// </summary>
+      /// <param name="gameTime">Игровое время</param>
+      private void updateFPS(GameTime gameTime)
+      {
+         ++frameCounter;
+         elapsedTime += gameTime.ElapsedGameTime;
+         if (elapsedTime >= oneSecond)
+         {
+            elapsedTime -= oneSecond;
+            fps = frameCounter;
+            frameCounter = 0;
+         }
+      }
+
+
+      /// <summary>
+      /// Отрисовывает панель на экране
+      /// </summary>
+      /// <param name="gameTime">Игровое время</param>
       public override void Draw(GameTime gameTime)
       {
+         updateFPS(gameTime);
          GraphicsDeviceHolder.Device.RenderState.DepthBufferEnable = false;
          spriteBatch.Begin();
 
