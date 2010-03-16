@@ -30,7 +30,7 @@ namespace GTAWorldRenderer.Scenes
          }
 
 
-         public void Load()
+         public IEnumerable<ArchiveEntry> Load()
          {
             using (Log.Instance.EnterStage("Loading IMG archive: " + filePath))
             {
@@ -64,6 +64,7 @@ namespace GTAWorldRenderer.Scenes
                }
 
                Log.Instance.Print(String.Format("Loaded {0} entries", files.Count));
+               return files;
             }
          }
 

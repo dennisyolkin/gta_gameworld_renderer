@@ -45,7 +45,7 @@ namespace GTAWorldRenderer.Scenes
             {
                txdName = Path.GetFileNameWithoutExtension(filePath);
                fin = new BinaryReader(new FileStream(filePath, FileMode.Open));
-               ParseSection((int)fin.BaseStream.Length, SectionType.Unknown);
+               ParseSection((int)fin.BaseStream.Length, 0, SectionType.Unknown);
                fin.Close();
 
                Log.Instance.Print(String.Format("Loaded {0} entries", files.Count));
@@ -54,12 +54,12 @@ namespace GTAWorldRenderer.Scenes
          }
 
 
-         private void ParseSection(int size, SectionType parentType)
+         private void ParseSection(int size, int depth, SectionType parentType)
          {
             if (size == 0)
                return;
 
-            while (fin.BaseStream.Position < fin.BaseStream.Length)
+            while (fin.BaseStream.Position + 12 <= fin.BaseStream.Length) // должны быть в состоянии считать заголовок секции
             {
                SectionType sectionType = (SectionType)fin.ReadInt32();
 
@@ -78,20 +78,24 @@ namespace GTAWorldRenderer.Scenes
                   case SectionType.Extension:
                   case SectionType.Dictionary:
                   case SectionType.TextureNative:
-                     ParseSection(sectionSize, sectionType);
+                     ParseSection(sectionSize, depth + 1, sectionType);
                      break;
 
                   default:
                      fin.BaseStream.Seek(sectionSize, SeekOrigin.Current);
                      break;
                }
+
+               if (depth == 0)
+                  break; // Корень в dxt-файле может быть только один. Плюс, в конце файла, судя по всему, может быть треш!
+
             }
+
          }
 
 
          void ParseDataSection(int size, SectionType type)
          {
-            int position = (int)fin.BaseStream.Position;
             fin.BaseStream.Seek(8, SeekOrigin.Current);
 
             byte[] diffuseTextureName = new byte[32];
@@ -99,20 +103,22 @@ namespace GTAWorldRenderer.Scenes
             fin.Read(diffuseTextureName, 0, diffuseTextureName.Length);
             fin.Read(alphaTextureName, 0, alphaTextureName.Length);
 
+            int position = (int)fin.BaseStream.Position;
+
             int headerSize = 8 + diffuseTextureName.Length + alphaTextureName.Length;
             fin.BaseStream.Seek(size - headerSize, SeekOrigin.Current);
 
             Func<byte[], string> ToFullName = delegate(byte[] name) 
             {
-               if (name[0] == 0)
-                  return "";
                int nilIdx = Array.IndexOf(name, (byte)0);
                int nameLen = nilIdx == -1 ? name.Length : nilIdx;
                return txdName + "/" + (Encoding.ASCII.GetString(name, 0, nameLen) + ".gtatexture").ToLower();
             };
 
             files.Add(new ArchiveEntry(ToFullName(diffuseTextureName), position, size));
-            files.Add(new ArchiveEntry(ToFullName(alphaTextureName), position, size));
+
+            if (alphaTextureName[0] != 0)
+               files.Add(new ArchiveEntry(ToFullName(alphaTextureName), position, size));
          }
 
       }
