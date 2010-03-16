@@ -102,9 +102,9 @@ namespace GTAWorldRenderer.Scenes
 
             Func<byte[], string> ToFullName = delegate(byte[] name) 
             {
-               int nilIdx = Array.IndexOf(name, 0);
                if (name[0] == 0)
                   return "";
+               int nilIdx = Array.IndexOf(name, (byte)0);
                int nameLen = nilIdx == -1 ? name.Length : nilIdx;
                return txdName + "/" + (Encoding.ASCII.GetString(name, 0, nameLen) + ".gtatexture").ToLower();
             };
