@@ -62,7 +62,7 @@ namespace GTAWorldRenderer.Scenes
                SectionType sectionType = (SectionType)fin.ReadInt32();
 
                int sectionSize = fin.ReadInt32();
-               fin.BaseStream.Seek(32, SeekOrigin.Current);
+               fin.BaseStream.Seek(4, SeekOrigin.Current);
 
                switch (sectionType)
                {
@@ -70,7 +70,7 @@ namespace GTAWorldRenderer.Scenes
                      if (parentType == SectionType.TextureNative)
                         ParseDataSection(sectionSize, parentType);
                      else
-                        fin.BaseStream.Seek(size, SeekOrigin.Current);
+                        fin.BaseStream.Seek(sectionSize, SeekOrigin.Current);
                      break;
 
                   case SectionType.Extension:
@@ -90,19 +90,21 @@ namespace GTAWorldRenderer.Scenes
          void ParseDataSection(int size, SectionType type)
          {
             int position = (int)fin.BaseStream.Position;
-            fin.BaseStream.Seek(4, SeekOrigin.Current); // TODO :: or 8 ???
+            fin.BaseStream.Seek(8, SeekOrigin.Current);
 
             byte[] diffuseTextureName = new byte[32];
             byte[] alphaTextureName = new byte[32];
             fin.Read(diffuseTextureName, 0, diffuseTextureName.Length);
             fin.Read(alphaTextureName, 0, alphaTextureName.Length);
 
-            int headerSize = sizeof(int) + 4 + diffuseTextureName.Length + alphaTextureName.Length; // TODO :: or +8 ?
+            int headerSize = 8 + diffuseTextureName.Length + alphaTextureName.Length;
             fin.BaseStream.Seek(size - headerSize, SeekOrigin.Current);
 
             Func<byte[], string> ToFullName = delegate(byte[] name) 
             {
                int nilIdx = Array.IndexOf(name, 0);
+               if (name[0] == 0)
+                  return "";
                int nameLen = nilIdx == -1 ? name.Length : nilIdx;
                return txdName + "/" + (Encoding.ASCII.GetString(name, 0, nameLen) + ".gtatexture").ToLower();
             };
