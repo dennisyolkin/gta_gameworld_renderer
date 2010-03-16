@@ -97,7 +97,7 @@
     <Compile Include="Rendering\TextInfoPanel.cs" />
     <Compile Include="Scenes\ArchivesCommon.cs" />
     <Compile Include="Scenes\DffLoader.cs" />
-    <Compile Include="Scenes\GTATexture.cs" />
+    <Compile Include="Scenes\GTATextureLoader.cs" />
     <Compile Include="Scenes\IDEFileLoader.cs" />
     <Compile Include="Scenes\IMGArchive.cs" />
     <Compile Include="Scenes\IPLFileLoader.cs" />
