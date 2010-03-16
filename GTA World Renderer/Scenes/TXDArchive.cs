@@ -39,15 +39,17 @@ namespace GTAWorldRenderer.Scenes
          }
 
 
-         public void Load()
+         public IEnumerable<ArchiveEntry> Load()
          {
             using (Log.Instance.EnterStage("Loading TXD archive: " + filePath))
             {
                txdName = Path.GetFileNameWithoutExtension(filePath);
                fin = new BinaryReader(new FileStream(filePath, FileMode.Open));
                ParseSection((int)fin.BaseStream.Length, SectionType.Unknown);
+               fin.Close();
 
                Log.Instance.Print(String.Format("Loaded {0} entries", files.Count));
+               return files;
             }
          }
 
