@@ -43,32 +43,29 @@ namespace GTAWorldRenderer.Scenes
             throw new NotSupportedException(msg);
          }
 
+         
+         /// <summary>
+         /// Структура заголовка
+         /// </summary>
+         static class HeaderFieldOffset
+         {
+            public const int PlatformId = 0;  // uint32
+            public const int FilterFlags = 4;  // uint16
+            public const int TextureWrapV = 6;  // byte
+            public const int TextureWrapU = 7;  // byte
+            public const int DiffuseTextureName = 8;  // byte[32]
+            public const int AlphaTextureName = 40; // byte[32]
+            public const int RasterFormat = 72; // uint32
+            public const int AlphaOrFourCC = 76; // uint32
+            public const int ImageWidth = 80; // uint16
+            public const int ImageHeight = 82; // uint16
+            public const int BitsPerPixel = 84; // byte
+            public const int MipMapCount = 85; // byte
+            public const int RasterType = 86; // byte
+            public const int DxtCompressionType = 87; // byte
+         }
+         const int HEADER_SIZE = 88;
 
-         private static int HEADER_SIZE = 26;
-
-
-         /*
-          * Header structure:
-          used | type |     field                  | offset |
-         -----------------------------------------------------
-             -    u32      platformId                 0
-             -    u16      filterFlags                4
-             -    u8       textureWrapV               6
-             -    u8       textureWrapU               7
-             -    u8       diffuseTextureName[32]     8
-             -    u8       alphaTextureName[32]       9
-             +    u32      rasterFormat               10
-             +    u32      alphaOrFourCC              14
-             +    u16      imageWidth                 18
-             +    u16      imageHeight                20
-             -    u8       bitsPerPixel               22
-             -    u8       mipMapCount                23
-             -    u8       rasterType                 24
-             +    u8       dxtCompressionType         25
-          * 
-          * 
-          * Header size: 26 bytes
-         */
          class Header
          {
             public int RasterFormatSource { get; private set; }
@@ -83,7 +80,7 @@ namespace GTAWorldRenderer.Scenes
 
             public Header(BinaryReader reader)
             {
-               reader.BaseStream.Seek(10, SeekOrigin.Current);
+               reader.BaseStream.Seek(HeaderFieldOffset.RasterFormat, SeekOrigin.Current);
                RasterFormatSource = reader.ReadInt32();
 
                RasterFormat = (RasterFormat)(RasterFormatSource % 0x1000);
@@ -96,7 +93,7 @@ namespace GTAWorldRenderer.Scenes
                BitsPerPixel = reader.ReadByte();
                MipMaps = reader.ReadByte();
 
-               reader.BaseStream.Seek(25, SeekOrigin.Begin);
+               reader.BaseStream.Seek(HeaderFieldOffset.DxtCompressionType, SeekOrigin.Begin);
                DXTnumber = reader.ReadByte();
 
                if (!Enum.IsDefined(typeof(RasterFormat), RasterFormat) || !Enum.IsDefined(typeof(RasterFormatEx), RasterFormatEx))
