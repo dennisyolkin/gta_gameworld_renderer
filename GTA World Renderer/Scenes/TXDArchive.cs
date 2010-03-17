@@ -96,14 +96,14 @@ namespace GTAWorldRenderer.Scenes
 
          void ParseDataSection(int size, SectionType type)
          {
+            int position = (int)fin.BaseStream.Position;
+
             fin.BaseStream.Seek(8, SeekOrigin.Current);
 
             byte[] diffuseTextureName = new byte[32];
             byte[] alphaTextureName = new byte[32];
             fin.Read(diffuseTextureName, 0, diffuseTextureName.Length);
             fin.Read(alphaTextureName, 0, alphaTextureName.Length);
-
-            int position = (int)fin.BaseStream.Position;
 
             int headerSize = 8 + diffuseTextureName.Length + alphaTextureName.Length;
             fin.BaseStream.Seek(size - headerSize, SeekOrigin.Current);
