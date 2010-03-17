@@ -121,7 +121,7 @@ namespace GTAWorldRenderer.Scenes
          }
 
 
-         public void Load()
+         public Texture2D Load()
          {
             header = new Header(reader);
             if ((header.RasterFormat == RasterFormat.R8_G8_B8_A8 || header.RasterFormat == RasterFormat.R8_G8_B8)
@@ -199,6 +199,8 @@ namespace GTAWorldRenderer.Scenes
                   chunk = reader.ReadBytes(mipMapSizes[i]);
                }
             }
+
+            return texture;
          }
 
 
