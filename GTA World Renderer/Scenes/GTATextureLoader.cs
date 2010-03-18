@@ -212,7 +212,7 @@ namespace GTAWorldRenderer.Scenes
                var tmp = new byte[4];
                for (int j = 0; j != 4; ++j)
                   tmp[j] = reader.ReadByte();
-               palette[i] = new Color(tmp[1], tmp[2], tmp[3], tmp[0]);
+               palette[i] = new Color(tmp[0], tmp[1], tmp[2], tmp[3]);
             }
          }
 
