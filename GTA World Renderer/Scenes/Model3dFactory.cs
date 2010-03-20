@@ -35,7 +35,7 @@ namespace GTAWorldRenderer.Scenes
             indexBuffer.SetData(mesh.Indices.ToArray());
 
             return new ModelMesh3D(new VertexDeclaration(GraphicsDeviceHolder.Device, VertexPositionNormalFormat.VertexElements),
-               vertexBuffer, indexBuffer, VertexPositionNormalFormat.SizeInBytes, "Default");
+               vertexBuffer, indexBuffer, mesh.TriangleStrip, VertexPositionNormalFormat.SizeInBytes, "Default");
          }
 
 

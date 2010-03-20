@@ -143,10 +143,7 @@ namespace GTAWorldRenderer.Scenes
                      break;
 
                   case SectionType.MaterialSplit:
-                     // Пока MaterialSplit никак не обрабатывается
-                     // Не очень понятно, нужно ли это для отображения статического игрового мира
-                     // возможно, придётся разобраться и реализовать
-                     input.BaseStream.Seek(header.SectionSize, SeekOrigin.Current);
+                     ParseMaterialSplit();
                      break;
 
                   case SectionType.Data:
@@ -170,7 +167,7 @@ namespace GTAWorldRenderer.Scenes
             switch(parent)
             {
                case SectionType.Geometry:
-                  ParseGeometry(sectionSize, parent, version);
+                  ParseGeometry(version);
                   break;
 
                default:
@@ -196,7 +193,11 @@ namespace GTAWorldRenderer.Scenes
          }
 
 
-         private void ParseGeometry(int sectionSize, SectionType parent, DffVersion version)
+         /// <summary>
+         /// Обрабатывает секцию Geometry
+         /// Считывает вершины, треугольники (индексы вершин), нормали, текстурные координаты.
+         /// </summary>
+         private void ParseGeometry(DffVersion version)
          {
             ModelMeshData mesh = new ModelMeshData();
 
@@ -214,9 +215,6 @@ namespace GTAWorldRenderer.Scenes
                // TODO :: we can use it for rendering!!!
                input.BaseStream.Seek(12, SeekOrigin.Current);
             }
-
-            if ((flags & GeometrySectionFlags.TrianglesStrip) != GeometrySectionFlags.None)
-               TerminateWithError("Model use triangle strip, but it is not implemented yet");
 
             if ((flags & GeometrySectionFlags.MultipleTextureCoords) != GeometrySectionFlags.None)
                Log.Instance.Print("Multiple TexCoords sets are provided but used only the first of it!", MessageType.Warning);
@@ -271,10 +269,6 @@ namespace GTAWorldRenderer.Scenes
 
          private void ReadTriangles(ModelMeshData mesh, int trianglesCount)
          {
-            // TODO :: remove; it is for debugging purposes
-            if (mesh.Indices != null)
-               TerminateWithError("DebugAssertionFailed: recreating Faces buffer!");
-
             mesh.Indices = new List<short>(trianglesCount * 3);
 
             for (var i = 0; i != trianglesCount; ++i)
@@ -290,10 +284,6 @@ namespace GTAWorldRenderer.Scenes
 
          private void ReadVertices(ModelMeshData mesh, int verticesCount)
          {
-            // TODO :: remove; it is for debugging purposes
-            if (mesh.Vertices != null)
-               TerminateWithError("DebugAssertionFailed: recreating Vertices buffer!");
-
             mesh.Vertices = new List<Vector3>(verticesCount);
 
             for (var i = 0; i != verticesCount; ++i)
@@ -308,10 +298,6 @@ namespace GTAWorldRenderer.Scenes
 
          private void ReadNormals(ModelMeshData mesh, int verticesCount)
          {
-            // TODO :: remove; it is for debugging purposes
-            if (mesh.Normals != null)
-               TerminateWithError("DebugAssertionFailed: recreating Normals buffer!");
-
             mesh.Normals = new List<Vector3>(verticesCount);
 
             for (var i = 0; i != verticesCount; ++i)
@@ -322,6 +308,45 @@ namespace GTAWorldRenderer.Scenes
                mesh.Normals.Add(new Vector3(x, y, z));
             }
          }
+
+
+         /// <summary>
+         /// Обрабатывает секцию MaterialSplit (она же Bin Mesh PLG)
+         /// Насколько я понял, эта секция нужна, когда отдельным кускам меша присваивается разный метариел (текстура),
+         /// либо когда треугольники перечисляются не в виде TriangleList, а в виде TriangleStrip.
+         /// 
+         /// Перезаписывает данные в последнем добавленном меше в modelData
+         /// </summary>
+         private void ParseMaterialSplit()
+         {
+            // ParseMaterialSplit вызывается всегда после ParseGeometry, которая добавляет новый mesh в modelData
+            ModelMeshData mesh = modelData.Meshes[modelData.Meshes.Count - 1];
+
+            int triangleStrip = input.ReadInt32();
+            int splitCount = input.ReadInt32();
+            int indicesCount = input.ReadInt32();
+
+            mesh.TriangleStrip = triangleStrip != 0;
+
+            // пока непонятно, что в этом случае делать и нафига оно нужно
+            if (triangleStrip == 0)
+               Log.Instance.Print("TriangleStrip == 0. WTF?", MessageType.Warning);
+
+            // не знаю пока, как обрабатывать такую ситуацию
+            if (splitCount != 1)
+               Log.Instance.Print("SplitCount != 1. WTF?", MessageType.Warning);
+
+            mesh.Indices.Clear(); // перезаписываем данные о треугольниках
+
+            indicesCount = input.ReadInt32();
+            int materialIdx = input.ReadInt32();
+            mesh.Indices.Capacity = indicesCount;
+
+            for (int i = 0; i != indicesCount; ++i)
+               mesh.Indices.Add((short)input.ReadInt32());
+         }
+
+
 
       }
 

@@ -42,6 +42,7 @@ namespace GTAWorldRenderer.Scenes
          public List<short> Indices { get; set; }
          public List<Vector3> Vertices { get; set; }
          public List<Vector3> Normals { get; set; }
+         public bool TriangleStrip { get; set; }
 
          public ModelMeshData()
          {
