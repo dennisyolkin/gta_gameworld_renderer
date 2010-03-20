@@ -85,7 +85,7 @@ namespace GTAWorldRenderer.Scenes
 
          private string fileName;
          BinaryReader input;
-         ModelData model = new ModelData();
+         ModelData modelData = new ModelData();
 
          public DffLoader(string fileName)
          {
@@ -111,9 +111,10 @@ namespace GTAWorldRenderer.Scenes
                }
 
                Log.Instance.Print("Model loaded!");
-               Log.Instance.Print(model.Info);
+               foreach (var info in modelData.Info)
+                  Log.Instance.Print(info);
 
-               return Model3dFactory.CreateModel(model);
+               return Model3dFactory.CreateModel(modelData);
             }
          }
 
@@ -197,6 +198,8 @@ namespace GTAWorldRenderer.Scenes
 
          private void ParseGeometry(int sectionSize, SectionType parent, DffVersion version)
          {
+            ModelMeshData mesh = new ModelMeshData();
+
             GeometrySectionFlags flags = (GeometrySectionFlags)input.ReadInt16();
 
             input.BaseStream.Seek(sizeof(short), SeekOrigin.Current); // unknown
@@ -227,24 +230,26 @@ namespace GTAWorldRenderer.Scenes
             }
 
             if ((flags & GeometrySectionFlags.HasTextureCoords) != GeometrySectionFlags.None)
-               ReadTextureCoords(verticesCount);
+               ReadTextureCoords(mesh, verticesCount);
 
-            ReadTriangles(trianglesCount);
+            ReadTriangles(mesh, trianglesCount);
 
             input.BaseStream.Seek(4 * sizeof(float), SeekOrigin.Current); // ignoring bounding sphere (x, y, z, radius)
             input.BaseStream.Seek(2 * sizeof(int), SeekOrigin.Current); // hasPosition, hasNormal (not used)
 
-            ReadVertices(verticesCount);
+            ReadVertices(mesh, verticesCount);
 
             // TODO :: возможно, здесь нужно создать нормали, если их нет изначально в файле. А возможно, это нужно делать в шейдере.
             if ((flags & GeometrySectionFlags.HasNormalsInfo) != GeometrySectionFlags.None)
-               ReadNormals(verticesCount);
+               ReadNormals(mesh, verticesCount);
+
+            modelData.Meshes.Add(mesh);
          }
 
 
-         private void ReadTextureCoords(int verticesCount)
+         private void ReadTextureCoords(ModelMeshData mesh, int verticesCount)
          {
-            model.TextureCoords = new List<Vector2>(verticesCount);
+            mesh.TextureCoords = new List<Vector2>(verticesCount);
             for (var i = 0; i != verticesCount; ++i)
             {
                float x = input.ReadSingle();
@@ -259,62 +264,62 @@ namespace GTAWorldRenderer.Scenes
                   x = (float)(0.5f + (x + 0.5));
                 */
 
-               model.TextureCoords.Add(new Vector2(x, y));
+               mesh.TextureCoords.Add(new Vector2(x, y));
             }
          }
 
 
-         private void ReadTriangles(int trianglesCount)
+         private void ReadTriangles(ModelMeshData mesh, int trianglesCount)
          {
             // TODO :: remove; it is for debugging purposes
-            if (model.Indices != null)
+            if (mesh.Indices != null)
                TerminateWithError("DebugAssertionFailed: recreating Faces buffer!");
 
-            model.Indices = new List<short>(trianglesCount * 3);
+            mesh.Indices = new List<short>(trianglesCount * 3);
 
             for (var i = 0; i != trianglesCount; ++i)
             {
-               model.Indices.Add(input.ReadInt16());
-               model.Indices.Add(input.ReadInt16());
+               mesh.Indices.Add(input.ReadInt16());
+               mesh.Indices.Add(input.ReadInt16());
                input.BaseStream.Seek(sizeof(short), SeekOrigin.Current); // skip index flags
-               model.Indices.Add(input.ReadInt16());
+               mesh.Indices.Add(input.ReadInt16());
 
             }
          }
 
 
-         private void ReadVertices(int verticesCount)
+         private void ReadVertices(ModelMeshData mesh, int verticesCount)
          {
             // TODO :: remove; it is for debugging purposes
-            if (model.Vertices != null)
+            if (mesh.Vertices != null)
                TerminateWithError("DebugAssertionFailed: recreating Vertices buffer!");
 
-            model.Vertices = new List<Vector3>(verticesCount);
+            mesh.Vertices = new List<Vector3>(verticesCount);
 
             for (var i = 0; i != verticesCount; ++i)
             {
                var x = input.ReadSingle();
                var y = input.ReadSingle();
                var z = input.ReadSingle();
-               model.Vertices.Add(new Vector3(x, y, z));
+               mesh.Vertices.Add(new Vector3(x, y, z));
             }
          }
 
 
-         private void ReadNormals(int verticesCount)
+         private void ReadNormals(ModelMeshData mesh, int verticesCount)
          {
             // TODO :: remove; it is for debugging purposes
-            if (model.Normals != null)
+            if (mesh.Normals != null)
                TerminateWithError("DebugAssertionFailed: recreating Normals buffer!");
 
-            model.Normals = new List<Vector3>(verticesCount);
+            mesh.Normals = new List<Vector3>(verticesCount);
 
             for (var i = 0; i != verticesCount; ++i)
             {
                var x = input.ReadSingle();
                var y = input.ReadSingle();
                var z = input.ReadSingle();
-               model.Normals.Add(new Vector3(x, y, z));
+               mesh.Normals.Add(new Vector3(x, y, z));
             }
          }
 

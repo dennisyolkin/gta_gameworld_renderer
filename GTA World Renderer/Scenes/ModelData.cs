@@ -9,17 +9,43 @@ namespace GTAWorldRenderer.Scenes
 {
    partial class SceneLoader
    {
+
       class ModelData
       {
-         public List<string> Textures { get; set; }
+         public List<ModelMeshData> Meshes { get; set; }
+
+
+         public ModelData()
+         {
+            Meshes = new List<ModelMeshData>();
+         }
+
+
+         public string[] Info
+         {
+            get
+            {
+               string[] res = new string[Meshes.Count + 1];
+               res[0] = "Meshes in model: " + Meshes.Count;
+               for (int i = 0; i < Meshes.Count; ++i )
+                  res[i + 1] = String.Format(" {0}: {1}", i + 1, Meshes[i].Info);
+               return res;
+            }
+         }
+      }
+
+
+      class ModelMeshData
+      {
+         public string Texture { get; set;}
          public List<Vector2> TextureCoords { get; set; }
          public List<short> Indices { get; set; }
          public List<Vector3> Vertices { get; set; }
          public List<Vector3> Normals { get; set; }
 
-         public ModelData()
+         public ModelMeshData()
          {
-            Textures = new List<string>();
+            Texture = null;
          }
 
 
@@ -29,9 +55,10 @@ namespace GTAWorldRenderer.Scenes
             {
                Func<IList, string> ToStr = x => (x == null ? "no" : x.Count.ToString());
 
-               return String.Format("Vertices: {0}, Triangles: {1}",
+               return String.Format("Vertices: {0}, Triangles: {1}, Texture: ",
                   ToStr(Vertices),
-                  Indices == null ? "no" : (Indices.Count / 3).ToString() // TODO :: не учитывается TrianglesStrip
+                  Indices == null ? "no" : (Indices.Count / 3).ToString(), // TODO :: не учитывается TrianglesStrip
+                  Texture == null? "no texture" : Texture
                   );
             }
          }

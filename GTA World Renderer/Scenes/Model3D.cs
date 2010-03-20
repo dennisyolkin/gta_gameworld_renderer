@@ -7,47 +7,24 @@ using Microsoft.Xna.Framework;
 
 namespace GTAWorldRenderer.Scenes
 {
+
    /// <summary>
    /// Трёхмерная модель в пространстве
-   /// 
-   /// Пока предполагается, что VertexDeclaration для всех вершин модели одинаковый.
    /// </summary>
    class Model3D
    {
-      private VertexDeclaration vertexDeclaration;
-      private VertexBuffer vertexBuffer;
-      private IndexBuffer indexBuffer;
-      private int vertexSize;
-      private int indicesCount, verticesCount;
-      private string effectTechnique;
+      private List<ModelMesh3D> meshes = new List<ModelMesh3D>();
 
+      /// <summary>
+      /// Матрица, задающая положение и поворот объекта в игровом пространстве
+      /// </summary>
       public Matrix WorldMatrix{ get; set; }
 
 
-      public Model3D(VertexDeclaration vertexDeclaration, VertexBuffer vertexBuffer, IndexBuffer indexBuffer, int vertexSize, string effectTechnique)
-      {
-         this.vertexDeclaration = vertexDeclaration;
-         this.vertexBuffer = vertexBuffer;
-         this.indexBuffer = indexBuffer;
-         this.vertexSize = vertexSize;
-         this.effectTechnique = effectTechnique;
-
-         indicesCount = this.indexBuffer.SizeInBytes / sizeof(short);
-         verticesCount = this.vertexBuffer.SizeInBytes / vertexSize;
-
-         Initialize();
-      }
-
-
-      /// <summary>
-      /// Инициализация объекта.
-      /// Вынесена из конструктора для удобочитаемости и удобокодируемости :)
-      /// </summary>
-      private void Initialize()
+      public Model3D()
       {
          WorldMatrix = Matrix.Identity;
       }
-
 
       /// <summary>
       /// Задание позиции и поворота объекта
@@ -61,14 +38,76 @@ namespace GTAWorldRenderer.Scenes
 
 
       /// <summary>
+      /// Добавление меша в модель
+      /// </summary>
+      /// <param name="mesh">меш</param>
+      public void AddMesh(ModelMesh3D mesh)
+      {
+         meshes.Add(mesh);
+      }
+
+
+      /// <summary>
+      /// Отрисовка модели, используя заданный эффект
+      /// </summary>
+      /// <param name="effect">эффект</param>
+      public void Draw(Effect effect)
+      {
+         foreach (var mesh in meshes)
+            mesh.Draw(effect, WorldMatrix);
+      }
+
+
+      /// <summary>
+      /// Отрисовка модели, используя заданный эффект
+      /// </summary>
+      /// <param name="effect">эффект</param>
+      /// <param name="worldMatrix">Матрица, определяющая местоположение и поворот объекта. Перекрывает значение свойства WorldMatrix</param>
+      public void Draw(Effect effect, Matrix worldMatrix)
+      {
+         foreach (var mesh in meshes)
+            mesh.Draw(effect, worldMatrix);
+      }
+   }
+
+
+
+   /// <summary>
+   /// Часть (mesh) трёхмерной модели в пространстве
+   /// </summary>
+   class ModelMesh3D
+   {
+      private VertexDeclaration vertexDeclaration;
+      private VertexBuffer vertexBuffer;
+      private IndexBuffer indexBuffer;
+      private int vertexSize;
+      private int indicesCount, verticesCount;
+      private string effectTechnique;
+
+
+      public ModelMesh3D(VertexDeclaration vertexDeclaration, VertexBuffer vertexBuffer, IndexBuffer indexBuffer, int vertexSize, string effectTechnique)
+      {
+         this.vertexDeclaration = vertexDeclaration;
+         this.vertexBuffer = vertexBuffer;
+         this.indexBuffer = indexBuffer;
+         this.vertexSize = vertexSize;
+         this.effectTechnique = effectTechnique;
+
+         indicesCount = this.indexBuffer.SizeInBytes / sizeof(short);
+         verticesCount = this.vertexBuffer.SizeInBytes / vertexSize;
+      }
+
+
+
+      /// <summary>
       /// Отрисовывает объект
       /// </summary>
       /// <param name="effect">Эффект, который должен испльзоваться для отрисовки. Предполагается, что как минимум матрицы xProjection и xView уже заданы!</param>
-      public void Draw(Effect effect)
+      public void Draw(Effect effect, Matrix worldMatrix)
       {
          GraphicsDevice device = vertexDeclaration.GraphicsDevice;
          effect.CurrentTechnique = effect.Techniques[effectTechnique];
-         effect.Parameters["xWorld"].SetValue(WorldMatrix);
+         effect.Parameters["xWorld"].SetValue(worldMatrix);
          effect.Begin();
          foreach (var pass in effect.CurrentTechnique.Passes)
          {
