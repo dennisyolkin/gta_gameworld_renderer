@@ -21,6 +21,10 @@ namespace GTAWorldRenderer.Logging
 
       public void Print(string msg, int indent, MessageType type)
       {
+         if (type == MessageType.Warning)
+            msg = "[waening] " + msg;
+         else if (type == MessageType.Error)
+            msg = "[error] " + msg;
          PrintIndent(indent);
          fout.WriteLine(msg);
       }
