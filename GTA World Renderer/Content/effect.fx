@@ -36,7 +36,7 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 {
    float4 color = float4(0, 1, 0, 1);
    color.rgb *= (input.LightingFactor + AmbientLight);
-   return color;;
+   return color;
 }
 
 technique Default
