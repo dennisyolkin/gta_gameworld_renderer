@@ -125,19 +125,22 @@ namespace GTAWorldRenderer.Scenes
          public Texture2D Load()
          {
             header = new Header(reader);
-            if ((header.RasterFormat == RasterFormat.R8_G8_B8_A8 || header.RasterFormat == RasterFormat.R8_G8_B8)
-               && header.RasterFormatEx == RasterFormatEx.Pal8)
-            {
-               ReadPalette(reader, HEADER_SIZE);
-            }
 
+            bool shouldUsePalette = ((header.RasterFormat == RasterFormat.R8_G8_B8_A8 || header.RasterFormat == RasterFormat.R8_G8_B8)
+                                       && header.RasterFormatEx == RasterFormatEx.Pal8) ||
+                                       (header.BitsPerPixel == 8); // Последнее условие - WORKAROUND в GTAIII, без него не грузится \txd\mainsc1.txd
+            
+            if (shouldUsePalette)
+               ReadPalette(reader, HEADER_SIZE);
+
+            /*
             if ((header.BitsPerPixel != 32 && header.DXTnumber == 1) || header.DXTnumber == 8 || header.RasterFormat == RasterFormat.R5_G5_B5_A1)
             {
                format = SurfaceFormat.Dxt1;
                //if (header.RasterFormat == RasterFormat.R5_G5_B5_A1 && header.RasterFormatEx == RasterFormatEx.MipMap)
                //   usingAlpha = true;
             }
-            else if ((header.BitsPerPixel != 32 && header.DXTnumber == 3) || header.DXTnumber == 9)
+            else */if ((header.BitsPerPixel != 32 && header.DXTnumber == 3) || header.DXTnumber == 9)
             {
                format = SurfaceFormat.Dxt3;
             }
@@ -145,7 +148,10 @@ namespace GTAWorldRenderer.Scenes
             {
                switch (header.RasterFormat)
                {
-                  case RasterFormat.R5_G5_B5_A1:
+                  case RasterFormat.R5_G5_B5_A1: // TODO :: раньше было DXT1
+                     format = SurfaceFormat.Bgra5551;
+                     break;
+
                   case RasterFormat.R5_G6_B5:
                      format = SurfaceFormat.Dxt1;
                      break;
@@ -161,12 +167,13 @@ namespace GTAWorldRenderer.Scenes
 
                   case RasterFormat.R8_G8_B8:
                      format = SurfaceFormat.Color; // странно
+                     //format = SurfaceFormat.Bgr24;
                      break;
                }
             }
 
-            if (header.BitsPerPixel == 16 && header.DXTnumber == 0)
-               format = SurfaceFormat.Color;
+            //if (header.BitsPerPixel == 16 && header.DXTnumber == 0)
+            //   format = SurfaceFormat.Color;
 
             //if (header.AlphaUsed == 1 || header.AlphaUsed == 0x33545844)
             //   usingAlpha = true;
@@ -175,7 +182,7 @@ namespace GTAWorldRenderer.Scenes
 
             Texture2D texture = new Texture2D(GraphicsDeviceHolder.Device, header.ImageWidth, header.ImageHeight, header.MipMaps, TextureUsage.None, format);
 
-            if (header.RasterFormatEx == RasterFormatEx.Pal8 && (header.RasterFormat == RasterFormat.R8_G8_B8 || header.RasterFormat == RasterFormat.R8_G8_B8_A8))
+            if (shouldUsePalette)
             {
                Color[] imageData = new Color[header.ImageWidth * header.ImageHeight];
 
@@ -197,6 +204,7 @@ namespace GTAWorldRenderer.Scenes
                {
                   int size = reader.ReadInt32();
                   chunk = reader.ReadBytes(size);
+                  texture.SetData(i, null, chunk, 0, size, SetDataOptions.Discard);
                }
             }
 
