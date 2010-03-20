@@ -186,7 +186,7 @@ namespace GTAWorldRenderer.Scenes
             {
                if (data.Length > 0)
                {
-                  model.Textures[model.Textures.Count - 1] = data;
+                  //model.Textures[model.Textures.Count - 1] = data;
                } else 
                {
                   Log.Instance.Print("String section of texture information is empty", MessageType.Warning);
@@ -198,7 +198,9 @@ namespace GTAWorldRenderer.Scenes
          private void ParseGeometry(int sectionSize, SectionType parent, DffVersion version)
          {
             GeometrySectionFlags flags = (GeometrySectionFlags)input.ReadInt16();
+
             input.BaseStream.Seek(sizeof(short), SeekOrigin.Current); // unknown
+
             int trianglesCount = input.ReadInt32();
             int verticesCount = input.ReadInt32();
             input.BaseStream.Seek(sizeof(int), SeekOrigin.Current); // morphTargetCount aka frameCount
@@ -243,7 +245,7 @@ namespace GTAWorldRenderer.Scenes
          private void ReadTextureCoords(int verticesCount)
          {
             model.TextureCoords = new List<Vector2>(verticesCount);
-            for (var i = 0; i != model.TextureCoords.Count; ++i)
+            for (var i = 0; i != verticesCount; ++i)
             {
                float x = input.ReadSingle();
                float y = input.ReadSingle();
