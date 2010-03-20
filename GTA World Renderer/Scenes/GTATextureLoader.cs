@@ -29,6 +29,7 @@ namespace GTAWorldRenderer.Scenes
 
          enum RasterFormatEx
          {
+            Default = 0,
             AutoMipMap = 0x1000, // (RW generates mipmaps)
             Pal8 = 0x2000, // (2^8 = 256 palette colors)
             Pal4 = 0x4000, // (2^4 = 16 palette colors)
@@ -192,11 +193,10 @@ namespace GTAWorldRenderer.Scenes
             {
                byte[] chunk = reader.ReadBytes(dataSize);
                texture.SetData(chunk);
-               int[] mipMapSizes = new int[header.MipMaps];
-               for (int i = 0; i < mipMapSizes.Length; ++i)
+               for (int i = 1; i < header.MipMaps; ++i)
                {
-                  mipMapSizes[i] = reader.ReadInt32();
-                  chunk = reader.ReadBytes(mipMapSizes[i]);
+                  int size = reader.ReadInt32();
+                  chunk = reader.ReadBytes(size);
                }
             }
 
