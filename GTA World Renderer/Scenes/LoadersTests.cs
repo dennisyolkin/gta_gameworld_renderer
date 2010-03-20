@@ -170,7 +170,41 @@ namespace GTAWorldRenderer.Scenes
             Log.Instance.Print(String.Format("Finished textures processing. Successes: {0}, failes: {1}", success, fail));
          }
 
-      }
 
+         /// <summary>
+         /// Пробует загрузить каждую найденную .dff в указанной папке
+         /// </summary>
+         /// <param name="directoryPath">Директория, в которой будет производиться рекурсивный поиск моделей .dff</param>
+         public static void LoadAllModels(string directoryPath)
+         {
+            int success = 0, fail = 0;
+            using (Log.Instance.EnterStage("Loading all .DFF models in directory: " + directoryPath))
+            {
+               foreach (var file in Directory.GetFiles(directoryPath, "*.dff", SearchOption.AllDirectories))
+               {
+                  try
+                  {
+                     using (Log.Instance.EnterStage("Processing file: " + file.Substring(directoryPath.Length)))
+                     {
+                        DffLoader dff = new DffLoader(file);
+                        dff.Load();
+
+                        ++success;
+                        Log.Instance.Print("success!");
+                     }
+                  } 
+                  catch (Exception er)
+                  {
+                     Log.Instance.Print("Failed to load dff model. Exception: " + er.Message, MessageType.Error);
+                     ++fail;
+                  }
+               }
+            }
+            Log.Instance.Print(String.Format("Finished models processing. Successes: {0}, failes: {1}", success, fail));
+         }
+
+         //
+
+      }
    }
 }
