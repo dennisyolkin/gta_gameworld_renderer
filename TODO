@@ -1,3 +1,7 @@
 TODO list
 =========
 
+* Rendering TriangleStrip meshes. Some triangles are not correctly-oriented, so I need to 
+  turn off FaceCulling to make it correctly drawn. But it is slowly!
+  
+* Write something in LICENSE :)
