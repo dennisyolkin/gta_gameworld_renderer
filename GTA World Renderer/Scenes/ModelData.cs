@@ -55,10 +55,10 @@ namespace GTAWorldRenderer.Scenes
             {
                Func<IList, string> ToStr = x => (x == null ? "no" : x.Count.ToString());
 
-               return String.Format("Vertices: {0}, Triangles: {1}, Texture: ",
+               return String.Format("Vertices: {0}, Triangles: {1}, Texture: {2}",
                   ToStr(Vertices),
                   Indices == null ? "no" : (Indices.Count / 3).ToString(), // TODO :: не учитывается TrianglesStrip
-                  Texture == null? "no texture" : Texture
+                  Texture?? "no texture"
                   );
             }
          }
