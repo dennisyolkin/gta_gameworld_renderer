@@ -1,7 +1,7 @@
 TODO list
 =========
 
-* Rendering TriangleStrip meshes. Some triangles are not correctly-oriented, so I need to 
-  turn off FaceCulling to make it correctly drawn. But it is slowly!
+You can find Issues on the official site of the project:
+  http://github.com/dennisyolkin/gta_gameworld_renderer/issues/
   
-* Write something in LICENSE :)
+Sorry, but the mose issues are written it Russian now. But I'll try to add new issues only in English.
