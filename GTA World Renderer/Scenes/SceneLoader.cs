@@ -67,13 +67,15 @@ namespace GTAWorldRenderer.Scenes
                */
 
                //LoadersTests.UnpackAllArchivesInDirectory(Config.Instance.GTAFolderPath, @"c:\home\tmp\root\");
+               LoadersTests.UnpackAllTextures(@"c:\home\tmp\root\");
 
-               
-               GTATextureLoader textureLoader = new GTATextureLoader(new BinaryReader(new FileStream(@"c:\home\tmp\root\mainsc2\mainsc2.gtatexture ", FileMode.Open)));
+               /*
+               GTATextureLoader textureLoader = new GTATextureLoader(new BinaryReader(
+                  new FileStream(@"c:\home\tmp\root\mainsc1\mainsc1.gtatexture", FileMode.Open)));
                Texture2D texture = textureLoader.Load();
                texture.Save("c:\\home\\tmp\\PICTURE.jpg", ImageFileFormat.Jpg);
+              */
                
-
                return models;
 
             } catch (Exception)
