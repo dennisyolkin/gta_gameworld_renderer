@@ -5,6 +5,7 @@ using System.Text;
 using GTAWorldRenderer.Logging;
 using GTAWorldRenderer.Scenes.ArchivesCommon;
 using System.IO;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace GTAWorldRenderer.Scenes
 {
@@ -136,6 +137,38 @@ namespace GTAWorldRenderer.Scenes
          }
 
 
+         /// <summary>
+         /// Распаковывает все текстуры (*.gtatexture) в directoryPath (и подкаталогах).
+         /// Распакованные изображения сохраняются рядом в файл с таким же именем и одним из графических расширений.
+         /// </summary>
+         public static void UnpackAllTextures(string directoryPath)
+         {
+            int success = 0, fail = 0;
+            using (Log.Instance.EnterStage("Unpacking all textures in directory " + directoryPath))
+            {
+               foreach (var file in Directory.GetFiles(directoryPath, "*.gtatexture", SearchOption.AllDirectories))
+               {
+                  try
+                  {
+                     using (Log.Instance.EnterStage("Unpacking texture: " + file.Substring(directoryPath.Length)))
+                     {
+                        GTATextureLoader textureLoader = new GTATextureLoader(new BinaryReader(new FileStream(file, FileMode.Open)));
+                        Texture2D texture = textureLoader.Load();
+                        texture.Save(file.Substring(0, file.LastIndexOf('.')) + ".png", ImageFileFormat.Png);
+
+                        ++success;
+                        Log.Instance.Print("success!");
+                     }
+                  } 
+                  catch (Exception er)
+                  {
+                     Log.Instance.Print("Failed to load texture. Exception: " + er.Message, MessageType.Error);
+                     ++fail;
+                  }
+               }
+            }
+            Log.Instance.Print(String.Format("Finished textures processing. Successes: {0}, failes: {1}", success, fail));
+         }
 
       }
 
