@@ -126,20 +126,16 @@ namespace GTAWorldRenderer.Scenes
          /// <param name="outptuPathPrefix">Папка, в которую проихводится распаковка. Должна существовать!</param>
          public static void UnpackAllArchivesInDirectory(string directoryPath, string outptuPathPrefix)
          {
-            DirectoryInfo directory = new DirectoryInfo(directoryPath);
-
-            foreach (DirectoryInfo dir in directory.GetDirectories())
-               UnpackAllArchivesInDirectory(dir.FullName, outptuPathPrefix);
-
-            foreach (FileInfo f in directory.GetFiles())
+            foreach (var path in Directory.GetFiles(directoryPath, "*", SearchOption.AllDirectories))
             {
-               if (f.Name.EndsWith(".img"))
-                  UnpackImg(f.FullName, outptuPathPrefix);
-               else if (f.Name.EndsWith(".txd"))
-                  UnpackTxd(f.FullName, outptuPathPrefix);
+               if (path.EndsWith(".img"))
+                  UnpackImg(path, outptuPathPrefix);
+               else if (path.EndsWith(".txd"))
+                  UnpackTxd(path, outptuPathPrefix);
             }
-
          }
+
+
 
       }
 
