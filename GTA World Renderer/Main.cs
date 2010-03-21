@@ -4,9 +4,7 @@ using System.Threading;
 using GTAWorldRenderer.Logging;
 using GTAWorldRenderer.Scenes;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using System.Diagnostics;
-using System.Collections.Generic;
 using GTAWorldRenderer.Rendering;
 
 namespace GTAWorldRenderer
@@ -14,7 +12,7 @@ namespace GTAWorldRenderer
    public class Main : Microsoft.Xna.Framework.Game
    {
       Scene scene;
-      IRenderer renderer3d;
+      Renderer renderer3d;
 
       public Main()
       {
@@ -50,9 +48,7 @@ namespace GTAWorldRenderer
          Log.Instance.PrintStatistic();
          GC.Collect();
 
-         renderer3d = new SceneRenderer3D(this, scene);
-         renderer3d.Initialize();
-
+         renderer3d = new SceneRenderer3D(Content, scene);
       }
 
 

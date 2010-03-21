@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
@@ -12,7 +10,7 @@ namespace GTAWorldRenderer.Rendering
    /// Реализация панели, на которой будет выводиться текстовая информация.
    /// Выводится FPS + пользовательские данные, которые задаются в виде словаря (свойство Data)
    /// </summary>
-   class TextInfoPanel : IRenderer
+   class TextInfoPanel : Renderer
    {
       private const int LINE_HEIGHT = 20;
 
@@ -26,20 +24,15 @@ namespace GTAWorldRenderer.Rendering
       private SpriteFont font;
       private SpriteBatch spriteBatch;
 
-      ContentManager contentManager;
 
       public TextInfoPanel(ContentManager contentManager)
+         : base(contentManager)
       {
-         this.contentManager = contentManager;
          Data = new Dictionary<string, object>();
-      }
-
-
-      public void Initialize()
-      {
          spriteBatch = new SpriteBatch(GraphicsDeviceHolder.Device);
-         font = contentManager.Load<SpriteFont>("font");
+         font = Content.Load<SpriteFont>("font");
       }
+
 
 
       /// <summary>
@@ -60,17 +53,12 @@ namespace GTAWorldRenderer.Rendering
       }
 
 
-      public virtual void Update(GameTime gameTime)
-      {
-         // TODO :: плохо!!!
-      }
-
 
       /// <summary>
       /// Отрисовывает панель на экране
       /// </summary>
       /// <param name="gameTime">Игровое время</param>
-      public void Draw(GameTime gameTime)
+      public override void Draw(GameTime gameTime)
       {
          updateFPS(gameTime);
          GraphicsDeviceHolder.Device.RenderState.DepthBufferEnable = false;

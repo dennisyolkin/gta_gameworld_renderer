@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 
 namespace GTAWorldRenderer.Rendering
 {
@@ -11,40 +9,43 @@ namespace GTAWorldRenderer.Rendering
    /// набор побочных эффектов в главном. Делает прозрачным вызовы Update и Draw
    /// для главного и побочных объектов
    /// </summary>
-   abstract class CompositeRenderer : IRenderer
+   abstract class CompositeRenderer : Renderer
    {
-      List<IRenderer> subrenderers = new List<IRenderer>();
+      List<Renderer> subrenderers = new List<Renderer>();
 
+      public CompositeRenderer(ContentManager contentManager)
+         : base(contentManager)
+      {
+      }
 
-      protected void AddSubRenderer(IRenderer renderer)
+      protected void AddSubRenderer(Renderer renderer)
       {
          subrenderers.Add(renderer);
       }
 
-      void IRenderer.Initialize()
+      void Initialize()
       {
          Initialize();
       }
 
 
-      void IRenderer.Update(GameTime gameTime)
+      public override void Update(GameTime gameTime)
       {
-         Update(gameTime);
-         foreach (IRenderer renderer in subrenderers)
+         DoUpdate(gameTime);
+         foreach (Renderer renderer in subrenderers)
             renderer.Update(gameTime);
       }
 
 
-      void IRenderer.Draw(GameTime gameTime)
+      public override void Draw(GameTime gameTime)
       {
-         Draw(gameTime);
-         foreach (IRenderer renderer in subrenderers)
+         DoDraw(gameTime);
+         foreach (Renderer renderer in subrenderers)
             renderer.Draw(gameTime);
       }
 
 
-      public abstract void Initialize();
-      public abstract void Update(GameTime gameTime);
-      public abstract void Draw(GameTime gameTime);
+      public abstract void DoUpdate(GameTime gameTime);
+      public abstract void DoDraw(GameTime gameTime);
    }
 }

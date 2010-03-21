@@ -86,7 +86,7 @@
   <ItemGroup>
     <Compile Include="Config.cs" />
     <Compile Include="GraphicsDeviceHolder.cs" />
-    <Compile Include="IRenderer.cs" />
+    <Compile Include="Rendering\Renderer.cs" />
     <Compile Include="Logging\ConsoleLogWriter.cs" />
     <Compile Include="Logging\FileLogWriter.cs" />
     <Compile Include="Logging\ILogWriter.cs" />
