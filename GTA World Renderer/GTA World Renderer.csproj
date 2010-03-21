@@ -94,6 +94,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Rendering\Camera.cs" />
+    <Compile Include="Rendering\InfoPanelFor3Dview.cs" />
     <Compile Include="Rendering\TextInfoPanel.cs" />
     <Compile Include="Scenes\ArchivesCommon.cs" />
     <Compile Include="Scenes\DffLoader.cs" />

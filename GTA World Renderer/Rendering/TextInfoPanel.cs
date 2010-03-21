@@ -9,13 +9,14 @@ using Microsoft.Xna.Framework.Content;
 namespace GTAWorldRenderer.Rendering
 {
    /// <summary>
-   /// Реализация панели, на которой будет выводиться текстовая информация
+   /// Реализация панели, на которой будет выводиться текстовая информация.
+   /// Выводится FPS + пользовательские данные, которые задаются в виде словаря (свойство Data)
    /// </summary>
    class TextInfoPanel : DrawableGameComponent
    {
       private const int LINE_HEIGHT = 20;
 
-      public Camera Camera{ get; set; }
+      public Dictionary<string, object> Data { get; set; }
 
       private int fps = 0;
       private int frameCounter = 0;
@@ -28,6 +29,7 @@ namespace GTAWorldRenderer.Rendering
 
       public TextInfoPanel(Game game) : base(game)
       {
+         Data = new Dictionary<string, object>();
       }
 
 
@@ -69,12 +71,10 @@ namespace GTAWorldRenderer.Rendering
          int y = 5;
          spriteBatch.DrawString(font, String.Format("FPS: {0}", fps), new Vector2(5, y), Color.Yellow);
 
-         if (Camera != null)
+         foreach(var item in Data)
          {
             y += LINE_HEIGHT;
-            spriteBatch.DrawString(font, String.Format("Camera position: X:{0:f2} Y:{1:f2} Z:{2:f2}", Camera.Position.X, Camera.Position.Y, Camera.Position.Z), new Vector2(5, y), Color.Yellow);
-            y += LINE_HEIGHT;
-            spriteBatch.DrawString(font, String.Format("Camera rotation: LR={0:f2} UD={1:f2}", Camera.LeftRightRotation, Camera.UpDownRotation), new Vector2(5, y), Color.Yellow);
+            spriteBatch.DrawString(font, String.Format("{0}: {1}", item.Key, item.Value), new Vector2(5, y), Color.Yellow);
          }
 
          spriteBatch.End();
