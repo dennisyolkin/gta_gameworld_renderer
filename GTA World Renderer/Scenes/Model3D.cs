@@ -119,7 +119,6 @@ namespace GTAWorldRenderer.Scenes
          if (triangleStrip)
             device.RenderState.CullMode = CullMode.None;
 
-         device.RenderState.CullMode = CullMode.None;
          effect.CurrentTechnique = effect.Techniques[effectTechnique];
          effect.Parameters["xWorld"].SetValue(worldMatrix);
          effect.Begin();
