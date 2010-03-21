@@ -73,6 +73,8 @@ namespace GTAWorldRenderer.Scenes
             public int SectionSize { get; private set; }
             public DffVersion Version { get; private set; }
 
+            public const int Size = sizeof(int) + sizeof(int) + sizeof(short) + sizeof(short);
+
             public void Read(BinaryReader reader)
             {
                SectionType = (SectionType)reader.ReadInt32();
@@ -98,17 +100,7 @@ namespace GTAWorldRenderer.Scenes
             using (Log.Instance.EnterStage("Loading model from DFF file: " + fileName))
             {
                using (input = new BinaryReader(new FileStream(fileName, FileMode.Open)))
-               {
-                  SectionHeader header = new SectionHeader();
-                  header.Read(input);
-
-                  if (!Enum.IsDefined(typeof(DffVersion), header.Version))
-                     TerminateWithError("Unknown dff file version: " + header.Version);
-
-                  Log.Instance.Print("Root version: " + header.Version);
-
-                  ProcessRenderwareSection(header.SectionSize, 0, header.SectionType);
-               }
+                  ProcessRenderwareSection((int)input.BaseStream.Length, 0, SectionType.Clump);
 
                Log.Instance.Print("Model loaded!");
                foreach (var info in modelData.Info)
@@ -123,7 +115,7 @@ namespace GTAWorldRenderer.Scenes
          {
             int sectionEnd = (int)input.BaseStream.Position + size;
 
-            while (input.BaseStream.Position < sectionEnd)
+            while (input.BaseStream.Position  + SectionHeader.Size <= sectionEnd)
             {
                SectionHeader header = new SectionHeader();
                header.Read(input);
