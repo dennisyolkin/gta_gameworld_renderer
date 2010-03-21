@@ -95,6 +95,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Rendering\Camera.cs" />
+    <Compile Include="Rendering\CompositeRenderer.cs" />
     <Compile Include="Rendering\InfoPanelFor3Dview.cs" />
     <Compile Include="Rendering\SceneRenderer3D.cs" />
     <Compile Include="Rendering\TextInfoPanel.cs" />

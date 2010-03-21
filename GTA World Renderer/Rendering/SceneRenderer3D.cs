@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework.Content;
 
 namespace GTAWorldRenderer.Rendering
 {
-   class SceneRenderer3D : IRenderer
+   class SceneRenderer3D : CompositeRenderer
    {
       private const float rotationSpeed = 0.3f;
 
@@ -49,7 +49,7 @@ namespace GTAWorldRenderer.Rendering
       }
 
 
-      public void Initialize()
+      public override void Initialize()
       {
          device = GraphicsDeviceHolder.Device;
          camera = new Camera();
@@ -63,7 +63,7 @@ namespace GTAWorldRenderer.Rendering
       }
 
 
-      public void Update(GameTime gameTime)
+      public override void Update(GameTime gameTime)
       {
          float timeDifference = (float)gameTime.ElapsedGameTime.TotalMilliseconds / 1000.0f;
 
@@ -107,7 +107,7 @@ namespace GTAWorldRenderer.Rendering
       }
 
 
-      public void Draw(GameTime gameTime)
+      public override void Draw(GameTime gameTime)
       {
          device.Clear(Color.Black);
 
