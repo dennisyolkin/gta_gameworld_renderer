@@ -31,7 +31,7 @@ namespace GTAWorldRenderer
             Log.Instance.AddLogWriter(ConsoleLogWriter.Instance);
          }
 
-         textInfoPanel = new TextInfoPanel(this);
+         textInfoPanel = new InfoPanelFor3Dview(this);
          Components.Add(textInfoPanel);
       }
 
@@ -39,7 +39,7 @@ namespace GTAWorldRenderer
 
       Scene scene;
       Camera camera;
-      TextInfoPanel textInfoPanel;
+      InfoPanelFor3Dview textInfoPanel;
       MouseState originalMouseState;
       Effect effect; // TODO :: возможно, он должен создаваться и загружаться в сцене...
       Matrix projectionMatrix;
@@ -92,7 +92,6 @@ namespace GTAWorldRenderer
          effect.Parameters["xView"].SetValue(camera.ViewMatrix);
          effect.Parameters["xProjection"].SetValue(projectionMatrix);
          scene.Draw(effect);
-         //textInfoPanel.Draw();
 
          base.Draw(gameTime);
       }
