@@ -62,7 +62,7 @@ namespace GTAWorldRenderer.Scenes
                }
             } catch (Exception er)
             {
-               Log.Instance.Print("Failed to unpack TXD. Exception occured: " + er.ToString());
+               Log.Instance.Print("Failed to unpack TXD. Exception occured: " + er.Message, MessageType.Error);
             }
          }
 
