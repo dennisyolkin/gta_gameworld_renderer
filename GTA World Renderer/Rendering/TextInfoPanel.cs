@@ -12,7 +12,7 @@ namespace GTAWorldRenderer.Rendering
    /// Реализация панели, на которой будет выводиться текстовая информация.
    /// Выводится FPS + пользовательские данные, которые задаются в виде словаря (свойство Data)
    /// </summary>
-   class TextInfoPanel : DrawableGameComponent
+   class TextInfoPanel : IRenderer
    {
       private const int LINE_HEIGHT = 20;
 
@@ -26,17 +26,19 @@ namespace GTAWorldRenderer.Rendering
       private SpriteFont font;
       private SpriteBatch spriteBatch;
 
+      ContentManager contentManager;
 
-      public TextInfoPanel(Game game) : base(game)
+      public TextInfoPanel(ContentManager contentManager)
       {
+         this.contentManager = contentManager;
          Data = new Dictionary<string, object>();
       }
 
 
-      protected override void LoadContent()
+      public void Initialize()
       {
          spriteBatch = new SpriteBatch(GraphicsDeviceHolder.Device);
-         font = Game.Content.Load<SpriteFont>("font");
+         font = contentManager.Load<SpriteFont>("font");
       }
 
 
@@ -58,11 +60,17 @@ namespace GTAWorldRenderer.Rendering
       }
 
 
+      public virtual void Update(GameTime gameTime)
+      {
+         // TODO :: плохо!!!
+      }
+
+
       /// <summary>
       /// Отрисовывает панель на экране
       /// </summary>
       /// <param name="gameTime">Игровое время</param>
-      public override void Draw(GameTime gameTime)
+      public void Draw(GameTime gameTime)
       {
          updateFPS(gameTime);
          GraphicsDeviceHolder.Device.RenderState.DepthBufferEnable = false;

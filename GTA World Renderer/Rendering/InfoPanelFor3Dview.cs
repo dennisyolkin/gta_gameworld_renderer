@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 
 namespace GTAWorldRenderer.Rendering
 {
@@ -17,8 +18,8 @@ namespace GTAWorldRenderer.Rendering
       public Camera Camera { get; set; }
 
 
-      public InfoPanelFor3Dview(Game game)
-         : base(game)
+      public InfoPanelFor3Dview(ContentManager contentManager)
+         : base(contentManager)
       {
          Data.Add("Camera position", null);
          Data.Add("Camera rotation", null);
@@ -27,8 +28,11 @@ namespace GTAWorldRenderer.Rendering
 
       public override void Update(GameTime time)
       {
-         Data["Camera position"] = String.Format("X:{0:f2} Y:{1:f2} Z:{2:f2}", Camera.Position.X, Camera.Position.Y, Camera.Position.Z);
-         Data["Camera rotation"] = String.Format("LR={0:f2} UD={1:f2}", Camera.LeftRightRotation, Camera.UpDownRotation);
+         if (Camera != null)
+         {
+            Data["Camera position"] = String.Format("X:{0:f2} Y:{1:f2} Z:{2:f2}", Camera.Position.X, Camera.Position.Y, Camera.Position.Z);
+            Data["Camera rotation"] = String.Format("LR={0:f2} UD={1:f2}", Camera.LeftRightRotation, Camera.UpDownRotation);
+         }
 
          base.Update(time);
       }

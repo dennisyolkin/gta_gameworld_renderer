@@ -19,7 +19,7 @@ namespace GTAWorldRenderer.Rendering
       GraphicsDevice device;
       ContentManager content;
       Camera camera;
-      //InfoPanelFor3Dview textInfoPanel;
+      InfoPanelFor3Dview textInfoPanel;
       MouseState originalMouseState;
       Effect effect;
       Matrix projectionMatrix;
@@ -53,7 +53,10 @@ namespace GTAWorldRenderer.Rendering
       {
          device = GraphicsDeviceHolder.Device;
          camera = new Camera();
-         //textInfoPanel.Camera = camera;
+
+         textInfoPanel = new InfoPanelFor3Dview(content);
+         textInfoPanel.Initialize();
+         AddSubRenderer(textInfoPanel);
 
          projectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, device.Viewport.AspectRatio, 0.1f, 200.0f);
          effect = content.Load<Effect>("effect");
