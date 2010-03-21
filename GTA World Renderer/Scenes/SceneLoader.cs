@@ -61,13 +61,13 @@ namespace GTAWorldRenderer.Scenes
                var models = new List<Model3D>();
 
 
-               //var dffLoader = new DffLoader(@"c:\Program Files\GTAIII\models\Generic\arrow.DFF");
-               //Model3D model = dffLoader.Load();
-               //models.Add(model);
+               var dffLoader = new DffLoader(@"c:\Program Files\GTAIII\models\Generic\arrow.DFF");
+               Model3D model = dffLoader.Load();
+               models.Add(model);
                
 
                //LoadersTests.UnpackAllArchivesInDirectory(Config.Instance.GTAFolderPath, @"c:\home\tmp\root\");
-               LoadersTests.UnpackAllTextures(@"c:\home\tmp\root\");
+               //LoadersTests.UnpackAllTextures(@"c:\home\tmp\root\");
                //LoadersTests.LoadAllModels(Config.Instance.GTAFolderPath);
                //LoadersTests.LoadAllModels(@"c:\home\tmp\root\");
 

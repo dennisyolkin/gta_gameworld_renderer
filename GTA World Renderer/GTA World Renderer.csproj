@@ -86,6 +86,7 @@
   <ItemGroup>
     <Compile Include="Config.cs" />
     <Compile Include="GraphicsDeviceHolder.cs" />
+    <Compile Include="IRenderer.cs" />
     <Compile Include="Logging\ConsoleLogWriter.cs" />
     <Compile Include="Logging\FileLogWriter.cs" />
     <Compile Include="Logging\ILogWriter.cs" />
@@ -95,6 +96,7 @@
     <Compile Include="Main.cs" />
     <Compile Include="Rendering\Camera.cs" />
     <Compile Include="Rendering\InfoPanelFor3Dview.cs" />
+    <Compile Include="Rendering\SceneRenderer3D.cs" />
     <Compile Include="Rendering\TextInfoPanel.cs" />
     <Compile Include="Scenes\ArchivesCommon.cs" />
     <Compile Include="Scenes\DffLoader.cs" />
