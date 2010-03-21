@@ -44,9 +44,16 @@ namespace GTAWorldRenderer.Scenes
             using (Log.Instance.EnterStage("Loading TXD archive: " + filePath))
             {
                txdName = Path.GetFileNameWithoutExtension(filePath);
-               fin = new BinaryReader(new FileStream(filePath, FileMode.Open));
-               ParseSection((int)fin.BaseStream.Length, 0, SectionType.Unknown);
-               fin.Close();
+               using (fin = new BinaryReader(new FileStream(filePath, FileMode.Open)))
+               {
+                  // There is only one root node in file, read it
+                  SectionType sectionType = (SectionType)fin.ReadInt32();
+                  int sectionSize = fin.ReadInt32();
+                  fin.BaseStream.Seek(4, SeekOrigin.Current);
+
+                  // Now we can recursively read all the tree
+                  ParseSection(sectionSize, sectionType);
+               }
 
                Log.Instance.Print(String.Format("Loaded {0} entries", files.Count));
                return files;
@@ -54,12 +61,11 @@ namespace GTAWorldRenderer.Scenes
          }
 
 
-         private void ParseSection(int size, int depth, SectionType parentType)
+         private void ParseSection(int size, SectionType parentType)
          {
-            if (size == 0)
-               return;
+            int positionEnd = (int)fin.BaseStream.Position + size;
 
-            while (fin.BaseStream.Position + 12 <= fin.BaseStream.Length) // должны быть в состоянии считать заголовок секции
+            while (fin.BaseStream.Position < positionEnd)
             {
                SectionType sectionType = (SectionType)fin.ReadInt32();
 
@@ -78,16 +84,13 @@ namespace GTAWorldRenderer.Scenes
                   case SectionType.Extension:
                   case SectionType.Dictionary:
                   case SectionType.TextureNative:
-                     ParseSection(sectionSize, depth + 1, sectionType);
+                     ParseSection(sectionSize, sectionType);
                      break;
 
                   default:
                      fin.BaseStream.Seek(sectionSize, SeekOrigin.Current);
                      break;
                }
-
-               if (depth == 0)
-                  break; // Корень в dxt-файле может быть только один. Плюс, в конце файла, судя по всему, может быть треш!
 
             }
 
