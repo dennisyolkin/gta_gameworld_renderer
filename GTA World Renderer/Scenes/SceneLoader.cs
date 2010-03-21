@@ -59,15 +59,18 @@ namespace GTAWorldRenderer.Scenes
                LoadDatFile(GetVersionSpecificDatFile());
 
                var models = new List<Model3D>();
+
+
+               //var dffLoader = new DffLoader(@"c:\Program Files\GTAIII\models\Generic\arrow.DFF");
+               //Model3D model = dffLoader.Load();
+               //models.Add(model);
                
-               /*
-               var dffLoader = new DffLoader(@"c:\Program Files\GTAIII\models\Generic\loplyguy.dff");
-               Model3D model = dffLoader.Load();
-               models.Add(model);
-               */
 
                //LoadersTests.UnpackAllArchivesInDirectory(Config.Instance.GTAFolderPath, @"c:\home\tmp\root\");
                LoadersTests.UnpackAllTextures(@"c:\home\tmp\root\");
+               //LoadersTests.LoadAllModels(Config.Instance.GTAFolderPath);
+               //LoadersTests.LoadAllModels(@"c:\home\tmp\root\");
+
 
                /*
                GTATextureLoader textureLoader = new GTATextureLoader(new BinaryReader(
@@ -75,7 +78,10 @@ namespace GTAWorldRenderer.Scenes
                Texture2D texture = textureLoader.Load();
                texture.Save("c:\\home\\tmp\\PICTURE.jpg", ImageFileFormat.Jpg);
               */
-               
+
+               //TXDArchive txd = new TXDArchive(@"c:\Program Files\GTAIII\models\fonts.txd");
+               //txd.Load();
+
                return models;
 
             } catch (Exception)
