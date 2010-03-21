@@ -240,6 +240,14 @@ namespace GTAWorldRenderer.Scenes
             // TODO :: возможно, здесь нужно создать нормали, если их нет изначально в файле. А возможно, это нужно делать в шейдере.
             if ((flags & GeometrySectionFlags.HasNormalsInfo) != GeometrySectionFlags.None)
                ReadNormals(mesh, verticesCount);
+            else
+            {
+               // TODO :: temporary solution. Filling the zero-vector normals
+               Log.Instance.Print("No normals!", MessageType.Warning);
+               mesh.Normals = new List<Vector3>(verticesCount);
+               for (var i = 0; i != verticesCount; ++i)
+                  mesh.Normals.Add(Vector3.Zero);
+            }
 
             modelData.Meshes.Add(mesh);
          }
