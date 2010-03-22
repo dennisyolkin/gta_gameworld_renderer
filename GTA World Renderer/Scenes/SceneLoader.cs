@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework;
 namespace GTAWorldRenderer.Scenes
 {
 
-   partial class SceneLoader
+   partial class SceneLoader // TODO :: возможно, его можно сделать Static
    {
       class LoadingException : ApplicationException
       {
@@ -51,15 +51,29 @@ namespace GTAWorldRenderer.Scenes
                Logger.Print("Switching working directory to GTA folder");
                System.Environment.CurrentDirectory = Config.Instance.GTAFolderPath;
 
-               //DetermineGtaVersion();
-               //LoadDatFile("data/default.dat");
-               //LoadDatFile(GetVersionSpecificDatFile());
-
-               DffLoader dff = new DffLoader(@"c:\Program Files\GTAIII\models\Generic\arrow.DFF");
-               Model3D model = dff.Load();
+               DetermineGtaVersion();
+               LoadDatFile("data/default.dat");
+               LoadDatFile(GetVersionSpecificDatFile());
 
                Scene scene = new Scene();
-               scene.SceneObjects.Add(new SceneObject(model, Matrix.Identity));
+               var loadedModels = new Dictionary<string, Model3D>();
+
+               // TODO :: temporary code with absolute paths!!!
+               foreach (var obj in objPlacements)
+               {
+                  if (!obj.Name.StartsWith("LOD"))
+                     continue;
+                  if (!loadedModels.ContainsKey(obj.Name))
+                     loadedModels[obj.Name] = new DffLoader(@"c:\home\tmp\root\" + obj.Name + ".dff").Load();
+                  Matrix matrix = Matrix.CreateScale(obj.Scale) * Matrix.CreateTranslation(obj.Position) * Matrix.CreateFromQuaternion(obj.Rotation);
+                  scene.SceneObjects.Add(new SceneObject(loadedModels[obj.Name], matrix));
+               }
+
+               Logger.Print("Scene loaded!");
+               Logger.PrintStatistic();
+               Logger.Print("Objects located on scene: " + scene.SceneObjects.Count);
+               Logger.Flush();
+
                return scene;
 
             } catch (Exception)
