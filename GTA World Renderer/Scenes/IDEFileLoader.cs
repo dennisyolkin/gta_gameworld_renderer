@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using GTAWorldRenderer.Logging;
 using System.IO;
 
@@ -31,9 +29,9 @@ namespace GTAWorldRenderer.Scenes
          }
 
 
-         public IDictionary<int, SceneObjectDefinition> Load()
+         public IDictionary<int, SceneItemDefinition> Load()
          {
-            var objects = new Dictionary<int, SceneObjectDefinition>();
+            var objects = new Dictionary<int, SceneItemDefinition>();
 
             using (Logger.EnterStage("Reading IDE file: " + filePath))
             {
@@ -70,7 +68,7 @@ namespace GTAWorldRenderer.Scenes
          }
 
 
-         private KeyValuePair<int, SceneObjectDefinition>? ProcessSectionItem(string line)
+         private KeyValuePair<int, SceneItemDefinition>? ProcessSectionItem(string line)
          {
             if (line.StartsWith("end"))
             {
@@ -87,13 +85,13 @@ namespace GTAWorldRenderer.Scenes
                throw new LoadingException(msg);
             }
 
-            SceneObjectDefinition obj = new SceneObjectDefinition();
+            SceneItemDefinition obj = new SceneItemDefinition();
             int id = Int32.Parse(toks[0]);
             obj.Name = toks[1];
             obj.TextureFolder = toks[2];
             obj.DrawDistance = float.Parse(toks[4]);
 
-            return new KeyValuePair<int, SceneObjectDefinition>(id, obj);
+            return new KeyValuePair<int, SceneItemDefinition>(id, obj);
          }
 
       }

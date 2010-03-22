@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 
 namespace GTAWorldRenderer.Scenes
 {
@@ -10,7 +6,7 @@ namespace GTAWorldRenderer.Scenes
    /// Определяет объект сцены (его позицию, масштаб, поворт)
    /// Данные берутся из *.ipl файлов
    /// </summary>
-   class SceneObject // from IPL files
+   class SceneItemPlacement
    {
       public int Id{ get; set; }
       public string Name{ get; set; }
@@ -22,12 +18,30 @@ namespace GTAWorldRenderer.Scenes
 
    /// <summary>
    /// Определяет описание объекта (текстуру и растояние отрисовки).
-   /// Данные берутся из *.ipl файлов
+   /// Данные берутся из *.ide файлов
    /// </summary>
-   class SceneObjectDefinition 
+   class SceneItemDefinition
    {
       public string Name { get; set; }
       public string TextureFolder { get; set; }
       public float DrawDistance { get; set; }
+   }
+
+
+   /// <summary>
+   /// Описание объекта на построенной сцене
+   /// </summary>
+   class SceneObject
+   {
+      public Matrix WorldMatrix { get; private set; }
+      public Model3D Model { get; private set; }
+
+
+      public SceneObject(Model3D model, Matrix worldMatrix)
+      {
+         Model = model;
+         WorldMatrix = worldMatrix;
+      }
+
    }
 }

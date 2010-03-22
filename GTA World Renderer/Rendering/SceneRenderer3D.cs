@@ -1,8 +1,8 @@
-﻿using Microsoft.Xna.Framework;
-using GTAWorldRenderer.Scenes;
-using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Graphics;
+﻿using GTAWorldRenderer.Scenes;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace GTAWorldRenderer.Rendering
 {
@@ -110,7 +110,9 @@ namespace GTAWorldRenderer.Rendering
 
          effect.Parameters["xView"].SetValue(camera.ViewMatrix);
          effect.Parameters["xProjection"].SetValue(projectionMatrix);
-         SceneContent.Draw(effect);
+
+         foreach (var obj in SceneContent.SceneObjects)
+            obj.Model.Draw(effect, obj.WorldMatrix);
       }
    }
 }

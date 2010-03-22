@@ -11,7 +11,6 @@ namespace GTAWorldRenderer
 {
    public class Main : Microsoft.Xna.Framework.Game
    {
-      Scene scene;
       Renderer renderer3d;
 
       public Main()
@@ -42,13 +41,10 @@ namespace GTAWorldRenderer
 
       protected override void LoadContent()
       {
-         // загружаем сцену
-         scene = new Scene();
-         scene.LoadScene();
          Log.Instance.PrintStatistic();
          GC.Collect();
 
-         renderer3d = new SceneRenderer3D(Content, scene);
+         renderer3d = new SceneRenderer3D(Content, new SceneLoader().LoadScene());
       }
 
 

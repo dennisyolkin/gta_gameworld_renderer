@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 
@@ -15,27 +12,6 @@ namespace GTAWorldRenderer.Scenes
    {
       private List<ModelMesh3D> meshes = new List<ModelMesh3D>();
 
-      /// <summary>
-      /// Матрица, задающая положение и поворот объекта в игровом пространстве
-      /// </summary>
-      public Matrix WorldMatrix{ get; set; }
-
-
-      public Model3D()
-      {
-         WorldMatrix = Matrix.Identity;
-      }
-
-      /// <summary>
-      /// Задание позиции и поворота объекта
-      /// </summary>
-      /// <param name="position">Позиция</param>
-      /// <param name="rotation">Поворот. Задаётся кватернионом</param>
-      public void PlaceIn3d(Vector3 position, Quaternion rotation)
-      {
-         WorldMatrix = Matrix.CreateTranslation(position) * Matrix.CreateFromQuaternion(rotation);
-      }
-
 
       /// <summary>
       /// Добавление меша в модель
@@ -44,17 +20,6 @@ namespace GTAWorldRenderer.Scenes
       public void AddMesh(ModelMesh3D mesh)
       {
          meshes.Add(mesh);
-      }
-
-
-      /// <summary>
-      /// Отрисовка модели, используя заданный эффект
-      /// </summary>
-      /// <param name="effect">эффект</param>
-      public void Draw(Effect effect)
-      {
-         foreach (var mesh in meshes)
-            mesh.Draw(effect, WorldMatrix);
       }
 
 

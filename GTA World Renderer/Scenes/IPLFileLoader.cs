@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Diagnostics;
 using GTAWorldRenderer.Logging;
 using System.IO;
 using Microsoft.Xna.Framework;
@@ -51,9 +48,9 @@ namespace GTAWorldRenderer.Scenes
          }
 
 
-         public IEnumerable<SceneObject> Load()
+         public IEnumerable<SceneItemPlacement> Load()
          {
-            List<SceneObject> objects = new List<SceneObject>();
+            var objects = new List<SceneItemPlacement>();
 
             using (Logger.EnterStage("Reading IPL file: " + filePath))
             {
@@ -95,7 +92,7 @@ namespace GTAWorldRenderer.Scenes
          }
 
 
-         private SceneObject ProcessSectionItem(string line)
+         private SceneItemPlacement ProcessSectionItem(string line)
          {
             if (line.StartsWith("end"))
             {
@@ -114,7 +111,7 @@ namespace GTAWorldRenderer.Scenes
                throw new LoadingException(msg);
             }
 
-            SceneObject obj = new SceneObject();
+            SceneItemPlacement obj = new SceneItemPlacement();
             obj.Id = Int32.Parse(toks[0]);
             obj.Name = toks[1];
             obj.Scale = Vector3.One;

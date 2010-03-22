@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using GTAWorldRenderer.Logging;
 using System.IO;
-using GTAWorldRenderer.Scenes.ArchivesCommon;
-using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework;
 
 namespace GTAWorldRenderer.Scenes
 {
@@ -40,12 +37,12 @@ namespace GTAWorldRenderer.Scenes
       private GtaVersion gtaVersion;
       
 
-      private Dictionary<int, SceneObjectDefinition> objDefinitions = new Dictionary<int, SceneObjectDefinition>();
-      private List<SceneObject> sceneObjects= new List<SceneObject>();
+      private Dictionary<int, SceneItemDefinition> objDefinitions = new Dictionary<int, SceneItemDefinition>();
+      private List<SceneItemPlacement> objPlacements = new List<SceneItemPlacement>();
 
 
 
-      public IEnumerable<Model3D> LoadScene()
+      public Scene LoadScene()
       {
          using (Logger.EnterStage("Loading scene"))
          {
@@ -54,35 +51,16 @@ namespace GTAWorldRenderer.Scenes
                Logger.Print("Switching working directory to GTA folder");
                System.Environment.CurrentDirectory = Config.Instance.GTAFolderPath;
 
-               DetermineGtaVersion();
-               LoadDatFile("data/default.dat");
-               LoadDatFile(GetVersionSpecificDatFile());
+               //DetermineGtaVersion();
+               //LoadDatFile("data/default.dat");
+               //LoadDatFile(GetVersionSpecificDatFile());
 
-               var models = new List<Model3D>();
+               DffLoader dff = new DffLoader(@"c:\Program Files\GTAIII\models\Generic\arrow.DFF");
+               Model3D model = dff.Load();
 
-
-               var dffLoader = new DffLoader(@"c:\Program Files\GTAIII\models\Generic\arrow.DFF");
-               Model3D model = dffLoader.Load();
-               models.Add(model);
-               
-
-               //LoadersTests.UnpackAllArchivesInDirectory(Config.Instance.GTAFolderPath, @"c:\home\tmp\root\");
-               //LoadersTests.UnpackAllTextures(@"c:\home\tmp\root\");
-               //LoadersTests.LoadAllModels(Config.Instance.GTAFolderPath);
-               //LoadersTests.LoadAllModels(@"c:\home\tmp\root\");
-
-
-               /*
-               GTATextureLoader textureLoader = new GTATextureLoader(new BinaryReader(
-                  new FileStream(@"c:\home\tmp\root\mainsc1\mainsc1.gtatexture", FileMode.Open)));
-               Texture2D texture = textureLoader.Load();
-               texture.Save("c:\\home\\tmp\\PICTURE.jpg", ImageFileFormat.Jpg);
-              */
-
-               //TXDArchive txd = new TXDArchive(@"c:\Program Files\GTAIII\models\fonts.txd");
-               //txd.Load();
-
-               return models;
+               Scene scene = new Scene();
+               scene.SceneObjects.Add(new SceneObject(model, Matrix.Identity));
+               return scene;
 
             } catch (Exception)
             {
@@ -167,7 +145,7 @@ namespace GTAWorldRenderer.Scenes
                      string fileName = line.Substring(4);
                      var objs = new IPLFileLoader(fileName, gtaVersion).Load();
                      foreach (var obj in objs)
-                        sceneObjects.Add(obj);
+                        objPlacements.Add(obj);
                   }
                   else if (line.StartsWith("SPLASH") || line.StartsWith("COLFILE") || line.StartsWith("MAPZONE") || line.StartsWith("MODELFILE"))
                   {
