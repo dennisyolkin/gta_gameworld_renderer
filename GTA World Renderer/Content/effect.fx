@@ -43,7 +43,7 @@ technique Default
 {
     pass Pass1
     {
-        VertexShader = compile vs_1_1 VertexShaderFunction();
-        PixelShader = compile ps_1_1 PixelShaderFunction();
+        VertexShader = compile vs_2_0 VertexShaderFunction();
+        PixelShader = compile ps_2_0 PixelShaderFunction();
     }
 }

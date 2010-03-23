@@ -20,6 +20,11 @@ namespace GTAWorldRenderer
          GraphicsDeviceHolder.DeviceManager = new GraphicsDeviceManager(this);
          Content.RootDirectory = "Content";
 
+         GraphicsDeviceHolder.DeviceManager.PreferredBackBufferHeight = 900;
+         GraphicsDeviceHolder.DeviceManager.PreferredBackBufferHeight = 1440;
+         GraphicsDeviceHolder.DeviceManager.IsFullScreen = true;
+         GraphicsDeviceHolder.DeviceManager.ApplyChanges();
+
          // настраиваем лог
          Log.Instance.AddLogWriter(new FileLogWriter("log.log"));
          if (!Debugger.IsAttached)

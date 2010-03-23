@@ -235,17 +235,8 @@ namespace GTAWorldRenderer.Scenes
 
             ReadVertices(mesh, verticesCount);
 
-            // TODO :: возможно, здесь нужно создать нормали, если их нет изначально в файле. А возможно, это нужно делать в шейдере.
             if ((flags & GeometrySectionFlags.HasNormalsInfo) != GeometrySectionFlags.None)
                ReadNormals(mesh, verticesCount);
-            else
-            {
-               // TODO :: temporary solution. Filling the zero-vector normals
-               Log.Instance.Print("No normals!", MessageType.Warning);
-               mesh.Normals = new List<Vector3>(verticesCount);
-               for (var i = 0; i != verticesCount; ++i)
-                  mesh.Normals.Add(Vector3.Zero);
-            }
 
             modelData.Meshes.Add(mesh);
          }
@@ -297,7 +288,7 @@ namespace GTAWorldRenderer.Scenes
                var x = input.ReadSingle();
                var y = input.ReadSingle();
                var z = input.ReadSingle();
-               mesh.Vertices.Add(new Vector3(x, y, z));
+               mesh.Vertices.Add(new Vector3(x, z, y));
             }
          }
 
@@ -311,7 +302,7 @@ namespace GTAWorldRenderer.Scenes
                var x = input.ReadSingle();
                var y = input.ReadSingle();
                var z = input.ReadSingle();
-               mesh.Normals.Add(new Vector3(x, y, z));
+               mesh.Normals.Add(new Vector3(x, z, y));
             }
          }
 
@@ -325,6 +316,8 @@ namespace GTAWorldRenderer.Scenes
          /// </summary>
          private void ParseMaterialSplit(int sectionSize)
          {
+            //input.BaseStream.Seek(sectionSize, SeekOrigin.Current);
+            //return;
             int sectionEnd = (int)input.BaseStream.Position + sectionSize;
 
             // ParseMaterialSplit вызывается всегда после ParseGeometry, которая добавляет новый mesh в modelData

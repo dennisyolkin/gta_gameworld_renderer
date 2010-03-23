@@ -81,8 +81,13 @@ namespace GTAWorldRenderer.Scenes
           * Поэтому для того, чтобы все отрисовывалось корректно, для рисования TriangleStrip-мешей
           * FaceCulling отключается.
           */
-         if (triangleStrip)
-            device.RenderState.CullMode = CullMode.None;
+         //if (triangleStrip)
+         //   device.RenderState.CullMode = CullMode.None;
+         //device.RenderState.CullMode = CullMode.CullClockwiseFace;
+
+         bool one = indicesCount == 525;
+
+         device.RenderState.CullMode = CullMode.None;
 
          effect.CurrentTechnique = effect.Techniques[effectTechnique];
          effect.Parameters["xWorld"].SetValue(worldMatrix);
@@ -93,14 +98,15 @@ namespace GTAWorldRenderer.Scenes
             device.VertexDeclaration = vertexDeclaration;
             device.Vertices[0].SetSource(vertexBuffer, 0, vertexSize);
             device.Indices = indexBuffer;
-            device.DrawIndexedPrimitives(triangleStrip? PrimitiveType.TriangleStrip : PrimitiveType.TriangleList, 0, 0, verticesCount, 0, indicesCount);
+
+            device.DrawIndexedPrimitives(triangleStrip? PrimitiveType.TriangleStrip : PrimitiveType.TriangleList, 0, 0, verticesCount, 0, indicesCount / 3);
             pass.End();
          }
          effect.End();
 
          // Возвращаем FaceCulling в исходное положение
-         if (triangleStrip)
-            device.RenderState.CullMode = CullMode.CullCounterClockwiseFace;
+         //if (triangleStrip)
+         //   device.RenderState.CullMode = CullMode.CullCounterClockwiseFace;
       }
    }
 }

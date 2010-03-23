@@ -16,7 +16,7 @@ namespace GTAWorldRenderer.Rendering
       Camera camera;
       InfoPanelFor3Dview textInfoPanel;
       MouseState originalMouseState;
-      Effect effect;
+      Effect[] effect = new Effect[2];
       Matrix projectionMatrix;
 
       /*
@@ -49,8 +49,9 @@ namespace GTAWorldRenderer.Rendering
          textInfoPanel.Camera = camera;
          AddSubRenderer(textInfoPanel);
 
-         projectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, device.Viewport.AspectRatio, 0.1f, 200.0f);
-         effect = Content.Load<Effect>("effect");
+         projectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, device.Viewport.AspectRatio, 0.1f, 5000.0f);
+         effect[0] = Content.Load<Effect>("effect");
+         effect[1] = effect[0].Clone(device);
 
          Mouse.SetPosition(device.Viewport.Width / 2, device.Viewport.Height / 2);
          originalMouseState = Mouse.GetState();
@@ -65,24 +66,38 @@ namespace GTAWorldRenderer.Rendering
          ProcessKeyboard(gameTime, timeDifference);
       }
 
+      bool wasPressed = false;
 
       private void ProcessMouse(GameTime gameTime, float amount)
       {
          MouseState currentMouseState = Mouse.GetState();
-         if (currentMouseState != originalMouseState && currentMouseState.LeftButton == ButtonState.Pressed)
+         if (currentMouseState.LeftButton == ButtonState.Pressed)
          {
-            float xDifference = -currentMouseState.X + originalMouseState.X;
-            float yDifference = -currentMouseState.Y + originalMouseState.Y;
-            float leftrightRot = rotationSpeed * xDifference * amount;
-            float updownRot = rotationSpeed * yDifference * amount;
-            camera.UpdateRotation(leftrightRot, updownRot);
-         }
+            wasPressed = true;
+            if (currentMouseState != originalMouseState)
+            {
+               float xDifference = -currentMouseState.X + originalMouseState.X;
+               float yDifference = -currentMouseState.Y + originalMouseState.Y;
+               float leftrightRot = rotationSpeed * xDifference * amount;
+               float updownRot = rotationSpeed * yDifference * amount;
+               camera.UpdateRotation(leftrightRot, updownRot);
+            }
+         } else
+            if (wasPressed)
+            {
+               camera.FixRotation(); // TODO :: move it to camera!!!
+               wasPressed = false;
+            }
          Mouse.SetPosition(device.Viewport.Width / 2, device.Viewport.Height / 2);
       }
 
+      private int objectsToDraw = 1;
+      KeyboardState oldKeyboardState = Keyboard.GetState();
 
       private void ProcessKeyboard(GameTime gameTime, float amount)
       {
+         amount *= 50;
+
          Vector3 moveVector = new Vector3(0, 0, 0);
          KeyboardState keyState = Keyboard.GetState();
          if (keyState.IsKeyDown(Keys.Up))
@@ -97,6 +112,29 @@ namespace GTAWorldRenderer.Rendering
             moveVector += Vector3.Up;
          if (keyState.IsKeyDown(Keys.PageDown))
             moveVector += Vector3.Down;
+
+         if (!oldKeyboardState.IsKeyDown(Keys.A) && keyState.IsKeyDown(Keys.A))
+            if (objectsToDraw + 1 <= SceneContent.SceneObjects.Count)
+            {
+               ++objectsToDraw;
+               textInfoPanel.Data["Objects to draw"] = objectsToDraw;
+               textInfoPanel.Data["Last model"] = SceneContent.SceneObjects[objectsToDraw - 1].ModelFilename;
+            }
+
+         if (!oldKeyboardState.IsKeyDown(Keys.Z) && keyState.IsKeyDown(Keys.Z))
+            if (objectsToDraw - 1 >= 0)
+            {
+               --objectsToDraw;
+               textInfoPanel.Data["Objects to draw"] = objectsToDraw;
+               if (objectsToDraw > 0)
+                  textInfoPanel.Data["Last model"] = SceneContent.SceneObjects[objectsToDraw - 1].ModelFilename;
+            }
+
+         oldKeyboardState = keyState;
+
+         if (keyState.IsKeyDown(Keys.LeftShift) || keyState.IsKeyDown(Keys.RightShift))
+            moveVector *= 10;
+
          camera.UpdatePosition(moveVector * amount);
       }
 
@@ -108,12 +146,17 @@ namespace GTAWorldRenderer.Rendering
          if (SceneContent == null)
             return;
 
-         effect.Parameters["xView"].SetValue(camera.ViewMatrix);
-         effect.Parameters["xProjection"].SetValue(projectionMatrix);
 
 
-         for (int i = 0; i != 100; ++i)
-            SceneContent.SceneObjects[i].Model.Draw(effect, SceneContent.SceneObjects[i].WorldMatrix);
+
+         for (int i = 0; i != SceneContent.SceneObjects.Count; ++i)
+         {
+            effect[0].Parameters["xView"].SetValue(camera.ViewMatrix);
+            effect[0].Parameters["xProjection"].SetValue(projectionMatrix);
+            effect[1].Parameters["xView"].SetValue(camera.ViewMatrix);
+            effect[1].Parameters["xProjection"].SetValue(projectionMatrix);
+            SceneContent.SceneObjects[i].Model.Draw(effect[0], SceneContent.SceneObjects[i].WorldMatrix);
+         }
 
          //foreach (var obj in SceneContent.SceneObjects)
          //   obj.Model.Draw(effect, obj.WorldMatrix);
