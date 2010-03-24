@@ -286,7 +286,7 @@ namespace GTAWorldRenderer.Scenes
             for (var i = 0; i != verticesCount; ++i)
             {
                var x = input.ReadSingle();
-               var y = input.ReadSingle();
+               var y = input.ReadSingle(); // y and z coords are exchanged because of different coordinate system
                var z = input.ReadSingle();
                mesh.Vertices.Add(new Vector3(x, z, y));
             }
@@ -300,7 +300,7 @@ namespace GTAWorldRenderer.Scenes
             for (var i = 0; i != verticesCount; ++i)
             {
                var x = input.ReadSingle();
-               var y = input.ReadSingle();
+               var y = input.ReadSingle(); // y and z coords are exchanged because of different coordinate system
                var z = input.ReadSingle();
                mesh.Normals.Add(new Vector3(x, z, y));
             }
