@@ -1,3 +1,5 @@
+//#define FULL_SCREEN
+
 using System;
 using System.Globalization;
 using System.Threading;
@@ -6,6 +8,7 @@ using GTAWorldRenderer.Scenes;
 using Microsoft.Xna.Framework;
 using System.Diagnostics;
 using GTAWorldRenderer.Rendering;
+
 
 namespace GTAWorldRenderer
 {
@@ -20,10 +23,12 @@ namespace GTAWorldRenderer
          GraphicsDeviceHolder.DeviceManager = new GraphicsDeviceManager(this);
          Content.RootDirectory = "Content";
 
+#if FULL_SCREEN
          GraphicsDeviceHolder.DeviceManager.PreferredBackBufferHeight = 900;
          GraphicsDeviceHolder.DeviceManager.PreferredBackBufferHeight = 1440;
          GraphicsDeviceHolder.DeviceManager.IsFullScreen = true;
          GraphicsDeviceHolder.DeviceManager.ApplyChanges();
+#endif
 
          // настраиваем лог
          Log.Instance.AddLogWriter(new FileLogWriter("log.log"));

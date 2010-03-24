@@ -35,7 +35,6 @@ namespace GTAWorldRenderer.Scenes
    {
       public Matrix WorldMatrix { get; private set; }
       public Model3D Model { get; private set; }
-      public string ModelFilename { get; set; }
 
       public SceneObject(Model3D model, Matrix worldMatrix)
       {

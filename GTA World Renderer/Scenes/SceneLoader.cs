@@ -58,11 +58,9 @@ namespace GTAWorldRenderer.Scenes
                Scene scene = new Scene();
                var loadedModels = new Dictionary<string, Model3D>();
 
-               //var objs = new IPLFileLoader(@"c:\Program Files\GTAIII\data\maps\comntop\comNtop.ipl", GtaVersion.III).Load();
-               //foreach (var obj in objs)
-               //   objPlacements.Add(obj);
-
-               // TODO :: temporary code with absolute paths!!!
+               /*
+                  TODO :: temporary code with absolute paths!!!
+               */
                foreach (var obj in objPlacements)
                {
                   if (!obj.Name.StartsWith("LOD"))
@@ -73,7 +71,6 @@ namespace GTAWorldRenderer.Scenes
                   Matrix matrix = Matrix.CreateScale(obj.Scale) * Matrix.CreateFromQuaternion(obj.Rotation) * Matrix.CreateTranslation(obj.Position);
 
                   scene.SceneObjects.Add(new SceneObject(loadedModels[obj.Name], matrix));
-                  scene.SceneObjects[scene.SceneObjects.Count - 1].ModelFilename = obj.Name;
                }
 
                Logger.Print("Scene loaded!");
@@ -83,7 +80,6 @@ namespace GTAWorldRenderer.Scenes
 
                //scene.SceneObjects.Add(new SceneObject(new DffLoader(@"c:\home\tmp\root\LODders02.dff ").Load(), Matrix.Identity));
                //scene.SceneObjects.Add(new SceneObject(new DffLoader(@"c:\home\tmp\root\LOD_landnew2.dff ").Load(), Matrix.Identity));
-               
                //scene.SceneObjects.Add(new SceneObject(new DffLoader(@"c:\Program Files\GTAIII\models\Generic\arrow.DFF").Load(), Matrix.Identity));
 
                return scene;

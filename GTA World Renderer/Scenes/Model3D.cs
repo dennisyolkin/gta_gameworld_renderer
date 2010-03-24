@@ -46,7 +46,7 @@ namespace GTAWorldRenderer.Scenes
       private VertexBuffer vertexBuffer;
       private IndexBuffer indexBuffer;
       private int vertexSize;
-      private int indicesCount, verticesCount;
+      private int trianglesCount, verticesCount;
       private string effectTechnique;
       private bool triangleStrip;
 
@@ -61,7 +61,7 @@ namespace GTAWorldRenderer.Scenes
          this.effectTechnique = effectTechnique;
          this.triangleStrip = triangleStrip;
 
-         indicesCount = this.indexBuffer.SizeInBytes / sizeof(short);
+         trianglesCount = (this.indexBuffer.SizeInBytes / sizeof(short)) / 3;
          verticesCount = this.vertexBuffer.SizeInBytes / vertexSize;
       }
 
@@ -74,19 +74,6 @@ namespace GTAWorldRenderer.Scenes
       public void Draw(Effect effect, Matrix worldMatrix)
       {
          GraphicsDevice device = vertexDeclaration.GraphicsDevice;
-
-         /*
-          * TODO :: 
-          * Судя по всему, при TriangleStrip некоторые треугольники неправильно завёрнуты.
-          * Поэтому для того, чтобы все отрисовывалось корректно, для рисования TriangleStrip-мешей
-          * FaceCulling отключается.
-          */
-         //if (triangleStrip)
-         //   device.RenderState.CullMode = CullMode.None;
-         //device.RenderState.CullMode = CullMode.CullClockwiseFace;
-
-         bool one = indicesCount == 525;
-
          device.RenderState.CullMode = CullMode.None;
 
          effect.CurrentTechnique = effect.Techniques[effectTechnique];
@@ -98,15 +85,12 @@ namespace GTAWorldRenderer.Scenes
             device.VertexDeclaration = vertexDeclaration;
             device.Vertices[0].SetSource(vertexBuffer, 0, vertexSize);
             device.Indices = indexBuffer;
-
-            device.DrawIndexedPrimitives(triangleStrip? PrimitiveType.TriangleStrip : PrimitiveType.TriangleList, 0, 0, verticesCount, 0, indicesCount / 3);
+            device.DrawIndexedPrimitives(triangleStrip? PrimitiveType.TriangleStrip : PrimitiveType.TriangleList, 0, 0, verticesCount, 0, trianglesCount);
             pass.End();
          }
          effect.End();
-
-         // Возвращаем FaceCulling в исходное положение
-         //if (triangleStrip)
-         //   device.RenderState.CullMode = CullMode.CullCounterClockwiseFace;
       }
+
+
    }
 }

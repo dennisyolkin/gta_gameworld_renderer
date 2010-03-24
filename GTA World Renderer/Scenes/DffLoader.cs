@@ -316,8 +316,6 @@ namespace GTAWorldRenderer.Scenes
          /// </summary>
          private void ParseMaterialSplit(int sectionSize)
          {
-            //input.BaseStream.Seek(sectionSize, SeekOrigin.Current);
-            //return;
             int sectionEnd = (int)input.BaseStream.Position + sectionSize;
 
             // ParseMaterialSplit вызывается всегда после ParseGeometry, которая добавляет новый mesh в modelData
