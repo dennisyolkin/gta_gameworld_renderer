@@ -35,7 +35,7 @@ namespace GTAWorldRenderer.Scenes
       }
 
 
-      class ModelMeshData
+      public class ModelMeshData
       {
          public string Texture { get; set;}
          public List<Vector2> TextureCoords { get; set; }
