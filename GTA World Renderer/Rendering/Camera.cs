@@ -16,15 +16,13 @@ namespace GTAWorldRenderer.Rendering
       public float UpDownRotation { get; private set; }
       public Matrix ViewMatrix { get; private set; }
 
-      private Matrix rotationMatrix;
 
       public Camera()
       {
          Position = Vector3.Zero;
-         LeftRightRotation = MathHelper.Pi;
+         LeftRightRotation = 0.0f;
          UpDownRotation = 0.0f;
-         rotationMatrix = Matrix.CreateRotationY(LeftRightRotation);
-         UpdateViewMatrix();
+         ViewMatrix = Matrix.CreateLookAt(Vector3.Zero, Vector3.Forward, Vector3.Up);
       }
 
 
@@ -32,14 +30,13 @@ namespace GTAWorldRenderer.Rendering
       {
          LeftRightRotation += leftRight;
          UpDownRotation += upDown;
+
          UpdateViewMatrix();
       }
 
 
       public void UpdatePosition(Vector3 moveVector)
       {
-         //Matrix cameraRotation = rotationMatrix;
-         //cameraRotation *= Matrix.CreateRotationX(UpDownRotation) * Matrix.CreateRotationY(LeftRightRotation);
          Matrix cameraRotation = Matrix.CreateRotationX(UpDownRotation) * Matrix.CreateRotationY(LeftRightRotation);
          Vector3 rotatedVector = Vector3.Transform(moveVector, cameraRotation);
          Position += rotatedVector;
@@ -48,25 +45,10 @@ namespace GTAWorldRenderer.Rendering
       }
 
 
-      public void FixRotation()
-      {
-         //GTAWorldRenderer.Logging.Log.Instance.Print("Fix");
-         //Matrix newRotation = Matrix.CreateRotationX(UpDownRotation) * Matrix.CreateRotationY(LeftRightRotation);
-         //rotationMatrix *= newRotation;
-
-         //UpDownRotation = .0f;
-         //LeftRightRotation = .0f;
-
-         //UpdateViewMatrix();
-      }
-
-
       private void UpdateViewMatrix()
       {
-         //Matrix rotation = rotationMatrix;
-         //rotation *= Matrix.CreateRotationX(UpDownRotation) * Matrix.CreateRotationY(LeftRightRotation);
          Matrix rotation = Matrix.CreateRotationX(UpDownRotation) * Matrix.CreateRotationY(LeftRightRotation);
-         Vector3 target = Vector3.Transform(Vector3.Forward, rotation) + Position;
+         Vector3 target = Vector3.Transform(new Vector3(0, 0, -1), rotation) + Position;
          Vector3 up = Vector3.Transform(Vector3.Up, rotation);
 
          ViewMatrix = Matrix.CreateLookAt(Position, target, up);
@@ -75,4 +57,3 @@ namespace GTAWorldRenderer.Rendering
 
    }
 }
-
