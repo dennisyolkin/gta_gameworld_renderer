@@ -37,7 +37,7 @@ namespace GTAWorldRenderer.Scenes
 
       public class ModelMeshData
       {
-         public string Texture { get; set;}
+         public List<string> Textures { get; set;}
          public List<Vector2> TextureCoords { get; set; }
          public List<short> Indices { get; set; }
          public List<Vector3> Vertices { get; set; }
@@ -46,7 +46,7 @@ namespace GTAWorldRenderer.Scenes
 
          public ModelMeshData()
          {
-            Texture = null;
+            Textures = new List<string>();
          }
 
 
@@ -56,10 +56,10 @@ namespace GTAWorldRenderer.Scenes
             {
                Func<IList, string> ToStr = x => (x == null ? "no" : x.Count.ToString());
 
-               return String.Format("Vertices: {0}, Triangles: {1}, Texture: {2}",
+               return String.Format("Vertices: {0}, Triangles: {1}, Textures: {2}",
                   ToStr(Vertices),
                   Indices == null ? "no" : (Indices.Count / 3).ToString(), // TODO :: не учитывается TrianglesStrip
-                  Texture?? "no texture"
+                  Textures.Count
                   );
             }
          }

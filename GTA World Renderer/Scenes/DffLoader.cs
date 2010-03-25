@@ -107,10 +107,7 @@ namespace GTAWorldRenderer.Scenes
                      ProcessRenderwareSection(header.SectionSize, 0, header.SectionType);
                   }
                }
-
                Log.Instance.Print("Model loaded!");
-               foreach (var info in modelData.Info)
-                  Log.Instance.Print(info);
 
                return Model3dFactory.CreateModel(modelData);
             }
@@ -177,16 +174,18 @@ namespace GTAWorldRenderer.Scenes
 
          private void ParseStringSection(int size, SectionType parentType)
          {
-            string data = Encoding.ASCII.GetString(input.ReadBytes(size));
+            byte[] data = input.ReadBytes(size);
             if (parentType == SectionType.Texture)
             {
-               if (data.Length > 0)
-               {
-                  //model.Textures[model.Textures.Count - 1] = data;
-               } else 
-               {
-                  Log.Instance.Print("String section of texture information is empty", MessageType.Warning);
-               }
+               int len = Array.IndexOf(data, (byte)0);
+               if (len == -1)
+                  len = data.Length;
+               if (len == 0)
+                  return;
+
+               string texture = Encoding.ASCII.GetString(data, 0, len);
+               ModelMeshData mesh = modelData.Meshes[modelData.Meshes.Count - 1];
+               mesh.Textures.Add(texture);
             }
          }
 
