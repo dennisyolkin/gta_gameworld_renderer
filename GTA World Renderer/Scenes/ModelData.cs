@@ -58,7 +58,7 @@ namespace GTAWorldRenderer.Scenes
 
                return String.Format("Vertices: {0}, Triangles: {1}, Textures: {2}",
                   ToStr(Vertices),
-                  Indices == null ? "no" : (Indices.Count / 3).ToString(), // TODO :: не учитывается TrianglesStrip
+                  Indices == null ? "no" : Indices.Count.ToString(),
                   Textures.Count
                   );
             }
