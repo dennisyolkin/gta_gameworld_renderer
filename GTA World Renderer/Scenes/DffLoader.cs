@@ -7,6 +7,7 @@ using GTAWorldRenderer.Logging;
 using Microsoft.Xna.Framework;
 using System.Diagnostics;
 using System.Collections;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace GTAWorldRenderer.Scenes
 {
@@ -217,12 +218,7 @@ namespace GTAWorldRenderer.Scenes
                Log.Instance.Print("Multiple TexCoords sets are provided but used only the first of it!", MessageType.Warning);
 
             if ((flags & GeometrySectionFlags.HasColorInfo) != GeometrySectionFlags.None)
-            {
-               // ignoring color info
-               // TODO :: we can use it for rendering, if there is no texture
-               input.BaseStream.Seek(4 * verticesCount, SeekOrigin.Current);
-               Log.Instance.Print("Ignoring color info", MessageType.Warning);
-            }
+               ReadColots(mesh, verticesCount);
 
             if ((flags & GeometrySectionFlags.HasTextureCoords) != GeometrySectionFlags.None)
                ReadTextureCoords(mesh, verticesCount);
@@ -238,6 +234,20 @@ namespace GTAWorldRenderer.Scenes
                ReadNormals(mesh, verticesCount);
 
             modelData.Meshes.Add(mesh);
+         }
+
+
+         private void ReadColots(ModelMeshData mesh, int verticesCount)
+         {
+            mesh.Colors = new List<Color>(verticesCount);
+            for (int i = 0; i != verticesCount; ++i)
+            {
+               byte r = input.ReadByte();
+               byte g = input.ReadByte();
+               byte b = input.ReadByte();
+               byte a = input.ReadByte();
+               mesh.Colors.Add(new Color(r, g, b, a));
+            }
          }
 
 

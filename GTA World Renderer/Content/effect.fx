@@ -9,12 +9,14 @@ struct VertexShaderInput
 {
     float4 Position  : POSITION;
     float3 Normal    : NORMAL0;
+    float4 Color     : COLOR0;
 };
 
 struct VertexShaderOutput
 {
     float4 Position        : POSITION;
     float LightingFactor   : TEXCOORD1;
+    float4 Color           : COLOR0;
 };
 
 VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
@@ -29,12 +31,14 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
    float3 lightVector = normalize(LightSource - worldPosition);
    output.LightingFactor = saturate(dot(input.Normal, lightVector));
 
+   output.Color = input.Color;
+
    return output;
 }
 
 float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 {
-   float4 color = float4(0, 1, 0, 1);
+   float4 color = input.Color;
    color.rgb *= (input.LightingFactor + AmbientLight);
    return color;
 }
@@ -43,7 +47,7 @@ technique Default
 {
     pass Pass1
     {
-        VertexShader = compile vs_1_1 VertexShaderFunction();
-        PixelShader = compile ps_1_1 PixelShaderFunction();
+        VertexShader = compile vs_2_0 VertexShaderFunction();
+        PixelShader = compile ps_2_0 PixelShaderFunction();
     }
 }

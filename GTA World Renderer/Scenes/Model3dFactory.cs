@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using GTAWorldRenderer.Scenes.VertexFormats;
+using System.Collections.Generic;
 
 namespace GTAWorldRenderer.Scenes
 {
@@ -8,6 +9,12 @@ namespace GTAWorldRenderer.Scenes
 
       static class Model3dFactory
       {
+
+         /*
+          * На первый взгляд (при тестировании в LOD-варианте) показалось, что цвета довольно бесполезны.
+          * Константа позволяет отключить использование заданных цветов и заполнять все подели константным цветом
+          */
+         const bool IgnoreModelColors = true;
 
          public static ModelMesh3D CreateModelMesh(ModelMeshData mesh)
          {
@@ -19,12 +26,20 @@ namespace GTAWorldRenderer.Scenes
             if (mesh.Normals == null)
                GeometryUtils.EvaluateNormals(mesh);
 
+            if (mesh.Colors == null || IgnoreModelColors)
+            {
+               // TODO :: временное решение. В дальнейшем либо у модели есть цвета вершин, либо текстура. Не придётся заполнять цвета вручную
+               mesh.Colors = new List<Color>(mesh.Vertices.Count);
+               for (int i = 0; i != mesh.Vertices.Count; ++i)
+                  mesh.Colors.Add(Color.Green);
+            }
+
             // создаём VertexBuffer
-            VertexPositionNormalFormat[] vertices = new VertexPositionNormalFormat[mesh.Vertices.Count];
+            VertexPositionNormalColorFormat[] vertices = new VertexPositionNormalColorFormat[mesh.Vertices.Count];
             for (var i = 0; i != mesh.Vertices.Count; ++i)
-               vertices[i] = new VertexPositionNormalFormat(mesh.Vertices[i], mesh.Normals[i]);
+               vertices[i] = new VertexPositionNormalColorFormat(mesh.Vertices[i], mesh.Normals[i], mesh.Colors[i]);
             VertexBuffer vertexBuffer = new VertexBuffer(GraphicsDeviceHolder.Device,
-               mesh.Vertices.Count * VertexPositionNormalFormat.SizeInBytes, BufferUsage.WriteOnly);
+               mesh.Vertices.Count * VertexPositionNormalColorFormat.SizeInBytes, BufferUsage.WriteOnly);
             vertexBuffer.SetData(vertices);
 
             // создаём IndexBuffer
@@ -32,8 +47,8 @@ namespace GTAWorldRenderer.Scenes
                BufferUsage.WriteOnly, IndexElementSize.SixteenBits);
             indexBuffer.SetData(mesh.Indices.ToArray());
 
-            return new ModelMesh3D(new VertexDeclaration(GraphicsDeviceHolder.Device, VertexPositionNormalFormat.VertexElements),
-               vertexBuffer, indexBuffer, mesh.TriangleStrip, VertexPositionNormalFormat.SizeInBytes, "Default");
+            return new ModelMesh3D(new VertexDeclaration(GraphicsDeviceHolder.Device, VertexPositionNormalColorFormat.VertexElements),
+               vertexBuffer, indexBuffer, mesh.TriangleStrip, VertexPositionNormalColorFormat.SizeInBytes, "Default");
          }
 
 

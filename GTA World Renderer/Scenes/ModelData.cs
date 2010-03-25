@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using System.Collections;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace GTAWorldRenderer.Scenes
 {
@@ -42,6 +43,7 @@ namespace GTAWorldRenderer.Scenes
          public List<short> Indices { get; set; }
          public List<Vector3> Vertices { get; set; }
          public List<Vector3> Normals { get; set; }
+         public List<Color> Colors { get; set; }
          public bool TriangleStrip { get; set; }
 
          public ModelMeshData()
