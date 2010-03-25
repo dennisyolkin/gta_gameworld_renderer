@@ -115,24 +115,25 @@ namespace GTAWorldRenderer.Scenes
             obj.Id = Int32.Parse(toks[0]);
             obj.Name = toks[1];
             obj.Scale = Vector3.One;
-            
+
+            // y and z coords are exchanged because of different coordinate system !!!
             switch (gtaVersion) 
             {
                case GtaVersion.III:
-                  obj.Position = new Vector3(float.Parse(toks[2]), float.Parse(toks[4]), float.Parse(toks[3])); // y and z coords are exchanged because of different coordinate system
+                  obj.Position = new Vector3(float.Parse(toks[2]), float.Parse(toks[4]), float.Parse(toks[3]));
                   obj.Scale = new Vector3(float.Parse(toks[5]), float.Parse(toks[6]), float.Parse(toks[7]));
-                  obj.Rotation = new Quaternion(float.Parse(toks[8]), float.Parse(toks[9]), float.Parse(toks[10]), float.Parse(toks[11]));
+                  obj.Rotation = new Quaternion(float.Parse(toks[8]), float.Parse(toks[10]), float.Parse(toks[9]), float.Parse(toks[11]));
                   break;
 
                case GtaVersion.ViceCity:
-                  obj.Position = new Vector3(float.Parse(toks[3]), float.Parse(toks[4]), float.Parse(toks[5]));
+                  obj.Position = new Vector3(float.Parse(toks[3]), float.Parse(toks[5]), float.Parse(toks[4]));
                   obj.Scale = new Vector3(float.Parse(toks[6]), float.Parse(toks[7]), float.Parse(toks[8]));
-                  obj.Rotation = new Quaternion(float.Parse(toks[9]), float.Parse(toks[10]), float.Parse(toks[11]), float.Parse(toks[12]));
+                  obj.Rotation = new Quaternion(float.Parse(toks[9]), float.Parse(toks[11]), float.Parse(toks[10]), float.Parse(toks[12]));
                   break;
 
                case GtaVersion.SanAndreas:
-                  obj.Position = new Vector3(float.Parse(toks[3]), float.Parse(toks[4]), float.Parse(toks[5]));
-                  obj.Rotation = new Quaternion(float.Parse(toks[6]), float.Parse(toks[7]), float.Parse(toks[8]), float.Parse(toks[9]));
+                  obj.Position = new Vector3(float.Parse(toks[3]), float.Parse(toks[5]), float.Parse(toks[4]));
+                  obj.Rotation = new Quaternion(float.Parse(toks[6]), float.Parse(toks[8]), float.Parse(toks[7]), float.Parse(toks[9]));
                   // toks[10] -- LOD -- is temporary ignored
                   break;
             }
