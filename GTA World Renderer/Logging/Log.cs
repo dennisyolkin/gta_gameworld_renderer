@@ -116,6 +116,7 @@ namespace GTAWorldRenderer.Logging
       private void LeaveStage()
       {
          --indent;
+         Flush();
       }
 
 
@@ -123,7 +124,7 @@ namespace GTAWorldRenderer.Logging
       {
          --indent;
          Print(String.Format("-> {0}: done in {1:f3} sec.", stageName, time.TotalSeconds));
-         Flush(); // Предполагается, что TimingStage будут создаваться не так часто, чтобы это стало проблемой. А вывод (время) должно сразу оказаться в логе.
+         Flush();
       }
 
 
