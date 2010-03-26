@@ -37,7 +37,7 @@ namespace GTAWorldRenderer.Logging
          AllocConsole();
          Console.Title = "GTA GameWorld Renderer. Console logger.";
          Console.BufferWidth = 100;
-         Console.BufferHeight = 500;
+         Console.BufferHeight = 5000;
          Console.WindowWidth = 100;
          Console.WindowHeight = 40;
 
