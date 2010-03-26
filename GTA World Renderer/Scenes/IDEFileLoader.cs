@@ -54,9 +54,9 @@ namespace GTAWorldRenderer.Scenes
                      }
                   }
                }
+               Logger.Print(String.Format("Loaded {0} scene object definitions from IDE file {1}", objects.Count, filePath));
             }
 
-            Logger.Print(String.Format("Loaded {0} scene object definitions from IDE file {1}", objects.Count, filePath));
             return objects;
          }
 

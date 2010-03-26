@@ -51,6 +51,33 @@ namespace GTAWorldRenderer.Logging
          }
       }
 
+
+      /// <summary>
+      /// Представляет "стадию" в процессе загрузки и построения игрового мира.
+      /// При вызове Dispose предполагается завершение текущей стадии.
+      /// При этом в лог будет записано название стадии и время её выполнения
+      /// </summary>
+      public class TimingStage : IDisposable
+      {
+         public delegate void EndTimingStageDelegate(string stageName, TimeSpan time);
+
+         EndTimingStageDelegate onEndStage;
+         string stageName;
+         DateTime startTime;
+
+         public TimingStage(string stageName, EndTimingStageDelegate onEndStage)
+         {
+            this.onEndStage = onEndStage;
+            this.stageName = stageName;
+            this.startTime = DateTime.Now;
+         }
+
+         public void Dispose()
+         {
+            onEndStage(stageName, DateTime.Now.Subtract(startTime));
+         }
+      }
+
       // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
 
       private static Log instance = new Log();
@@ -78,9 +105,25 @@ namespace GTAWorldRenderer.Logging
       }
 
 
+      public TimingStage EnterTimingStage(string stageName)
+      {
+         Print(stageName + " ...");
+         ++indent;
+         return new TimingStage(stageName, new TimingStage.EndTimingStageDelegate(LeaveStage));
+      }
+
+
       private void LeaveStage()
       {
          --indent;
+      }
+
+
+      private void LeaveStage(string stageName, TimeSpan time)
+      {
+         --indent;
+         Print(String.Format("-> {0}: done in {1:f3} sec.", stageName, time.TotalSeconds));
+         Flush(); // Предполагается, что TimingStage будут создаваться не так часто, чтобы это стало проблемой. А вывод (время) должно сразу оказаться в логе.
       }
 
 

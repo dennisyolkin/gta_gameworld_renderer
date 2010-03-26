@@ -73,9 +73,9 @@ namespace GTAWorldRenderer.Scenes
                      }
                   }
                }
+               Logger.Print(String.Format("Loaded {0} scene objects from IPL file {1}", objects.Count, filePath));
             }
 
-            Logger.Print(String.Format("Loaded {0} scene objects from IPL file {1}", objects.Count, filePath));
             return objects;
          }
 

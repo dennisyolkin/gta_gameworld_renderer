@@ -44,7 +44,7 @@ namespace GTAWorldRenderer.Scenes
 
       public Scene LoadScene()
       {
-         using (Logger.EnterStage("Loading scene"))
+         using (Logger.EnterTimingStage("Loading scene"))
          {
             try
             {
@@ -77,6 +77,7 @@ namespace GTAWorldRenderer.Scenes
                Logger.PrintStatistic();
                Logger.Print("Objects located on scene: " + scene.SceneObjects.Count);
                Logger.Flush();
+
 
                //scene.SceneObjects.Add(new SceneObject(new DffLoader(@"c:\home\tmp\root\LODders02.dff ").Load(), Matrix.Identity));
                //scene.SceneObjects.Add(new SceneObject(new DffLoader(@"c:\home\tmp\root\LOD_landnew2.dff ").Load(), Matrix.Identity));
