@@ -51,9 +51,6 @@ namespace GTAWorldRenderer
 
       protected override void LoadContent()
       {
-         Log.Instance.PrintStatistic();
-         GC.Collect();
-
          renderer3d = new SceneRenderer3D(Content, new SceneLoader().LoadScene());
       }
 

@@ -108,7 +108,6 @@ namespace GTAWorldRenderer.Scenes
                      ProcessRenderwareSection(header.SectionSize, 0, header.SectionType);
                   }
                }
-               Log.Instance.Print("Model loaded!");
 
                return Model3dFactory.CreateModel(modelData);
             }
@@ -339,12 +338,10 @@ namespace GTAWorldRenderer.Scenes
             if (triangleStrip == 0)
             {
                // пока что секция MaterialSplit используется только для TriangleStrip
-               Log.Instance.Print("MaterialSplit section is provided but ignored because TriangleStrip = 0");
+               //Log.Instance.Print("MaterialSplit section is provided but ignored because TriangleStrip = 0");
                input.BaseStream.Seek(sectionEnd, SeekOrigin.Begin);
                return;
             }
-
-            Log.Instance.Print("Using TriangleStrip for this mesh!");
 
             // не знаю пока, как обрабатывать такую ситуацию
             if (splitCount != 1)
