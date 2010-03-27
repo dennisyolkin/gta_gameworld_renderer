@@ -5,5 +5,11 @@
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:schemaLocation="schema.xsd"
    >
+   
    <GtaFolder>c:\Program Files\GTAIII\</GtaFolder>
+   
+   <LoadingParams>
+      <ShowWarningsIfTextureNotFound>false</ShowWarningsIfTextureNotFound>
+   </LoadingParams>
+   
 </GlobalConfig>

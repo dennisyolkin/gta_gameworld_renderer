@@ -9,7 +9,14 @@
    <xsd:complexType name="GlobalConfigType">
       <xsd:sequence>
          <xsd:element name="GtaFolder" type="xsd:string"/>
+         <xsd:element name="LoadingParams" type="LoadingParamsType"/>
       </xsd:sequence>
    </xsd:complexType>
 
+   <xsd:complexType name="LoadingParamsType">
+      <xsd:sequence>
+         <xsd:element name="ShowWarningsIfTextureNotFound" type="xsd:boolean"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   
 </xsd:schema>

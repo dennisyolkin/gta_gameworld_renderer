@@ -113,6 +113,7 @@
     <Compile Include="Scenes\SceneLoader.cs" />
     <Compile Include="Scenes\SceneObjectDefinition.cs" />
     <Compile Include="Scenes\LoadersTests.cs" />
+    <Compile Include="Scenes\TexturesStorage.cs" />
     <Compile Include="Scenes\TXDArchive.cs" />
     <Compile Include="Scenes\VertexFormats.cs" />
   </ItemGroup>

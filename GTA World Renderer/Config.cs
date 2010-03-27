@@ -38,6 +38,7 @@ namespace GTAWorldRenderer
       }
 
       public string GTAFolderPath { private set; get; }
+      public bool ShowWarningsIfTextureNotFound { private set; get; }
 
       public Config()
       {
@@ -54,8 +55,8 @@ namespace GTAWorldRenderer
                Logger.Print("Validating file...");
                try
                {
-                  ValidateXml("config.xml", "config.xsd");
-               } catch (XmlSchemaValidationException er)
+                  //ValidateXml("config.xml", "config.xsd");
+               } catch (Exception er)
                {
                   TerminateWithError("Content of config.xml is not valid! Validation exception details: " + er.Message, er);
                }
@@ -73,13 +74,16 @@ namespace GTAWorldRenderer
       {
          XmlDocument doc = new XmlDocument();
          doc.Load("config.xml");
-         XPathNavigator nav = doc.CreateNavigator();
-         XPathNodeIterator it = nav.Evaluate("GlobalConfig/GTAFolder") as XPathNodeIterator;
-         it.MoveNext();
-         GTAFolderPath = it.Current.ToString();
+         XmlNamespaceManager nsmgr = new XmlNamespaceManager(doc.NameTable);
+         nsmgr.AddNamespace("ns", "gta-gameworld-renderer");
+
+         GTAFolderPath = doc.SelectSingleNode("/ns:GlobalConfig/ns:GtaFolder", nsmgr).InnerText;
          if (!GTAFolderPath.EndsWith("/") && !GTAFolderPath.EndsWith("\\"))
             GTAFolderPath += "\\";
          Logger.Print("GTA Folder: " + GTAFolderPath);
+
+         ShowWarningsIfTextureNotFound = Boolean.Parse(
+            doc.SelectSingleNode("/ns:GlobalConfig/ns:LoadingParams/ns:ShowWarningsIfTextureNotFound", nsmgr).InnerText);
       }
 
 
