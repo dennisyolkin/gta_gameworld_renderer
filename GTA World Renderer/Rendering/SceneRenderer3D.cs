@@ -118,7 +118,6 @@ namespace GTAWorldRenderer.Rendering
 
          if (KeyPressed(Keys.Escape))
          {
-            GTAWorldRenderer.Logging.Log.Instance.Print("Escape pressed!");
             usingMouse = !usingMouse;
             if (usingMouse)
                Mouse.SetPosition(device.Viewport.Width / 2, device.Viewport.Height / 2);
