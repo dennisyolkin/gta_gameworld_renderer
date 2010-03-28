@@ -81,39 +81,48 @@ namespace GTAWorldRenderer.Scenes.Loaders
       }
 
 
-      private string fileName;
+      private string modelName;
       private string texturesFolder;
       BinaryReader input;
       ModelData modelData = new ModelData();
 
       public DffLoader(string fileName)
       {
-         this.fileName = fileName;
+         this.modelName = fileName;
+         input = new BinaryReader(new FileStream(fileName, FileMode.Open));
       }
 
       // TODO :: after upgrade to C# 4.0 make default-value parameter
       public DffLoader(string fileName, string texturesFolder)
       {
-         this.fileName = fileName;
+         this.modelName = fileName;
          this.texturesFolder = texturesFolder;
+         input = new BinaryReader(new FileStream(fileName, FileMode.Open));
+      }
+
+
+      // TODO :: after upgrade to C# 4.0 make default-value parameter
+      public DffLoader(byte[] data, string modelName, string texturesFolder)
+      {
+         this.modelName = modelName;
+         this.texturesFolder = texturesFolder;
+         input = new BinaryReader(new MemoryStream(data));
       }
 
 
       public ModelData Load()
       {
-         using (Log.Instance.EnterStage("Loading model from DFF file: " + fileName))
+         using (Log.Instance.EnterStage("Loading model from DFF file: " + modelName))
          {
-            using (input = new BinaryReader(new FileStream(fileName, FileMode.Open)))
+            // К сожалению, в GTA III есть dff-файлы размера 0
+            if (input.BaseStream.Length > 0)
             {
-               // К сожалению, в GTA III есть dff-файлы размера 0
-               if (input.BaseStream.Length > 0)
-               {
-                  SectionHeader header = new SectionHeader();
-                  header.Read(input);
-                  ProcessRenderwareSection(header.SectionSize, 0, header.SectionType);
-               }
+               SectionHeader header = new SectionHeader();
+               header.Read(input);
+               ProcessRenderwareSection(header.SectionSize, 0, header.SectionType);
             }
 
+            input.Close();
             return modelData;
          }
       }

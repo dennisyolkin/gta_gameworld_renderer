@@ -4,12 +4,26 @@ using GTAWorldRenderer.Logging;
 using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using GTAWorldRenderer.Scenes.ArchivesCommon;
 
 namespace GTAWorldRenderer.Scenes.Loaders
 {
 
    class SceneLoader
    {
+
+      class ModelEntry
+      {
+         public ArchiveEntry ArchiveEntry { get; private set; }
+         public Model3D Model{ get; set; }
+
+         public ModelEntry(ArchiveEntry archiveEntry)
+         {
+            this.ArchiveEntry = archiveEntry;
+         }
+      }
+
+
       private static Log Logger = Log.Instance;
       private GtaVersion gtaVersion;
       private Dictionary<int, SceneItemDefinition> objDefinitions = new Dictionary<int, SceneItemDefinition>();
@@ -25,36 +39,52 @@ namespace GTAWorldRenderer.Scenes.Loaders
                System.Environment.CurrentDirectory = Config.Instance.GTAFolderPath;
 
                gtaVersion = GetGtaVersion();
+
+               var loadedModels = new Dictionary<string, ModelEntry>();
+
+               string mainImgPath = Config.Instance.GTAFolderPath + "models/gta3.img";
+               var loadedArchiveEntries = LoadMainImgArchive(mainImgPath);
+               foreach (var item in loadedArchiveEntries)
+                  loadedModels[item.Name.Substring(0, item.Name.Length - 4)] = new ModelEntry(item); // берём название модели без расширения .dff
+
                LoadDatFile("data/default.dat");
                LoadDatFile(GetVersionSpecificDatFile(gtaVersion));
 
                Scene scene = new Scene();
-               var loadedModels = new Dictionary<string, Model3D>();
                int missedIDEs = 0;
 
-               /*
-                  TODO :: temporary code with absolute paths!!!
-               */
                foreach (var obj in objPlacements)
                {
                   if (!obj.Name.StartsWith("LOD"))
                      continue;
-                  string textureFolder = null;
+
                   if (!loadedModels.ContainsKey(obj.Name))
+                     Utils.TerminateWithError("Model " + obj.Name + " is not loaded because it is not found");
+
+                  string textureFolder = null;
+                  var modelEntry = loadedModels[obj.Name];
+                  if (modelEntry.Model == null)
                   {
                      if (objDefinitions.ContainsKey(obj.Id))
                         textureFolder = objDefinitions[obj.Id].TextureFolder;
                      else
                         ++missedIDEs;
 
-                     var dffPath = @"c:\home\tmp\root\" + obj.Name + ".dff";
-                     var modelData = new DffLoader(dffPath, textureFolder).Load();
+                     // TODO :: Refactor it! Open file on every operation is not a good idea!
+                     byte[] binDffData;
+                     using (BinaryReader reader = new BinaryReader(new FileStream(mainImgPath, FileMode.Open)))
+                     {
+                        reader.BaseStream.Seek(modelEntry.ArchiveEntry.Offset, SeekOrigin.Begin);
+                        binDffData = reader.ReadBytes(modelEntry.ArchiveEntry.Size);
+                     }
+                     var modelData = new DffLoader(binDffData, modelEntry.ArchiveEntry.Name, textureFolder).Load();
+
                      var model = Model3dFactory.CreateModel(modelData);
-                     loadedModels[obj.Name] = model;
+                     modelEntry.Model = model;
                   }
 
                   Matrix matrix = Matrix.CreateScale(obj.Scale) * Matrix.CreateFromQuaternion(obj.Rotation) * Matrix.CreateTranslation(obj.Position);
-                  scene.SceneObjects.Add(new SceneObject(loadedModels[obj.Name], matrix));
+                  scene.SceneObjects.Add(new SceneObject(modelEntry.Model, matrix));
                }
 
                if (missedIDEs != 0)
@@ -82,6 +112,31 @@ namespace GTAWorldRenderer.Scenes.Loaders
                throw;
             }
          }
+      }
+
+
+      private List<ArchiveEntry> LoadMainImgArchive(string path)
+      {
+         IMGArchive archive = new IMGArchive(path, gtaVersion);
+         var items = archive.Load();
+         var result = new List<ArchiveEntry>();
+         
+         using (BinaryReader reader = new BinaryReader(new FileStream(path, FileMode.Open)))
+         {
+            foreach (var item in items)
+            {
+               if (item.Name.EndsWith(".dff"))
+                  result.Add(item);
+               else if (item.Name.EndsWith(".txd"))
+               {
+                  reader.BaseStream.Seek(item.Offset, SeekOrigin.Begin);
+                  byte[] data = reader.ReadBytes(item.Size);
+                  TexturesStorage.Instance.AddTexturesArchive(data, item.Name, path, item.Offset);
+               }
+            }
+         }
+         
+         return result;
       }
 
 
@@ -144,9 +199,7 @@ namespace GTAWorldRenderer.Scenes.Loaders
 
                   if (line.StartsWith("TEXDICTION"))
                   {
-                     // Device->getFileSystem()->registerFileArchive(inStr.subString(11, inStr.size() - 11), true, false); // " 11 = "TEXDICTION "
-                     Logger.Print("TEXDICTION: not implemented yet", MessageType.Warning);
-                     Logger.Print(line);
+                     TexturesStorage.Instance.AddTexturesArchive(line.Substring("TEXDICTION ".Length));
                   }
                   else if (line.StartsWith("IDE"))
                   {

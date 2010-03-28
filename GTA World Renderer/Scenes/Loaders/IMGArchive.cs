@@ -80,7 +80,7 @@ namespace GTAWorldRenderer.Scenes.Loaders
             while (nameLen > 0 && name[nameLen - 1] == 0)
                --nameLen;
 
-            ArchiveEntry entry = new ArchiveEntry(Encoding.ASCII.GetString(name, 0, nameLen), pos, length);
+            ArchiveEntry entry = new ArchiveEntry(filePath, Encoding.ASCII.GetString(name, 0, nameLen), pos, length);
             files.Add(entry);
          }
       }

@@ -6,8 +6,9 @@ namespace GTAWorldRenderer.Scenes.ArchivesCommon
       /// </summary>
       public class ArchiveEntry
       {
-         public ArchiveEntry(string name, int offset, int size)
+         public ArchiveEntry(string archiveFilePath, string name, int offset, int size)
          {
+            ArchiveFilePath = archiveFilePath;
             Name = name;
             Offset = offset;
             Size = size;
@@ -16,6 +17,7 @@ namespace GTAWorldRenderer.Scenes.ArchivesCommon
          public string Name { get; private set; }
          public int Offset { get; private set; }
          public int Size { get; private set; }
+         public string ArchiveFilePath { get; private set; }
       }
    
 }

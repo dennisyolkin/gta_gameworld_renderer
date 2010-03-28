@@ -27,31 +27,54 @@ namespace GTAWorldRenderer.Scenes.Loaders
       }
 
       private BinaryReader fin;
-      private string txdName, filePath;
+      private string txdName, txdArchiveFileName, sourceArchiveFilePath;
+      int offsetInFile = 0;
+
       private List<ArchiveEntry> files = new List<ArchiveEntry>();
 
-
+      /// <summary>
+      /// Сохдаёт загрузчик TXD архива
+      /// </summary>
+      /// <param name="filePath">Путь к файлу-архиву</param>
       public TXDArchive(string filePath)
       {
-         this.filePath = filePath;
+         txdArchiveFileName = filePath;
+         sourceArchiveFilePath = filePath;
+         txdName = Path.GetFileNameWithoutExtension(filePath);
+         fin = new BinaryReader(new FileStream(filePath, FileMode.Open));
+      }
+
+      /// <summary>
+      /// Сохдаёт загрузчик TXD архива из массива байт.
+      /// Чтение из файла не производится! Имя файла нужно только для протаскивания во все ArchiveEntry
+      /// </summary>
+      /// <param name="data">Данные txd-архива</param>
+      /// <param name="txdArchiveFileName">Имя TXD архива</param>
+      /// <param name="sourceArchivePath">Имя исходного файла-архива, из которого был извлечён этот txd-архив. Будет протаскиваться во все ArchiveEntry</param>
+      /// <param name="offsetInFile">Смещение в исходном файле, по которому начинается этот txd архив</param>
+      public TXDArchive(byte[] data, string txdArchiveFileName, string sourceArchivePath, int offsetInFile)
+      {
+         this.txdArchiveFileName = txdArchiveFileName;
+         this.sourceArchiveFilePath = sourceArchivePath;
+         this.offsetInFile = offsetInFile;
+         txdName = Path.GetFileNameWithoutExtension(txdArchiveFileName);
+         fin = new BinaryReader(new MemoryStream(data));
       }
 
 
       public IEnumerable<ArchiveEntry> Load()
       {
-         using (Log.Instance.EnterStage("Loading TXD archive: " + filePath))
+         using (Log.Instance.EnterStage("Loading TXD archive: " + txdName))
          {
-            txdName = Path.GetFileNameWithoutExtension(filePath);
-            using (fin = new BinaryReader(new FileStream(filePath, FileMode.Open)))
-            {
-               // There is only one root node in file, read it
-               SectionType sectionType = (SectionType)fin.ReadInt32();
-               int sectionSize = fin.ReadInt32();
-               fin.BaseStream.Seek(4, SeekOrigin.Current);
+            // There is only one root node in file, read it
+            SectionType sectionType = (SectionType)fin.ReadInt32();
+            int sectionSize = fin.ReadInt32();
+            fin.BaseStream.Seek(4, SeekOrigin.Current);
 
-               // Now we can recursively read all the tree
-               ParseSection(sectionSize, sectionType);
-            }
+            // Now we can recursively read all the tree
+            ParseSection(sectionSize, sectionType);
+
+            fin.Close();
 
             Log.Instance.Print(String.Format("Loaded {0} entries", files.Count));
             return files;
@@ -116,10 +139,10 @@ namespace GTAWorldRenderer.Scenes.Loaders
             return txdName + "/" + (Encoding.ASCII.GetString(name, 0, nameLen) + ".gtatexture").ToLower();
          };
 
-         files.Add(new ArchiveEntry(ToFullName(diffuseTextureName), position, size));
+         files.Add(new ArchiveEntry(sourceArchiveFilePath, ToFullName(diffuseTextureName), position + offsetInFile, size));
 
          if (alphaTextureName[0] != 0)
-            files.Add(new ArchiveEntry(ToFullName(alphaTextureName), position, size));
+            files.Add(new ArchiveEntry(sourceArchiveFilePath, ToFullName(alphaTextureName), position + offsetInFile, size));
       }
 
    }
