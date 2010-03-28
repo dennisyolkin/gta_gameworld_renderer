@@ -145,7 +145,7 @@ namespace GTAWorldRenderer.Scenes.Loaders
          {
             switch (header.RasterFormat)
             {
-               case RasterFormat.R5_G5_B5_A1: // TODO :: раньше было DXT1
+               case RasterFormat.R5_G5_B5_A1:
                   format = SurfaceFormat.Bgra5551;
                   break;
 
