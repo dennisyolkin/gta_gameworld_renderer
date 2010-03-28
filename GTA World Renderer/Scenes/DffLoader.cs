@@ -230,7 +230,7 @@ namespace GTAWorldRenderer.Scenes
                Log.Instance.Print("Multiple TexCoords sets are provided but used only the first of it!", MessageType.Warning);
 
             if ((flags & GeometrySectionFlags.HasColorInfo) != GeometrySectionFlags.None)
-               ReadColots(mesh, verticesCount);
+               ReadColors(mesh, verticesCount);
 
             if ((flags & GeometrySectionFlags.HasTextureCoords) != GeometrySectionFlags.None)
                ReadTextureCoords(mesh, verticesCount);
@@ -249,7 +249,7 @@ namespace GTAWorldRenderer.Scenes
          }
 
 
-         private void ReadColots(ModelMeshData mesh, int verticesCount)
+         private void ReadColors(ModelMeshData mesh, int verticesCount)
          {
             mesh.Colors = new List<Color>(verticesCount);
             for (int i = 0; i != verticesCount; ++i)
