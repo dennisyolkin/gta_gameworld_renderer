@@ -15,23 +15,23 @@ namespace GTAWorldRenderer.Scenes
       {
          public List<ModelMeshData> Meshes { get; set; }
 
-
          public ModelData()
          {
             Meshes = new List<ModelMeshData>();
          }
+      }
 
 
-         public string[] Info
+      public class ModelMeshPartData
+      {
+         public List<short> Indices { get; set; }
+         public int MaterialId { get; set; }
+
+         // TODO :: set default value for materialId
+         public ModelMeshPartData(int indicesCapacity, int materialId)
          {
-            get
-            {
-               string[] res = new string[Meshes.Count + 1];
-               res[0] = "Meshes in model: " + Meshes.Count;
-               for (int i = 0; i < Meshes.Count; ++i )
-                  res[i + 1] = String.Format(" {0}: {1}", i + 1, Meshes[i].Info);
-               return res;
-            }
+            this.MaterialId = materialId;
+            Indices = new List<short>(indicesCapacity);
          }
       }
 
@@ -40,31 +40,20 @@ namespace GTAWorldRenderer.Scenes
       {
          public List<string> Textures { get; set;}
          public List<Vector2> TextureCoords { get; set; }
-         public List<short> Indices { get; set; }
          public List<Vector3> Vertices { get; set; }
          public List<Vector3> Normals { get; set; }
          public List<Color> Colors { get; set; }
+
+         public List<ModelMeshPartData> MeshParts{ get; set; }
+
          public bool TriangleStrip { get; set; }
+         public int SumIndicesCount { get; set; } // Количество индексов во всех частях меша суммарно
 
          public ModelMeshData()
          {
             Textures = new List<string>();
          }
 
-
-         public string Info
-         {
-            get
-            {
-               Func<IList, string> ToStr = x => (x == null ? "no" : x.Count.ToString());
-
-               return String.Format("Vertices: {0}, Triangles: {1}, Textures: {2}",
-                  ToStr(Vertices),
-                  Indices == null ? "no" : Indices.Count.ToString(),
-                  Textures.Count
-                  );
-            }
-         }
       }
    }
 }

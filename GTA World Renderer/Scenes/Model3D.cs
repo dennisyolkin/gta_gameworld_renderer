@@ -36,23 +36,43 @@ namespace GTAWorldRenderer.Scenes
    }
 
 
+   /// <summary>
+   /// Составлябщая часть меша (ModelMesh3D).
+   /// Обычно используется, когда в разных частях меша накладываются разные материалы.
+   /// Описывает начальный индекс в индекс-буфере меша и количество индексов, а также номер материала
+   /// </summary>
+   struct ModelMeshPart3D
+   {
+      public int StartIdx { get; private set; }
+      public int PrimitivesCount { get; private set; }
+      public int MaterialId { get; private set; }
+
+      public ModelMeshPart3D(int startIdx, int primitivesCount, int materialId) : this()
+      {
+         this.StartIdx = startIdx;
+         this.PrimitivesCount = primitivesCount;
+         this.MaterialId = materialId;
+      }
+   }
+
 
    /// <summary>
    /// Часть (mesh) трёхмерной модели в пространстве
    /// </summary>
    class ModelMesh3D
    {
-      private VertexDeclaration vertexDeclaration;
-      private VertexBuffer vertexBuffer;
-      private IndexBuffer indexBuffer;
-      private int vertexSize;
-      private int trianglesCount, verticesCount;
-      private string effectTechnique;
-      private bool triangleStrip;
-      private List<Texture2D> textures;
+      private readonly VertexDeclaration vertexDeclaration;
+      private readonly VertexBuffer vertexBuffer;
+      private readonly IndexBuffer indexBuffer;
+      private readonly int vertexSize;
+      private readonly int verticesCount;
+      private readonly string effectTechnique;
+      private readonly bool triangleStrip;
+      private readonly List<Texture2D> textures;
+      private readonly List<ModelMeshPart3D> meshParts;
 
       public ModelMesh3D(VertexDeclaration vertexDeclaration, VertexBuffer vertexBuffer, IndexBuffer indexBuffer, bool triangleStrip,
-                           int vertexSize, string effectTechnique, List<Texture2D> textures)
+                           int vertexSize, string effectTechnique, List<Texture2D> textures, List<ModelMeshPart3D> meshParts)
       {
          this.vertexDeclaration = vertexDeclaration;
          this.vertexBuffer = vertexBuffer;
@@ -61,8 +81,8 @@ namespace GTAWorldRenderer.Scenes
          this.effectTechnique = effectTechnique;
          this.triangleStrip = triangleStrip;
          this.textures = textures;
+         this.meshParts = meshParts;
 
-         trianglesCount = (this.indexBuffer.SizeInBytes / sizeof(short)) / 3;
          verticesCount = this.vertexBuffer.SizeInBytes / vertexSize;
       }
 
@@ -86,7 +106,15 @@ namespace GTAWorldRenderer.Scenes
             device.VertexDeclaration = vertexDeclaration;
             device.Vertices[0].SetSource(vertexBuffer, 0, vertexSize);
             device.Indices = indexBuffer;
-            device.DrawIndexedPrimitives(triangleStrip? PrimitiveType.TriangleStrip : PrimitiveType.TriangleList, 0, 0, verticesCount, 0, trianglesCount);
+
+            foreach (ModelMeshPart3D part in meshParts)
+               device.DrawIndexedPrimitives(triangleStrip ? PrimitiveType.TriangleStrip : PrimitiveType.TriangleList, 0, 0,
+                  verticesCount, part.StartIdx, part.PrimitivesCount);
+            
+            //if (meshParts.Count >= 2)
+            //   device.DrawIndexedPrimitives(triangleStrip ? PrimitiveType.TriangleStrip : PrimitiveType.TriangleList, 0, 0,
+            //      verticesCount, part.MaterialId, meshParts[1].PrimitivesCount);
+
             pass.End();
          }
          effect.End();

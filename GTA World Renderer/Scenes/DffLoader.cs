@@ -274,16 +274,19 @@ namespace GTAWorldRenderer.Scenes
 
          private void ReadTriangles(ModelMeshData mesh, int trianglesCount)
          {
-            mesh.Indices = new List<short>(trianglesCount * 3);
+            ModelMeshPartData meshPart = new ModelMeshPartData(trianglesCount * 3, 0);
+            mesh.SumIndicesCount = trianglesCount * 3;
 
             for (var i = 0; i != trianglesCount; ++i)
             {
-               mesh.Indices.Add(input.ReadInt16());
-               mesh.Indices.Add(input.ReadInt16());
+               meshPart.Indices.Add(input.ReadInt16());
+               meshPart.Indices.Add(input.ReadInt16());
                input.BaseStream.Seek(sizeof(short), SeekOrigin.Current); // skip index flags
-               mesh.Indices.Add(input.ReadInt16());
-
+               meshPart.Indices.Add(input.ReadInt16());
             }
+
+            mesh.MeshParts = new List<ModelMeshPartData>();
+            mesh.MeshParts.Add(meshPart);
          }
 
 
@@ -331,33 +334,22 @@ namespace GTAWorldRenderer.Scenes
 
             int triangleStrip = input.ReadInt32();
             int splitCount = input.ReadInt32();
-            int indicesCount = input.ReadInt32();
+            mesh.SumIndicesCount = input.ReadInt32();
 
             mesh.TriangleStrip = triangleStrip != 0;
 
-            if (triangleStrip == 0)
-            {
-               // пока что секция MaterialSplit используется только для TriangleStrip
-               //Log.Instance.Print("MaterialSplit section is provided but ignored because TriangleStrip = 0");
-               input.BaseStream.Seek(sectionEnd, SeekOrigin.Begin);
-               return;
-            }
+            mesh.MeshParts.Clear(); // перезаписываем данные о треугольниках
 
-            // не знаю пока, как обрабатывать такую ситуацию
-            if (splitCount != 1)
-               Log.Instance.Print("SplitCount != 1", MessageType.Warning);
-
-            mesh.Indices.Clear(); // перезаписываем данные о треугольниках
-
-            // В настоящее время игнорируется разбиение по материалам, считываются все индексы одним куском
             for (int j = 0; j < splitCount; ++j)
             {
                int localIndicesCount = input.ReadInt32();
                int materialIdx = input.ReadInt32();
-               mesh.Indices.Capacity = indicesCount;
 
+               ModelMeshPartData meshPart = new ModelMeshPartData(localIndicesCount, materialIdx);
                for (int i = 0; i != localIndicesCount; ++i)
-                  mesh.Indices.Add((short)input.ReadInt32());
+                  meshPart.Indices.Add((short)input.ReadInt32());
+
+               mesh.MeshParts.Add(meshPart);
             }
          }
 

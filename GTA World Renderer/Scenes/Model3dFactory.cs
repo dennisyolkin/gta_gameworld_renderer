@@ -45,16 +45,26 @@ namespace GTAWorldRenderer.Scenes
             vertexBuffer.SetData(vertices);
 
             // создаём IndexBuffer
-            IndexBuffer indexBuffer = new IndexBuffer(GraphicsDeviceHolder.Device, mesh.Indices.Count * sizeof(short),
+            IndexBuffer indexBuffer = new IndexBuffer(GraphicsDeviceHolder.Device, mesh.SumIndicesCount * sizeof(short),
                BufferUsage.WriteOnly, IndexElementSize.SixteenBits);
-            indexBuffer.SetData(mesh.Indices.ToArray());
+
+            var meshParrts3d = new List<ModelMeshPart3D>();
+            int offset = 0;
+            foreach (ModelMeshPartData part in mesh.MeshParts)
+            {
+               indexBuffer.SetData(offset * sizeof(short), part.Indices.ToArray(), 0, part.Indices.Count);
+               meshParrts3d.Add(new ModelMeshPart3D(offset, mesh.TriangleStrip? part.Indices.Count - 2 : part.Indices.Count / 3, part.MaterialId));
+               offset += part.Indices.Count;
+            }
+            if (offset != mesh.SumIndicesCount)
+               TerminateWithError("Incorrect total indices amount!");
 
             var textures = new List<Texture2D>();
             foreach (var textureName in mesh.Textures)
                textures.Add(TexturesStorage.Instance.GetTexture(textureName, texturesPath));
 
             return new ModelMesh3D(new VertexDeclaration(GraphicsDeviceHolder.Device, VertexPositionNormalColorFormat.VertexElements),
-               vertexBuffer, indexBuffer, mesh.TriangleStrip, VertexPositionNormalColorFormat.SizeInBytes, "Default", textures);
+               vertexBuffer, indexBuffer, mesh.TriangleStrip, VertexPositionNormalColorFormat.SizeInBytes, "Default", textures, meshParrts3d);
          }
 
 
