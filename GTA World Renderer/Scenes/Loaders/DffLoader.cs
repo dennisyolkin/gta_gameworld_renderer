@@ -266,6 +266,8 @@ namespace GTAWorldRenderer.Scenes.Loaders
 
          if ((flags & GeometrySectionFlags.HasNormalsInfo) != GeometrySectionFlags.None)
             ReadNormals(mesh, verticesCount);
+         else
+            GeometryUtils.EvaluateNormals(mesh);
 
          modelData.Meshes.Add(mesh);
       }

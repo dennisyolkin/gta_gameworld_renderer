@@ -9,9 +9,6 @@ namespace GTAWorldRenderer.Scenes.Loaders
 
       public static ModelMesh3D CreateModelMesh(ModelMeshData mesh)
       {
-         if (mesh.Normals == null)
-            GeometryUtils.EvaluateNormals(mesh);
-
          // создаём VertexBuffer
          VertexPositionNormalTexture[] vertices = new VertexPositionNormalTexture[mesh.Vertices.Count];
          for (var i = 0; i != mesh.Vertices.Count; ++i)
