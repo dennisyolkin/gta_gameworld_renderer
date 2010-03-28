@@ -58,13 +58,13 @@ struct ColoredVSOutput
 struct TexturedVSInput
 {
    CommonVSInput  Common;
-   float2         TexCoords      : TEXCOORD2;
+   float2         TexCoords      : TEXCOORD0;
 };
 
 struct TexturedVSOutput
 {
    CommonVSOutput  Common;
-   float2          TexCoords      : TEXCOORD2;
+   float2          TexCoords      : TEXCOORD0;
 };
 // ====================================================================
 
