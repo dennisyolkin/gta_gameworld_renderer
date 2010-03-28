@@ -42,7 +42,7 @@ namespace GTAWorldRenderer
          for (int i = 0; i != normals.Length; ++i)
          {
             normals[i].Normalize();
-            normals[i] = normals[i];
+            normals[i] = -normals[i];
          }
 
          mesh.Normals = new List<Vector3>(normals);

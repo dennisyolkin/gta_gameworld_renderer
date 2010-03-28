@@ -16,7 +16,7 @@ sampler TextureSampler = sampler_state {
 
 
 float3 LightSource = float3(10, 10, 10);
-float AmbientLight = 0.15;
+float AmbientLight = 0.30;
 
 
 /*
