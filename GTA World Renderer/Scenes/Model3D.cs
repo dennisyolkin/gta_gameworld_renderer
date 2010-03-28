@@ -49,10 +49,10 @@ namespace GTAWorldRenderer.Scenes
       private int trianglesCount, verticesCount;
       private string effectTechnique;
       private bool triangleStrip;
-
+      private List<Texture2D> textures;
 
       public ModelMesh3D(VertexDeclaration vertexDeclaration, VertexBuffer vertexBuffer, IndexBuffer indexBuffer, bool triangleStrip,
-                           int vertexSize, string effectTechnique)
+                           int vertexSize, string effectTechnique, List<Texture2D> textures)
       {
          this.vertexDeclaration = vertexDeclaration;
          this.vertexBuffer = vertexBuffer;
@@ -60,6 +60,7 @@ namespace GTAWorldRenderer.Scenes
          this.vertexSize = vertexSize;
          this.effectTechnique = effectTechnique;
          this.triangleStrip = triangleStrip;
+         this.textures = textures;
 
          trianglesCount = (this.indexBuffer.SizeInBytes / sizeof(short)) / 3;
          verticesCount = this.vertexBuffer.SizeInBytes / vertexSize;

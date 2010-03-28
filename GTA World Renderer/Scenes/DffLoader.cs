@@ -94,7 +94,7 @@ namespace GTAWorldRenderer.Scenes
          }
 
 
-         public Model3D Load()
+         public ModelData Load()
          {
             using (Log.Instance.EnterStage("Loading model from DFF file: " + fileName))
             {
@@ -109,7 +109,7 @@ namespace GTAWorldRenderer.Scenes
                   }
                }
 
-               return Model3dFactory.CreateModel(modelData);
+               return modelData;
             }
          }
 

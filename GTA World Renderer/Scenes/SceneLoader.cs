@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using GTAWorldRenderer.Logging;
 using System.IO;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace GTAWorldRenderer.Scenes
 {
 
-   partial class SceneLoader // TODO :: возможно, его можно сделать Static
+   partial class SceneLoader // TODO :: redactor strcture. It should be static. Partial class should be a namespace
    {
       class LoadingException : ApplicationException
       {
@@ -57,6 +58,7 @@ namespace GTAWorldRenderer.Scenes
 
                Scene scene = new Scene();
                var loadedModels = new Dictionary<string, Model3D>();
+               int missedIDEs = 0;
 
                /*
                   TODO :: temporary code with absolute paths!!!
@@ -65,29 +67,45 @@ namespace GTAWorldRenderer.Scenes
                {
                   if (!obj.Name.StartsWith("LOD"))
                      continue;
+                  string textureFolder = null;
                   if (!loadedModels.ContainsKey(obj.Name))
-                     loadedModels[obj.Name] = new DffLoader(@"c:\home\tmp\root\" + obj.Name + ".dff").Load();
+                  {
+                     if (objDefinitions.ContainsKey(obj.Id))
+                        textureFolder = objDefinitions[obj.Id].TextureFolder;
+                     else
+                        ++missedIDEs;
+
+                     var dffPath = @"c:\home\tmp\root\" + obj.Name + ".dff";
+                     var modelData = new DffLoader(dffPath).Load();
+                     var model = Model3dFactory.CreateModel(modelData, textureFolder);
+                     loadedModels[obj.Name] = model;
+                  }
 
                   Matrix matrix = Matrix.CreateScale(obj.Scale) * Matrix.CreateFromQuaternion(obj.Rotation) * Matrix.CreateTranslation(obj.Position);
-
                   scene.SceneObjects.Add(new SceneObject(loadedModels[obj.Name], matrix));
                }
+
+               if (missedIDEs != 0)
+                  Logger.Print(String.Format("Missed IDE(s): {0}", missedIDEs), MessageType.Warning);
+               else
+                  Logger.Print("No IDE was missed!");
+
+               if (TexturesStorage.Instance.MissedTextures != 0)
+                  Logger.Print(String.Format("Missed textures(s): {0}", TexturesStorage.Instance.MissedTextures), MessageType.Warning);
+               else
+                  Logger.Print("No texture was missed!");
 
                Logger.Print("Scene loaded!");
                Logger.PrintStatistic();
                Logger.Print("Objects located on scene: " + scene.SceneObjects.Count);
                Logger.Flush();
 
-
-               //scene.SceneObjects.Add(new SceneObject(new DffLoader(@"c:\home\tmp\root\LODders02.dff ").Load(), Matrix.Identity));
-               //scene.SceneObjects.Add(new SceneObject(new DffLoader(@"c:\home\tmp\root\LOD_landnew2.dff ").Load(), Matrix.Identity));
-               //scene.SceneObjects.Add(new SceneObject(new DffLoader(@"c:\Program Files\GTAIII\models\Generic\arrow.DFF").Load(), Matrix.Identity));
-
                return scene;
 
             } catch (Exception)
             {
                Logger.Print("Failed to load scene", MessageType.Error);
+               Logger.PrintStatistic();
                throw;
             }
          }
@@ -155,6 +173,7 @@ namespace GTAWorldRenderer.Scenes
                   {
                      // Device->getFileSystem()->registerFileArchive(inStr.subString(11, inStr.size() - 11), true, false); // " 11 = "TEXDICTION "
                      Logger.Print("TEXDICTION: not implemented yet", MessageType.Warning);
+                     Logger.Print(line);
                   }
                   else if (line.StartsWith("IDE"))
                   {

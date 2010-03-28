@@ -18,7 +18,7 @@ namespace GTAWorldRenderer.Scenes
           */
          const bool IgnoreModelColors = true;
 
-         public static ModelMesh3D CreateModelMesh(ModelMeshData mesh)
+         public static ModelMesh3D CreateModelMesh(ModelMeshData mesh, string texturesPath)
          {
             /*
              * TODO :: здесь должен быть большоя switch, по которому должен определяться VertexFormat.
@@ -49,16 +49,20 @@ namespace GTAWorldRenderer.Scenes
                BufferUsage.WriteOnly, IndexElementSize.SixteenBits);
             indexBuffer.SetData(mesh.Indices.ToArray());
 
+            var textures = new List<Texture2D>();
+            foreach (var textureName in mesh.Textures)
+               textures.Add(TexturesStorage.Instance.GetTexture(textureName, texturesPath));
+
             return new ModelMesh3D(new VertexDeclaration(GraphicsDeviceHolder.Device, VertexPositionNormalColorFormat.VertexElements),
-               vertexBuffer, indexBuffer, mesh.TriangleStrip, VertexPositionNormalColorFormat.SizeInBytes, "Default");
+               vertexBuffer, indexBuffer, mesh.TriangleStrip, VertexPositionNormalColorFormat.SizeInBytes, "Default", textures);
          }
 
 
-         public static Model3D CreateModel(ModelData modelData)
+         public static Model3D CreateModel(ModelData modelData, string texturesPath)
          {
             Model3D model = new Model3D();
             foreach (var mesh in modelData.Meshes)
-               model.AddMesh(CreateModelMesh(mesh));
+               model.AddMesh(CreateModelMesh(mesh, texturesPath));
             return model;
          }
 
