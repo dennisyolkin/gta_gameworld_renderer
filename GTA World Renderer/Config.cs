@@ -39,6 +39,7 @@ namespace GTAWorldRenderer
 
       public string GTAFolderPath { private set; get; }
       public bool ShowWarningsIfTextureNotFound { private set; get; }
+      public bool FullScreenMode { private set; get; }
 
       public Config()
       {
@@ -55,7 +56,7 @@ namespace GTAWorldRenderer
                Logger.Print("Validating file...");
                try
                {
-                  //ValidateXml("config.xml", "config.xsd");
+                  ValidateXml("config.xml", "config.xsd");
                } catch (Exception er)
                {
                   TerminateWithError("Content of config.xml is not valid! Validation exception details: " + er.Message, er);
@@ -84,6 +85,9 @@ namespace GTAWorldRenderer
 
          ShowWarningsIfTextureNotFound = Boolean.Parse(
             doc.SelectSingleNode("/ns:GlobalConfig/ns:LoadingParams/ns:ShowWarningsIfTextureNotFound", nsmgr).InnerText);
+
+         FullScreenMode = Boolean.Parse(
+            doc.SelectSingleNode("/ns:GlobalConfig/ns:RenderingParams/ns:FullScreen", nsmgr).InnerText);
       }
 
 

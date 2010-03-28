@@ -1,5 +1,3 @@
-//#define FULL_SCREEN
-
 using System;
 using System.Globalization;
 using System.Threading;
@@ -23,13 +21,6 @@ namespace GTAWorldRenderer
          GraphicsDeviceHolder.DeviceManager = new GraphicsDeviceManager(this);
          Content.RootDirectory = "Content";
 
-#if FULL_SCREEN
-         GraphicsDeviceHolder.DeviceManager.PreferredBackBufferHeight = 900;
-         GraphicsDeviceHolder.DeviceManager.PreferredBackBufferHeight = 1440;
-         GraphicsDeviceHolder.DeviceManager.IsFullScreen = true;
-         GraphicsDeviceHolder.DeviceManager.ApplyChanges();
-#endif
-
          // настраиваем лог
          Log.Instance.AddLogWriter(new FileLogWriter("log.log"));
          if (!Debugger.IsAttached)
@@ -51,7 +42,16 @@ namespace GTAWorldRenderer
 
       protected override void LoadContent()
       {
-         renderer3d = new SceneRenderer3D(Content, new SceneLoader().LoadScene());
+         Scene scene = new SceneLoader().LoadScene();
+         if (Config.Instance.FullScreenMode)
+         {
+            Log.Instance.Print("Switching to fullscreen mode...");
+            GraphicsDeviceHolder.DeviceManager.PreferredBackBufferHeight = GraphicsDeviceHolder.Device.DisplayMode.Height;
+            GraphicsDeviceHolder.DeviceManager.PreferredBackBufferWidth = GraphicsDeviceHolder.Device.DisplayMode.Width;
+            GraphicsDeviceHolder.DeviceManager.IsFullScreen = true;
+            GraphicsDeviceHolder.DeviceManager.ApplyChanges();
+         }
+         renderer3d = new SceneRenderer3D(Content, scene);
       }
 
 

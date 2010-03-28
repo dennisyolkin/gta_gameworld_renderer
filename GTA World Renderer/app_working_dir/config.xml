@@ -12,4 +12,7 @@
       <ShowWarningsIfTextureNotFound>false</ShowWarningsIfTextureNotFound>
    </LoadingParams>
    
+   <RenderingParams>
+      <FullScreen>true</FullScreen>
+   </RenderingParams>
 </GlobalConfig>
