@@ -103,11 +103,7 @@ namespace GTAWorldRenderer.Scenes
 
          foreach (ModelMeshPart3D part in meshParts)
          {
-            Material mat;
-            if (part.MaterialId < materials.Count)
-               mat = materials[part.MaterialId];
-            else
-               continue;
+            Material mat = materials[part.MaterialId];
 
             if (mat.Texture != null)
             {
@@ -116,9 +112,8 @@ namespace GTAWorldRenderer.Scenes
             }
             else
             {
-               continue;
                effect.CurrentTechnique = effect.Techniques["Colored"];
-               effect.Parameters["xColor"].SetValue(mat.Color.ToVector4());
+               effect.Parameters["xSolidColor"].SetValue(mat.Color.ToVector4());
             }
 
             effect.Begin();

@@ -2,7 +2,8 @@ float4x4 xWorld;
 float4x4 xView;
 float4x4 xProjection;
 
-Texture xTexture;
+Texture xTexture;   // используется при отрисовке техникой Textured
+float4 xSolidColor; // используется при отрисовке техникой Colored
 
 // TODO :: параметры выбраны "от фонаря". Подумать над ними
 sampler TextureSampler = sampler_state { 
@@ -39,19 +40,6 @@ struct CommonVSOutput
    float  LightingFactor   : TEXCOORD1;
 };
 
-// ==================== Colored data structures =======================
-struct ColoredVSInput
-{
-   CommonVSInput  Common;
-   float4         Color      : COLOR0;
-};
-
-struct ColoredVSOutput
-{
-   CommonVSOutput    Common;
-   float4            Color   : COLOR0;
-};
-// ====================================================================
 
 
 // ==================== Textured data structures =======================
@@ -85,18 +73,11 @@ inline CommonVSOutput CommonVertexShader(CommonVSInput input)
 
 
 // ============= Colored shaders  =====================================
-ColoredVSOutput ColoredVertexShader(ColoredVSInput input)
-{
-   ColoredVSOutput output;
-   output.Common = CommonVertexShader(input.Common);
-   output.Color = input.Color;
-   return output;
-}
 
-float4 ColoredPixelShader(ColoredVSOutput input) : COLOR0
+float4 ColoredPixelShader(CommonVSOutput input) : COLOR0
 {
-   float4 color = input.Color;
-   color.rgb *= (input.Common.LightingFactor + AmbientLight);
+   float4 color = xSolidColor;
+   color.rgb *= (input.LightingFactor + AmbientLight);
    return color;
 }
 
@@ -123,7 +104,7 @@ technique Colored
 {
     pass Pass1
     {
-        VertexShader = compile vs_2_0 ColoredVertexShader();
+        VertexShader = compile vs_2_0 CommonVertexShader();
         PixelShader = compile ps_2_0 ColoredPixelShader();
     }
 }

@@ -173,10 +173,30 @@ namespace GTAWorldRenderer.Scenes
                   ParseGeometry(version);
                   break;
 
+               case SectionType.Material:
+                  ParseMaterial(sectionSize);
+                  break;
+
                default:
                   input.BaseStream.Seek(sectionSize, SeekOrigin.Current);
                   break;
             }
+         }
+
+
+         private void ParseMaterial(int sectionSize)
+         {
+            input.BaseStream.Seek(4, SeekOrigin.Current); // unknown data
+            byte[] color = input.ReadBytes(4);
+            input.BaseStream.Seek(4, SeekOrigin.Current); // unknown data
+            int textureCount = input.ReadInt32();
+            input.BaseStream.Seek(12, SeekOrigin.Current); // unknown data
+
+            if (textureCount != 0 && textureCount != 1)
+               Log.Instance.Print("Material section: unexpected TexturesCount value: " + textureCount);
+
+            ModelMeshData mesh = modelData.Meshes[modelData.Meshes.Count - 1];
+            mesh.Materials.Add(new Material() { Color = new Color(color[0], color[1], color[2], color[3]) });
          }
 
 
@@ -192,13 +212,18 @@ namespace GTAWorldRenderer.Scenes
                   return;
 
                string textureName = Encoding.ASCII.GetString(data, 0, len);
-               ModelMeshData mesh = modelData.Meshes[modelData.Meshes.Count - 1];
 
-               Texture2D texture = null;
                if (texturesFolder != null)
-                  texture = TexturesStorage.Instance.GetTexture(textureName, texturesFolder);
+               {
+                  Texture2D texture = TexturesStorage.Instance.GetTexture(textureName, texturesFolder);
+                  if (texture != null)
+                  {
+                     ModelMeshData mesh = modelData.Meshes[modelData.Meshes.Count - 1];
+                     Material material = mesh.Materials[mesh.Materials.Count - 1];
+                     material.Texture = texture;
+                  }
+               }
 
-               mesh.Materials.Add(new Material(texture));
             }
          }
 
