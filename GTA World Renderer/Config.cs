@@ -40,6 +40,8 @@ namespace GTAWorldRenderer
       public string GTAFolderPath { private set; get; }
       public bool ShowWarningsIfTextureNotFound { private set; get; }
       public bool FullScreenMode { private set; get; }
+      public float NearClippingDistance { private set; get; }
+      public float FarClippingDistance { private set; get; }
 
       public Config()
       {
@@ -88,6 +90,9 @@ namespace GTAWorldRenderer
 
          FullScreenMode = Boolean.Parse(
             doc.SelectSingleNode("/ns:GlobalConfig/ns:RenderingParams/ns:FullScreen", nsmgr).InnerText);
+
+         NearClippingDistance = float.Parse(doc.SelectSingleNode("/ns:GlobalConfig/ns:RenderingParams/ns:NearClippingDist", nsmgr).InnerText);
+         FarClippingDistance = float.Parse(doc.SelectSingleNode("/ns:GlobalConfig/ns:RenderingParams/ns:FarClippingDist", nsmgr).InnerText);
       }
 
 

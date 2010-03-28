@@ -56,7 +56,9 @@ namespace GTAWorldRenderer.Rendering
          textInfoPanel.Camera = camera;
          AddSubRenderer(textInfoPanel);
 
-         projectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, device.Viewport.AspectRatio, 0.1f, 5000.0f);
+         projectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, device.Viewport.AspectRatio, 
+            Config.Instance.NearClippingDistance, Config.Instance.FarClippingDistance);
+
          effect = Content.Load<Effect>("effect");
 
          Mouse.SetPosition(device.Viewport.Width / 2, device.Viewport.Height / 2);

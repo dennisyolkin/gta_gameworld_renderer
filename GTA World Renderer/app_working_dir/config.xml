@@ -14,5 +14,7 @@
    
    <RenderingParams>
       <FullScreen>true</FullScreen>
+      <NearClippingDist>0.1</NearClippingDist>
+      <FarClippingDist>5000</FarClippingDist>
    </RenderingParams>
 </GlobalConfig>

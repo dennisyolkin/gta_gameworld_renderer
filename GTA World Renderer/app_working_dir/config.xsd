@@ -23,6 +23,8 @@
    <xsd:complexType name="RenderingParamsType">
       <xsd:sequence>
          <xsd:element name="FullScreen" type="xsd:boolean"/>
+         <xsd:element name="NearClippingDist" type="xsd:float"/>
+         <xsd:element name="FarClippingDist" type="xsd:float"/>
       </xsd:sequence>
    </xsd:complexType>
    
