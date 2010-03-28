@@ -1,10 +1,9 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
-using GTAWorldRenderer.Scenes.VertexFormats;
 using System.Collections.Generic;
 
 namespace GTAWorldRenderer.Scenes
 {
-   partial class SceneLoader
+   namespace Loaders
    {
 
       static class Model3dFactory
@@ -36,7 +35,7 @@ namespace GTAWorldRenderer.Scenes
                offset += part.Indices.Count;
             }
             if (offset != mesh.SumIndicesCount)
-               TerminateWithError("Incorrect total indices amount!");
+               Utils.TerminateWithError("Incorrect total indices amount!");
 
             return new ModelMesh3D(new VertexDeclaration(GraphicsDeviceHolder.Device, VertexPositionNormalTexture.VertexElements),
                vertexBuffer, indexBuffer, mesh.TriangleStrip, VertexPositionNormalTexture.SizeInBytes, mesh.Materials, meshParrts3d);

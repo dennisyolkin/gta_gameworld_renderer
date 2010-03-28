@@ -8,7 +8,7 @@ using GTAWorldRenderer.Scenes.ArchivesCommon;
 
 namespace GTAWorldRenderer.Scenes
 {
-   partial class SceneLoader
+   namespace Loaders
    {
       /// <summary>
       /// Реализация загрузки и работы с TXD архивами.

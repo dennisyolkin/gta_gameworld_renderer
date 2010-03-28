@@ -6,6 +6,7 @@ using GTAWorldRenderer.Scenes;
 using Microsoft.Xna.Framework;
 using System.Diagnostics;
 using GTAWorldRenderer.Rendering;
+using GTAWorldRenderer.Scenes.Loaders;
 
 
 namespace GTAWorldRenderer

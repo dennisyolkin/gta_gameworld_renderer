@@ -101,22 +101,22 @@
     <Compile Include="Rendering\SceneRenderer3D.cs" />
     <Compile Include="Rendering\TextInfoPanel.cs" />
     <Compile Include="Scenes\ArchivesCommon.cs" />
-    <Compile Include="Scenes\DffLoader.cs" />
-    <Compile Include="Scenes\GTATextureLoader.cs" />
-    <Compile Include="Scenes\IDEFileLoader.cs" />
-    <Compile Include="Scenes\IMGArchive.cs" />
-    <Compile Include="Scenes\IPLFileLoader.cs" />
+    <Compile Include="Scenes\Loaders\DffLoader.cs" />
+    <Compile Include="Scenes\Loaders\GTATextureLoader.cs" />
+    <Compile Include="Scenes\Loaders\IDEFileLoader.cs" />
+    <Compile Include="Scenes\Loaders\IMGArchive.cs" />
+    <Compile Include="Scenes\Loaders\IPLFileLoader.cs" />
+    <Compile Include="Scenes\Loaders\Utils.cs" />
     <Compile Include="Scenes\Material.cs" />
     <Compile Include="Scenes\Model3D.cs" />
-    <Compile Include="Scenes\Model3dFactory.cs" />
+    <Compile Include="Scenes\Loaders\Model3dFactory.cs" />
     <Compile Include="Scenes\ModelData.cs" />
     <Compile Include="Scenes\Scene.cs" />
-    <Compile Include="Scenes\SceneLoader.cs" />
+    <Compile Include="Scenes\Loaders\SceneLoader.cs" />
     <Compile Include="Scenes\SceneObjectDefinition.cs" />
-    <Compile Include="Scenes\LoadersTests.cs" />
-    <Compile Include="Scenes\TexturesStorage.cs" />
-    <Compile Include="Scenes\TXDArchive.cs" />
-    <Compile Include="Scenes\VertexFormats.cs" />
+    <Compile Include="Scenes\Loaders\LoadersTests.cs" />
+    <Compile Include="Scenes\Loaders\TexturesStorage.cs" />
+    <Compile Include="Scenes\Loaders\TXDArchive.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>

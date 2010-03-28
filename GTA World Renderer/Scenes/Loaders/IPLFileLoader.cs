@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 
 namespace GTAWorldRenderer.Scenes
 {
-   partial class SceneLoader
+   namespace Loaders
    {
       /// <summary>
       /// Парсит и заргужает данные из IPL (Item Placement) файла.
@@ -34,7 +34,8 @@ namespace GTAWorldRenderer.Scenes
 
          static IPLFileLoader()
          {
-            INST_REQUIRED_TOKENS = new int[3];
+            INST_REQUIRED_TOKENS = new int[4];
+            INST_REQUIRED_TOKENS[(int)GtaVersion.Unknown] = 0;
             INST_REQUIRED_TOKENS[(int)GtaVersion.III] = 12;
             INST_REQUIRED_TOKENS[(int)GtaVersion.ViceCity] = 13;
             INST_REQUIRED_TOKENS[(int)GtaVersion.SanAndreas] = 11;

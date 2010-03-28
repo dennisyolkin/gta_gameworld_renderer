@@ -8,7 +8,7 @@ using GTAWorldRenderer.Logging;
 
 namespace GTAWorldRenderer.Scenes
 {
-   partial class SceneLoader
+   namespace Loaders
    {
       /// <summary>
       /// Реализация загрузки и работы с IMG архивами.
@@ -52,14 +52,14 @@ namespace GTAWorldRenderer.Scenes
                         byte[] header = new byte[4];
                         inputImg.Read(header, 0, header.Length);
                         if (Encoding.ASCII.GetString(header) != "VER2")
-                           TerminateWithError("Incorrect IMG archive for GTA San Andreas. Expected IMG archive ver2.");
+                           Utils.TerminateWithError("Incorrect IMG archive for GTA San Andreas. Expected IMG archive ver2.");
                         int entries = inputImg.ReadInt32();
                         LoadArchiveContents(inputImg, entries);
                      }
                      break;
 
                   default:
-                     TerminateWithError("IMGArchive lodaer does not suppport this GTA version.");
+                     Utils.TerminateWithError("IMGArchive lodaer does not suppport this GTA version.");
                      break;
                }
 

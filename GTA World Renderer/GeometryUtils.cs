@@ -5,6 +5,7 @@ using System.Text;
 
 using GTAWorldRenderer.Scenes;
 using Microsoft.Xna.Framework;
+using GTAWorldRenderer.Scenes.Loaders;
 
 namespace GTAWorldRenderer
 {
@@ -12,7 +13,7 @@ namespace GTAWorldRenderer
    {
 
 
-      public static void EvaluateNormals(SceneLoader.ModelMeshData mesh)
+      public static void EvaluateNormals(ModelMeshData mesh)
       {
          Vector3[] normals = new Vector3[mesh.Vertices.Count];
          for (int i = 0; i != mesh.Vertices.Count; ++i )

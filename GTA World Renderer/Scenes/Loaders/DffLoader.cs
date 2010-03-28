@@ -12,7 +12,7 @@ using Microsoft.Xna.Framework.Graphics;
 namespace GTAWorldRenderer.Scenes
 {
 
-   partial class SceneLoader
+   namespace Loaders
    {
 
       /// <summary>

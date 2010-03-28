@@ -8,7 +8,7 @@ using GTAWorldRenderer.Logging;
 
 namespace GTAWorldRenderer.Scenes
 {
-   partial class SceneLoader
+   namespace Loaders
    {
 
       /// <summary>

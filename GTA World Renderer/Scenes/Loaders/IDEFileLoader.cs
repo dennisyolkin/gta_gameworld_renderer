@@ -5,7 +5,7 @@ using System.IO;
 
 namespace GTAWorldRenderer.Scenes
 {
-   partial class SceneLoader
+   namespace Loaders
    {
       /// <summary>
       /// Загрузчик файлов .ide (Item Description)
