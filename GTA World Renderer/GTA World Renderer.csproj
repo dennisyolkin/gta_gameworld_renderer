@@ -110,7 +110,7 @@
     <Compile Include="Scenes\Material.cs" />
     <Compile Include="Scenes\Model3D.cs" />
     <Compile Include="Scenes\Loaders\Model3dFactory.cs" />
-    <Compile Include="Scenes\ModelData.cs" />
+    <Compile Include="Scenes\Loaders\ModelData.cs" />
     <Compile Include="Scenes\Scene.cs" />
     <Compile Include="Scenes\Loaders\SceneLoader.cs" />
     <Compile Include="Scenes\SceneObjectDefinition.cs" />
