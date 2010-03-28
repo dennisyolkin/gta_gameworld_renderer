@@ -10,17 +10,10 @@ namespace GTAWorldRenderer.Scenes
       static class Model3dFactory
       {
 
-         public static ModelMesh3D CreateModelMesh(ModelMeshData mesh, string texturesPath)
+         public static ModelMesh3D CreateModelMesh(ModelMeshData mesh)
          {
             if (mesh.Normals == null)
                GeometryUtils.EvaluateNormals(mesh);
-
-            //if (mesh.Colors == null)
-            //{
-            //   mesh.Colors = new List<Color>(mesh.Vertices.Count);
-            //   for (int i = 0; i != mesh.Vertices.Count; ++i)
-            //      mesh.Colors.Add(Color.White);
-            //}
 
             // создаём VertexBuffer
             VertexPositionNormalTexture[] vertices = new VertexPositionNormalTexture[mesh.Vertices.Count];
@@ -29,12 +22,6 @@ namespace GTAWorldRenderer.Scenes
             VertexBuffer vertexBuffer = new VertexBuffer(GraphicsDeviceHolder.Device,
                mesh.Vertices.Count * VertexPositionNormalTexture.SizeInBytes, BufferUsage.WriteOnly);
             vertexBuffer.SetData(vertices);
-            //VertexPositionNormalColorFormat[] vertices = new VertexPositionNormalColorFormat[mesh.Vertices.Count];
-            //for (var i = 0; i != mesh.Vertices.Count; ++i)
-            //   vertices[i] = new VertexPositionNormalColorFormat(mesh.Vertices[i], mesh.Normals[i], mesh.Colors[i]);
-            //VertexBuffer vertexBuffer = new VertexBuffer(GraphicsDeviceHolder.Device,
-            //   mesh.Vertices.Count * VertexPositionNormalColorFormat.SizeInBytes, BufferUsage.WriteOnly);
-            //vertexBuffer.SetData(vertices);
 
             // создаём IndexBuffer
             IndexBuffer indexBuffer = new IndexBuffer(GraphicsDeviceHolder.Device, mesh.SumIndicesCount * sizeof(short),
@@ -51,20 +38,16 @@ namespace GTAWorldRenderer.Scenes
             if (offset != mesh.SumIndicesCount)
                TerminateWithError("Incorrect total indices amount!");
 
-            var textures = new List<Texture2D>();
-            foreach (var textureName in mesh.Textures)
-               textures.Add(TexturesStorage.Instance.GetTexture(textureName, texturesPath));
-
             return new ModelMesh3D(new VertexDeclaration(GraphicsDeviceHolder.Device, VertexPositionNormalTexture.VertexElements),
-               vertexBuffer, indexBuffer, mesh.TriangleStrip, VertexPositionNormalTexture.SizeInBytes, "Textured", textures, meshParrts3d);
+               vertexBuffer, indexBuffer, mesh.TriangleStrip, VertexPositionNormalTexture.SizeInBytes, mesh.Materials, meshParrts3d);
          }
 
 
-         public static Model3D CreateModel(ModelData modelData, string texturesPath)
+         public static Model3D CreateModel(ModelData modelData)
          {
             Model3D model = new Model3D();
             foreach (var mesh in modelData.Meshes)
-               model.AddMesh(CreateModelMesh(mesh, texturesPath));
+               model.AddMesh(CreateModelMesh(mesh));
             return model;
          }
 

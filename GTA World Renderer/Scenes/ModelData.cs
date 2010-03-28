@@ -27,7 +27,7 @@ namespace GTAWorldRenderer.Scenes
          public List<short> Indices { get; set; }
          public int MaterialId { get; set; }
 
-         // TODO :: set default value for materialId
+         // TODO :: set default value for materialId (after upgrade to C# 4.0)
          public ModelMeshPartData(int indicesCapacity, int materialId)
          {
             this.MaterialId = materialId;
@@ -38,7 +38,7 @@ namespace GTAWorldRenderer.Scenes
 
       public class ModelMeshData
       {
-         public List<string> Textures { get; set;}
+         public List<Material> Materials { get; set;}
          public List<Vector2> TextureCoords { get; set; }
          public List<Vector3> Vertices { get; set; }
          public List<Vector3> Normals { get; set; }
@@ -51,7 +51,7 @@ namespace GTAWorldRenderer.Scenes
 
          public ModelMeshData()
          {
-            Textures = new List<string>();
+            Materials = new List<Material>();
          }
 
       }

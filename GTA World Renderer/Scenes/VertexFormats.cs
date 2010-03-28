@@ -9,7 +9,14 @@ namespace GTAWorldRenderer.Scenes
 {
    namespace VertexFormats
    {
+      /*
+       * TODO :: 
+       * 
+       * эти "нестандартные" форматы, скорее всего, нафиг не нужны. Как только 
+       * текстурирование будет полностью отлажено, их можно будет похерить.
+       */
 
+      /*
       public struct VertexPositionNormalFormat
       {
          private Vector3 position;
@@ -28,11 +35,10 @@ namespace GTAWorldRenderer.Scenes
             };
 
          public static int SizeInBytes = sizeof(float) * (3 + 3);
-      }
+      }*/
 
 
-
-
+      /*
       public struct VertexPositionNormalColorFormat
       {
          private Vector3 position;
@@ -54,7 +60,7 @@ namespace GTAWorldRenderer.Scenes
             };
 
          public static int SizeInBytes = sizeof(float) * (3 + 3) + 4;
-      }
+      }*/
 
    }
 }

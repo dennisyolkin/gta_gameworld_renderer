@@ -76,8 +76,8 @@ namespace GTAWorldRenderer.Scenes
                         ++missedIDEs;
 
                      var dffPath = @"c:\home\tmp\root\" + obj.Name + ".dff";
-                     var modelData = new DffLoader(dffPath).Load();
-                     var model = Model3dFactory.CreateModel(modelData, textureFolder);
+                     var modelData = new DffLoader(dffPath, textureFolder).Load();
+                     var model = Model3dFactory.CreateModel(modelData);
                      loadedModels[obj.Name] = model;
                   }
 

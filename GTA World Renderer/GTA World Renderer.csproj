@@ -106,6 +106,7 @@
     <Compile Include="Scenes\IDEFileLoader.cs" />
     <Compile Include="Scenes\IMGArchive.cs" />
     <Compile Include="Scenes\IPLFileLoader.cs" />
+    <Compile Include="Scenes\Material.cs" />
     <Compile Include="Scenes\Model3D.cs" />
     <Compile Include="Scenes\Model3dFactory.cs" />
     <Compile Include="Scenes\ModelData.cs" />
@@ -116,6 +117,7 @@
     <Compile Include="Scenes\TexturesStorage.cs" />
     <Compile Include="Scenes\TXDArchive.cs" />
     <Compile Include="Scenes\VertexFormats.cs" />
+    <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />

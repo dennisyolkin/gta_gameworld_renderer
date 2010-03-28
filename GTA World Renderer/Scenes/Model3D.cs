@@ -66,21 +66,19 @@ namespace GTAWorldRenderer.Scenes
       private readonly IndexBuffer indexBuffer;
       private readonly int vertexSize;
       private readonly int verticesCount;
-      private readonly string effectTechnique;
       private readonly bool triangleStrip;
-      private readonly List<Texture2D> textures;
+      private readonly List<Material> materials;
       private readonly List<ModelMeshPart3D> meshParts;
 
       public ModelMesh3D(VertexDeclaration vertexDeclaration, VertexBuffer vertexBuffer, IndexBuffer indexBuffer, bool triangleStrip,
-                           int vertexSize, string effectTechnique, List<Texture2D> textures, List<ModelMeshPart3D> meshParts)
+                           int vertexSize, List<Material> materials, List<ModelMeshPart3D> meshParts)
       {
          this.vertexDeclaration = vertexDeclaration;
          this.vertexBuffer = vertexBuffer;
          this.indexBuffer = indexBuffer;
          this.vertexSize = vertexSize;
-         this.effectTechnique = effectTechnique;
          this.triangleStrip = triangleStrip;
-         this.textures = textures;
+         this.materials = materials;
          this.meshParts = meshParts;
 
          verticesCount = this.vertexBuffer.SizeInBytes / vertexSize;
@@ -97,27 +95,45 @@ namespace GTAWorldRenderer.Scenes
          GraphicsDevice device = vertexDeclaration.GraphicsDevice;
          device.RenderState.CullMode = CullMode.None;
 
-         effect.CurrentTechnique = effect.Techniques[effectTechnique];
          effect.Parameters["xWorld"].SetValue(worldMatrix);
-         effect.Begin();
-         foreach (var pass in effect.CurrentTechnique.Passes)
-         {
-            pass.Begin();
-            device.VertexDeclaration = vertexDeclaration;
-            device.Vertices[0].SetSource(vertexBuffer, 0, vertexSize);
-            device.Indices = indexBuffer;
 
-            foreach (ModelMeshPart3D part in meshParts)
+         device.VertexDeclaration = vertexDeclaration;
+         device.Vertices[0].SetSource(vertexBuffer, 0, vertexSize);
+         device.Indices = indexBuffer;
+
+         foreach (ModelMeshPart3D part in meshParts)
+         {
+            Material mat;
+            if (part.MaterialId < materials.Count)
+               mat = materials[part.MaterialId];
+            else
+               continue;
+
+            if (mat.Texture != null)
             {
-               if (textures.Count != 0)
-                  effect.Parameters["xTexture"].SetValue(textures[0]);
-               device.DrawIndexedPrimitives(triangleStrip ? PrimitiveType.TriangleStrip : PrimitiveType.TriangleList, 0, 0,
-                  verticesCount, part.StartIdx, part.PrimitivesCount);
+               effect.CurrentTechnique = effect.Techniques["Textured"];
+               effect.Parameters["xTexture"].SetValue(mat.Texture);
+            }
+            else
+            {
+               continue;
+               effect.CurrentTechnique = effect.Techniques["Colored"];
+               effect.Parameters["xColor"].SetValue(mat.Color.ToVector4());
             }
 
-            pass.End();
+            effect.Begin();
+            foreach (var pass in effect.CurrentTechnique.Passes)
+            {
+               pass.Begin();
+
+               device.DrawIndexedPrimitives(triangleStrip ? PrimitiveType.TriangleStrip : PrimitiveType.TriangleList, 0, 0,
+                  verticesCount, part.StartIdx, part.PrimitivesCount);
+
+               pass.End();
+            }
+            effect.End();
          }
-         effect.End();
+
       }
 
 

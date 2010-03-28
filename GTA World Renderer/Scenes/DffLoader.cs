@@ -85,12 +85,20 @@ namespace GTAWorldRenderer.Scenes
 
 
          private string fileName;
+         private string texturesFolder;
          BinaryReader input;
          ModelData modelData = new ModelData();
 
          public DffLoader(string fileName)
          {
             this.fileName = fileName;
+         }
+
+         // TODO :: after upgrade to C# 4.0 make default-value parameter
+         public DffLoader(string fileName, string texturesFolder)
+         {
+            this.fileName = fileName;
+            this.texturesFolder = texturesFolder;
          }
 
 
@@ -183,9 +191,14 @@ namespace GTAWorldRenderer.Scenes
                if (len == 0)
                   return;
 
-               string texture = Encoding.ASCII.GetString(data, 0, len);
+               string textureName = Encoding.ASCII.GetString(data, 0, len);
                ModelMeshData mesh = modelData.Meshes[modelData.Meshes.Count - 1];
-               mesh.Textures.Add(texture);
+
+               Texture2D texture = null;
+               if (texturesFolder != null)
+                  texture = TexturesStorage.Instance.GetTexture(textureName, texturesFolder);
+
+               mesh.Materials.Add(new Material(texture));
             }
          }
 
@@ -258,8 +271,8 @@ namespace GTAWorldRenderer.Scenes
                float x = input.ReadSingle();
                float y = input.ReadSingle();
 
-               x = MathHelper.Clamp(x, 0, 1);
-               y = MathHelper.Clamp(y, 0, 1);
+               //x = MathHelper.Clamp(x, 0, 1);
+               //y = MathHelper.Clamp(y, 0, 1);
 
                // flip x coordinate
                // TODO :: а оно надо?
