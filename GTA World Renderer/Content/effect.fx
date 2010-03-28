@@ -2,6 +2,19 @@ float4x4 xWorld;
 float4x4 xView;
 float4x4 xProjection;
 
+Texture xTexture;
+
+// TODO :: параметры выбраны "от фонар€". ѕодумать над ними
+sampler TextureSampler = sampler_state { 
+   texture = <xTexture>;
+   magfilter = LINEAR;
+   minfilter = LINEAR;
+   mipfilter=LINEAR;
+   AddressU = mirror;
+   AddressV = mirror;
+};
+
+
 float3 LightSource = float3(10, 10, 10);
 float AmbientLight = 0.15;
 
@@ -88,6 +101,23 @@ float4 ColoredPixelShader(ColoredVSOutput input) : COLOR0
 }
 
 
+// ============= Textured shaders  =====================================
+TexturedVSOutput TexturedVertexShader(TexturedVSInput input)
+{
+   TexturedVSOutput output;
+   output.Common = CommonVertexShader(input.Common);
+   output.TexCoords = input.TexCoords;
+   return output;
+}
+
+float4 TexturedPixelShader(TexturedVSOutput input) : COLOR0
+{
+   float4 color = tex2D(TextureSampler, input.TexCoords);
+   color.rgb *= (input.Common.LightingFactor + AmbientLight);
+   return color;
+}
+
+
 // ====================================================================
 technique Colored
 {
@@ -98,3 +128,11 @@ technique Colored
     }
 }
 
+technique Textured
+{
+    pass Pass1
+    {
+        VertexShader = compile vs_2_0 TexturedVertexShader();
+        PixelShader = compile ps_2_0 TexturedPixelShader();
+    }
+}

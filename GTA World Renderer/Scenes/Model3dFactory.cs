@@ -10,39 +10,31 @@ namespace GTAWorldRenderer.Scenes
       static class Model3dFactory
       {
 
-         /*
-          * На первый взгляд (при тестировании в LOD-варианте) показалось, что цвета довольно бесполезны.
-          * Константа позволяет отключить использование заданных цветов и заполнять все подели константным цветом
-          * 
-          * TODO :: вернуться к этому вопросу, когда будет реализовано текстурирование.
-          */
-         const bool IgnoreModelColors = true;
-
          public static ModelMesh3D CreateModelMesh(ModelMeshData mesh, string texturesPath)
          {
-            /*
-             * TODO :: здесь должен быть большоя switch, по которому должен определяться VertexFormat.
-             * Но пока поддерживается только простейший VertexPositionNormal формат, поэтому всё просто.
-             */
-
             if (mesh.Normals == null)
                GeometryUtils.EvaluateNormals(mesh);
 
-            if (mesh.Colors == null || IgnoreModelColors)
-            {
-               // TODO :: временное решение. В дальнейшем либо у модели есть цвета вершин, либо текстура. Не придётся заполнять цвета вручную
-               mesh.Colors = new List<Color>(mesh.Vertices.Count);
-               for (int i = 0; i != mesh.Vertices.Count; ++i)
-                  mesh.Colors.Add(Color.Green);
-            }
+            //if (mesh.Colors == null)
+            //{
+            //   mesh.Colors = new List<Color>(mesh.Vertices.Count);
+            //   for (int i = 0; i != mesh.Vertices.Count; ++i)
+            //      mesh.Colors.Add(Color.White);
+            //}
 
             // создаём VertexBuffer
-            VertexPositionNormalColorFormat[] vertices = new VertexPositionNormalColorFormat[mesh.Vertices.Count];
+            VertexPositionNormalTexture[] vertices = new VertexPositionNormalTexture[mesh.Vertices.Count];
             for (var i = 0; i != mesh.Vertices.Count; ++i)
-               vertices[i] = new VertexPositionNormalColorFormat(mesh.Vertices[i], mesh.Normals[i], mesh.Colors[i]);
+               vertices[i] = new VertexPositionNormalTexture(mesh.Vertices[i], mesh.Normals[i], mesh.TextureCoords[i]);
             VertexBuffer vertexBuffer = new VertexBuffer(GraphicsDeviceHolder.Device,
-               mesh.Vertices.Count * VertexPositionNormalColorFormat.SizeInBytes, BufferUsage.WriteOnly);
+               mesh.Vertices.Count * VertexPositionNormalTexture.SizeInBytes, BufferUsage.WriteOnly);
             vertexBuffer.SetData(vertices);
+            //VertexPositionNormalColorFormat[] vertices = new VertexPositionNormalColorFormat[mesh.Vertices.Count];
+            //for (var i = 0; i != mesh.Vertices.Count; ++i)
+            //   vertices[i] = new VertexPositionNormalColorFormat(mesh.Vertices[i], mesh.Normals[i], mesh.Colors[i]);
+            //VertexBuffer vertexBuffer = new VertexBuffer(GraphicsDeviceHolder.Device,
+            //   mesh.Vertices.Count * VertexPositionNormalColorFormat.SizeInBytes, BufferUsage.WriteOnly);
+            //vertexBuffer.SetData(vertices);
 
             // создаём IndexBuffer
             IndexBuffer indexBuffer = new IndexBuffer(GraphicsDeviceHolder.Device, mesh.SumIndicesCount * sizeof(short),
@@ -63,8 +55,8 @@ namespace GTAWorldRenderer.Scenes
             foreach (var textureName in mesh.Textures)
                textures.Add(TexturesStorage.Instance.GetTexture(textureName, texturesPath));
 
-            return new ModelMesh3D(new VertexDeclaration(GraphicsDeviceHolder.Device, VertexPositionNormalColorFormat.VertexElements),
-               vertexBuffer, indexBuffer, mesh.TriangleStrip, VertexPositionNormalColorFormat.SizeInBytes, "Default", textures, meshParrts3d);
+            return new ModelMesh3D(new VertexDeclaration(GraphicsDeviceHolder.Device, VertexPositionNormalTexture.VertexElements),
+               vertexBuffer, indexBuffer, mesh.TriangleStrip, VertexPositionNormalTexture.SizeInBytes, "Textured", textures, meshParrts3d);
          }
 
 

@@ -108,12 +108,12 @@ namespace GTAWorldRenderer.Scenes
             device.Indices = indexBuffer;
 
             foreach (ModelMeshPart3D part in meshParts)
+            {
+               if (textures.Count != 0)
+                  effect.Parameters["xTexture"].SetValue(textures[0]);
                device.DrawIndexedPrimitives(triangleStrip ? PrimitiveType.TriangleStrip : PrimitiveType.TriangleList, 0, 0,
                   verticesCount, part.StartIdx, part.PrimitivesCount);
-            
-            //if (meshParts.Count >= 2)
-            //   device.DrawIndexedPrimitives(triangleStrip ? PrimitiveType.TriangleStrip : PrimitiveType.TriangleList, 0, 0,
-            //      verticesCount, part.MaterialId, meshParts[1].PrimitivesCount);
+            }
 
             pass.End();
          }

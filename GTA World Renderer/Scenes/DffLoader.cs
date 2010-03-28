@@ -258,6 +258,9 @@ namespace GTAWorldRenderer.Scenes
                float x = input.ReadSingle();
                float y = input.ReadSingle();
 
+               x = MathHelper.Clamp(x, 0, 1);
+               y = MathHelper.Clamp(y, 0, 1);
+
                // flip x coordinate
                // TODO :: а оно надо?
                /*
