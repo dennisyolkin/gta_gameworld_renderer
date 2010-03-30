@@ -53,7 +53,7 @@ namespace GTAWorldRenderer.Scenes.Loaders
                Scene scene = new Scene();
                int missedIDEs = 0;
 
-               int objectsToLoad = 5000; // TODO :: Temporary!
+               int objectsToLoad = 11000; // TODO :: Temporary!
                foreach (var obj in objPlacements)
                {
                   // TODO :: temporary!
@@ -83,6 +83,22 @@ namespace GTAWorldRenderer.Scenes.Loaders
                         binDffData = reader.ReadBytes(modelEntry.ArchiveEntry.Size);
                      }
                      var modelData = new DffLoader(binDffData, modelEntry.ArchiveEntry.Name, textureFolder).Load();
+
+                     // - - - - - - - - - - -- - - - - - - - - - -- - - - - - - - - - -- - - - - - - - - - -- - - - - - - - - - -
+                     // TODO :: workaround situation when object has no texture coodinates. FIX IT!!!!
+                     bool fail = false;
+                     foreach (var mesh in modelData.Meshes)
+                        if (mesh.TextureCoords == null)
+                        {
+                           fail = true;
+                           break;
+                        }
+                     if (fail)
+                     {
+                        Logger.Print("FIXME: Object has no texture coordinates and was IGNORED.", MessageType.Warning);
+                        continue;
+                     }
+                     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
                      var model = Model3dFactory.CreateModel(modelData);
                      modelEntry.Model = model;
