@@ -304,15 +304,6 @@ namespace GTAWorldRenderer.Scenes.Loaders
             float x = input.ReadSingle();
             float y = input.ReadSingle();
 
-            // flip x coordinate
-            // TODO :: а оно надо?
-            /*
-            if (x > 0.5f)
-               x = (float)(0.5f + (0.5 - x));
-            else
-               x = (float)(0.5f + (x + 0.5));
-             */
-
             mesh.TextureCoords.Add(new Vector2(x, y));
          }
       }
@@ -345,7 +336,7 @@ namespace GTAWorldRenderer.Scenes.Loaders
             var x = input.ReadSingle();
             var y = input.ReadSingle(); // y and z coords are exchanged because of different coordinate system
             var z = input.ReadSingle();
-            mesh.Vertices.Add(new Vector3(x, z, y));
+            mesh.Vertices.Add(new Vector3(x, z, -y));
          }
       }
 

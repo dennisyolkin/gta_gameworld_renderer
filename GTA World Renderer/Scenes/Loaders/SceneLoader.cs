@@ -53,9 +53,14 @@ namespace GTAWorldRenderer.Scenes.Loaders
                Scene scene = new Scene();
                int missedIDEs = 0;
 
+               int objectsToLoad = 5000; // TODO :: Temporary!
                foreach (var obj in objPlacements)
                {
-                  if (!obj.Name.StartsWith("LOD"))
+                  // TODO :: temporary!
+                  if (objectsToLoad-- == 0)
+                     break;
+
+                  if (obj.Name.StartsWith("LOD"))
                      continue;
 
                   if (!loadedModels.ContainsKey(obj.Name))

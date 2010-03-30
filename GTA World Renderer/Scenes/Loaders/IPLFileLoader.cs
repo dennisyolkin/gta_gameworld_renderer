@@ -119,20 +119,20 @@ namespace GTAWorldRenderer.Scenes.Loaders
          switch (gtaVersion) 
          {
             case GtaVersion.III:
-               obj.Position = new Vector3(float.Parse(toks[2]), float.Parse(toks[4]), float.Parse(toks[3]));
+               obj.Position = new Vector3(float.Parse(toks[2]), float.Parse(toks[4]), -float.Parse(toks[3]));
                obj.Scale = new Vector3(float.Parse(toks[5]), float.Parse(toks[6]), float.Parse(toks[7]));
-               obj.Rotation = new Quaternion(float.Parse(toks[8]), float.Parse(toks[10]), float.Parse(toks[9]), float.Parse(toks[11]));
+               obj.Rotation = new Quaternion(float.Parse(toks[8]), float.Parse(toks[10]), -float.Parse(toks[9]), -float.Parse(toks[11]));
                break;
 
             case GtaVersion.ViceCity:
-               obj.Position = new Vector3(float.Parse(toks[3]), float.Parse(toks[5]), float.Parse(toks[4]));
+               obj.Position = new Vector3(float.Parse(toks[3]), float.Parse(toks[5]), -float.Parse(toks[4]));
                obj.Scale = new Vector3(float.Parse(toks[6]), float.Parse(toks[7]), float.Parse(toks[8]));
-               obj.Rotation = new Quaternion(float.Parse(toks[9]), float.Parse(toks[11]), float.Parse(toks[10]), float.Parse(toks[12]));
+               obj.Rotation = new Quaternion(float.Parse(toks[9]), float.Parse(toks[11]), -float.Parse(toks[10]), -float.Parse(toks[12]));
                break;
 
             case GtaVersion.SanAndreas:
-               obj.Position = new Vector3(float.Parse(toks[3]), float.Parse(toks[5]), float.Parse(toks[4]));
-               obj.Rotation = new Quaternion(float.Parse(toks[6]), float.Parse(toks[8]), float.Parse(toks[7]), float.Parse(toks[9]));
+               obj.Position = new Vector3(float.Parse(toks[3]), float.Parse(toks[5]), -float.Parse(toks[4]));
+               obj.Rotation = new Quaternion(float.Parse(toks[6]), float.Parse(toks[8]), -float.Parse(toks[7]), -float.Parse(toks[9]));
                // toks[10] -- LOD -- is temporary ignored
                break;
          }

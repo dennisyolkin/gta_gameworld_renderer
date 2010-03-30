@@ -5,14 +5,13 @@ float4x4 xProjection;
 Texture xTexture;   // используется при отрисовке техникой Textured
 float4 xSolidColor; // используется при отрисовке техникой Colored
 
-// TODO :: параметры выбраны "от фонаря". Подумать над ними
 sampler TextureSampler = sampler_state { 
    texture = <xTexture>;
    magfilter = LINEAR;
    minfilter = LINEAR;
    mipfilter=LINEAR;
-   AddressU = mirror;
-   AddressV = mirror;
+   AddressU = wrap;
+   AddressV = wrap;
 };
 
 
