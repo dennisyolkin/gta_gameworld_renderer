@@ -58,7 +58,10 @@ namespace GTAWorldRenderer.Scenes.Loaders
                {
                   // TODO :: temporary!
                   if (objectsToLoad-- == 0)
+                  {
+                     Logger.Print("Limit for maximum number of objects to load is exceeded", MessageType.Warning);
                      break;
+                  }
 
                   if (obj.Name.StartsWith("LOD"))
                      continue;
