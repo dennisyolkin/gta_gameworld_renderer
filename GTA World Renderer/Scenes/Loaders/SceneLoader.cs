@@ -52,10 +52,12 @@ namespace GTAWorldRenderer.Scenes.Loaders
 
                Scene scene = new Scene();
                int missedIDEs = 0;
-
+               int hvatit = 2000;
                foreach (var obj in objPlacements)
                {
-                  if (!obj.Name.StartsWith("LOD"))
+                  if (--hvatit == 0)
+                     break;
+                  if (obj.Name.StartsWith("LOD"))
                      continue;
 
                   if (!loadedModels.ContainsKey(obj.Name))
@@ -78,6 +80,21 @@ namespace GTAWorldRenderer.Scenes.Loaders
                         binDffData = reader.ReadBytes(modelEntry.ArchiveEntry.Size);
                      }
                      var modelData = new DffLoader(binDffData, modelEntry.ArchiveEntry.Name, textureFolder).Load();
+
+                     // TODO :: workaround
+                     bool fail = false;
+                     foreach (var mesh in modelData.Meshes)
+                     {
+                        if (mesh.TextureCoords == null)
+                        {
+                           fail = true;
+                        }
+                     }
+                     if (fail)
+                     {
+                        Logger.Print("No texture coords. Ignoring.", MessageType.Warning);
+                        continue;
+                     }
 
                      var model = Model3dFactory.CreateModel(modelData);
                      modelEntry.Model = model;

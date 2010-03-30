@@ -266,6 +266,7 @@ namespace GTAWorldRenderer.Scenes.Loaders
          if ((flags & GeometrySectionFlags.HasTextureCoords) != GeometrySectionFlags.None)
             ReadTextureCoords(mesh, verticesCount);
 
+
          ReadTriangles(mesh, trianglesCount);
 
          input.BaseStream.Seek(4 * sizeof(float), SeekOrigin.Current); // ignoring bounding sphere (x, y, z, radius)
@@ -306,12 +307,12 @@ namespace GTAWorldRenderer.Scenes.Loaders
 
             // flip x coordinate
             // TODO :: а оно надо?
-            /*
+            
             if (x > 0.5f)
                x = (float)(0.5f + (0.5 - x));
             else
                x = (float)(0.5f + (x + 0.5));
-             */
+             
 
             mesh.TextureCoords.Add(new Vector2(x, y));
          }

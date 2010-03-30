@@ -93,7 +93,7 @@ namespace GTAWorldRenderer.Scenes
       public void Draw(Effect effect, Matrix worldMatrix)
       {
          GraphicsDevice device = vertexDeclaration.GraphicsDevice;
-         device.RenderState.CullMode = CullMode.None;
+         device.RenderState.CullMode = CullMode.CullCounterClockwiseFace;//None;
 
          effect.Parameters["xWorld"].SetValue(worldMatrix);
 
