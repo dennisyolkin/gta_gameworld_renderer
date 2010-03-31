@@ -53,17 +53,15 @@ namespace GTAWorldRenderer.Scenes.Loaders
                Scene scene = new Scene();
                int missedIDEs = 0;
 
-               int objectsToLoad = 11000; // TODO :: Temporary!
                foreach (var obj in objPlacements)
                {
-                  // TODO :: temporary!
-                  if (objectsToLoad-- == 0)
+                  if (scene.SceneObjects.Count >= Config.Instance.SceneObjectsAmountLimit)
                   {
                      Logger.Print("Limit for maximum number of objects to load is exceeded", MessageType.Warning);
                      break;
                   }
 
-                  if (obj.Name.StartsWith("LOD"))
+                  if (obj.Name.StartsWith("lod") != Config.Instance.LowDetailed)
                      continue;
 
                   if (!loadedModels.ContainsKey(obj.Name))

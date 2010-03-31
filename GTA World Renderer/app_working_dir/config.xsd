@@ -15,9 +15,11 @@
    </xsd:complexType>
 
    <xsd:complexType name="LoadingParamsType">
-      <xsd:sequence>
+      <xsd:all>
          <xsd:element name="ShowWarningsIfTextureNotFound" type="xsd:boolean"/>
-      </xsd:sequence>
+         <xsd:element name="SceneObjectsAmountLimit" type="xsd:integer"/> 
+         <xsd:element name="LowDetailed" type="xsd:boolean"/>
+      </xsd:all>
    </xsd:complexType>
 
    <xsd:complexType name="RenderingParamsType">

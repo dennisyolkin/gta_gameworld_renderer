@@ -38,6 +38,8 @@ namespace GTAWorldRenderer
       public bool FullScreenMode { private set; get; }
       public float NearClippingDistance { private set; get; }
       public float FarClippingDistance { private set; get; }
+      public bool LowDetailed { private set; get; }
+      public int SceneObjectsAmountLimit { private set; get; }
 
       public Config()
       {
@@ -83,6 +85,14 @@ namespace GTAWorldRenderer
 
          ShowWarningsIfTextureNotFound = Boolean.Parse(
             doc.SelectSingleNode("/ns:GlobalConfig/ns:LoadingParams/ns:ShowWarningsIfTextureNotFound", nsmgr).InnerText);
+
+         SceneObjectsAmountLimit = int.Parse(doc.SelectSingleNode("/ns:GlobalConfig/ns:LoadingParams/ns:SceneObjectsAmountLimit", nsmgr).InnerText);
+         if (SceneObjectsAmountLimit == -1)
+            SceneObjectsAmountLimit = int.MaxValue;
+
+         LowDetailed = Boolean.Parse(
+            doc.SelectSingleNode("/ns:GlobalConfig/ns:LoadingParams/ns:LowDetailed", nsmgr).InnerText);
+
 
          FullScreenMode = Boolean.Parse(
             doc.SelectSingleNode("/ns:GlobalConfig/ns:RenderingParams/ns:FullScreen", nsmgr).InnerText);

@@ -10,6 +10,8 @@
    
    <LoadingParams>
       <ShowWarningsIfTextureNotFound>false</ShowWarningsIfTextureNotFound>
+      <LowDetailed>false</LowDetailed>
+      <SceneObjectsAmountLimit>-1</SceneObjectsAmountLimit>
    </LoadingParams>
    
    <RenderingParams>

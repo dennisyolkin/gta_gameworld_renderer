@@ -112,7 +112,7 @@ namespace GTAWorldRenderer.Scenes.Loaders
 
          SceneItemPlacement obj = new SceneItemPlacement();
          obj.Id = Int32.Parse(toks[0]);
-         obj.Name = toks[1];
+         obj.Name = toks[1].ToLower();
          obj.Scale = Vector3.One;
 
          // y and z coords are exchanged because of different coordinate system !!!
