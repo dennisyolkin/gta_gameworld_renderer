@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using GTAWorldRenderer.Scenes.ArchivesCommon;
 using System.IO;
 using GTAWorldRenderer.Logging;
 
@@ -17,26 +16,26 @@ namespace GTAWorldRenderer.Scenes.Loaders
    class IMGArchive  //  TODO :: возможно, следует создать интерфейс IArchive
    {
 
-      private string filePath;
+      private FileProxy archiveFile;
       private GtaVersion gtaVersion;
-      private List<ArchiveEntry> files = new List<ArchiveEntry>();
+      private List<FileProxy> files = new List<FileProxy>();
 
       public IMGArchive(string filePath, GtaVersion gtaVersion)
       {
-         this.filePath = filePath;
          this.gtaVersion = gtaVersion;
+         archiveFile = new FileProxy(filePath);
       }
 
 
-      public IEnumerable<ArchiveEntry> Load()
+      public IEnumerable<FileProxy> Load()
       {
-         using (Log.Instance.EnterStage("Loading IMG archive: " + filePath))
+         using (Log.Instance.EnterStage("Loading IMG archive: " + archiveFile.FilePath))
          {
             switch (gtaVersion)
             {
                case GtaVersion.III:
                case GtaVersion.ViceCity:
-                  string dirFilePath = filePath.Substring(0, filePath.Length - 3) + "dir";
+                  string dirFilePath = Path.ChangeExtension(archiveFile.FilePath, "dir");
                   using (BinaryReader inputDir = new BinaryReader(new FileStream(dirFilePath, FileMode.Open)))
                   {
                      int entries = (int)inputDir.BaseStream.Length / 32;
@@ -45,7 +44,7 @@ namespace GTAWorldRenderer.Scenes.Loaders
                   break;
 
                case GtaVersion.SanAndreas:
-                  using (BinaryReader inputImg = new BinaryReader(new FileStream(filePath, FileMode.Open)))
+                  using (BinaryReader inputImg = new BinaryReader(new MemoryStream(archiveFile.GetData())))
                   {
                      byte[] header = new byte[4];
                      inputImg.Read(header, 0, header.Length);
@@ -80,7 +79,8 @@ namespace GTAWorldRenderer.Scenes.Loaders
             while (nameLen > 0 && name[nameLen - 1] == 0)
                --nameLen;
 
-            ArchiveEntry entry = new ArchiveEntry(filePath, Encoding.ASCII.GetString(name, 0, nameLen).ToLower(), pos, length);
+            string strName = Encoding.ASCII.GetString(name, 0, nameLen).ToLower();
+            FileProxy entry = new FileProxy(archiveFile, strName, pos, length);
             files.Add(entry);
          }
       }

@@ -5,7 +5,6 @@ using System.Text;
 using Microsoft.Xna.Framework.Graphics;
 using System.IO;
 using GTAWorldRenderer.Logging;
-using GTAWorldRenderer.Scenes.ArchivesCommon;
 
 namespace GTAWorldRenderer.Scenes.Loaders
 {
@@ -20,12 +19,12 @@ namespace GTAWorldRenderer.Scenes.Loaders
    {
       class TextureEntry
       {
-         public ArchiveEntry ArchiveEntry { get; private set; }
+         public FileProxy FileProxy { get; private set; }
          public Texture2D Texture{ get; set; }
 
-         public TextureEntry(ArchiveEntry archiveEntry)
+         public TextureEntry(FileProxy fileProxy)
          {
-            this.ArchiveEntry = archiveEntry;
+            this.FileProxy = fileProxy;
          }
       }
 
@@ -49,30 +48,17 @@ namespace GTAWorldRenderer.Scenes.Loaders
       /// </summary>
       public void AddTexturesArchive(string path)
       {
-         loadedArchives.Add(Path.GetFileNameWithoutExtension(path).ToLower());
-         TXDArchive archive = new TXDArchive(path);
-         UpdateArchiveItems(archive.Load());
+         AddTexturesArchive(new FileProxy(path));
       }
 
       /// <summary>
       /// Подгружает .txd-архив - источник текстур их массива байт. 
-      /// Непосредственное чтение из файла не производится!
       /// </summary>
-      /// <param name="data">Массив байт - содержимое архива</param>
-      /// <param name="txdFileName">Имя файла - TXD архива</param>
-      /// <param name="sourceArchiveFilePath">Исходный файл, в котором содержится TXD архив.</param>
-      /// /// <param name="offsetInFile">Смещение в исходном файле, по которому начинается TXD-архив</param>
-      public void AddTexturesArchive(byte[] data, string txdFileName, string sourceArchiveFilePath, int offsetInFile)
+      public void AddTexturesArchive(FileProxy fileProxy)
       {
-         loadedArchives.Add(Path.GetFileNameWithoutExtension(txdFileName).ToLower());
-         TXDArchive archive = new TXDArchive(data, txdFileName, sourceArchiveFilePath, offsetInFile);
-         UpdateArchiveItems(archive.Load());
-      }
-
-
-      private void UpdateArchiveItems(IEnumerable<ArchiveEntry> items)
-      {
-         foreach (var item in items)
+         loadedArchives.Add(Path.GetFileNameWithoutExtension(fileProxy.Name).ToLower());
+         TXDArchive archive = new TXDArchive(fileProxy);
+         foreach (var item in archive.Load())
             textures[item.Name.ToLower()] = new TextureEntry(item);
       }
 
@@ -108,14 +94,9 @@ namespace GTAWorldRenderer.Scenes.Loaders
          if (textureEntry.Texture != null)
             return textureEntry.Texture;
 
-         using (BinaryReader reader = new BinaryReader(new FileStream(textureEntry.ArchiveEntry.ArchiveFilePath, FileMode.Open)))
-         {
-            reader.BaseStream.Seek(textureEntry.ArchiveEntry.Offset, SeekOrigin.Begin);
-            byte[] data = reader.ReadBytes(textureEntry.ArchiveEntry.Size);
-            Texture2D texture = new GTATextureLoader(data).Load();
-            textureEntry.Texture = texture;
-            return texture;
-         }
+         Texture2D texture = new GTATextureLoader(textureEntry.FileProxy.GetData()).Load();
+         textureEntry.Texture = texture;
+         return texture;
 
       }
    }

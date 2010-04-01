@@ -4,7 +4,6 @@ using GTAWorldRenderer.Logging;
 using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using GTAWorldRenderer.Scenes.ArchivesCommon;
 
 namespace GTAWorldRenderer.Scenes.Loaders
 {
@@ -14,12 +13,12 @@ namespace GTAWorldRenderer.Scenes.Loaders
 
       class ModelEntry
       {
-         public ArchiveEntry ArchiveEntry { get; private set; }
+         public FileProxy FileProxy { get; private set; }
          public Model3D Model{ get; set; }
 
-         public ModelEntry(ArchiveEntry archiveEntry)
+         public ModelEntry(FileProxy fileProxy)
          {
-            this.ArchiveEntry = archiveEntry;
+            this.FileProxy = fileProxy;
          }
       }
 
@@ -33,6 +32,7 @@ namespace GTAWorldRenderer.Scenes.Loaders
       {
          using (Logger.EnterTimingStage("Loading scene"))
          {
+            Log.Instance.SetOutputFilter(MessagesFilter.Warning | MessagesFilter.Error);
             try
             {
                Logger.Print("Switching working directory to GTA folder");
@@ -76,14 +76,7 @@ namespace GTAWorldRenderer.Scenes.Loaders
                      else
                         ++missedIDEs;
 
-                     // TODO :: Refactor it! Open file on every operation is not a good idea!
-                     byte[] binDffData;
-                     using (BinaryReader reader = new BinaryReader(new FileStream(mainImgPath, FileMode.Open)))
-                     {
-                        reader.BaseStream.Seek(modelEntry.ArchiveEntry.Offset, SeekOrigin.Begin);
-                        binDffData = reader.ReadBytes(modelEntry.ArchiveEntry.Size);
-                     }
-                     var modelData = new DffLoader(binDffData, modelEntry.ArchiveEntry.Name, textureFolder).Load();
+                     var modelData = new DffLoader(modelEntry.FileProxy.GetData(), modelEntry.FileProxy.Name, textureFolder).Load();
 
                      // - - - - - - - - - - -- - - - - - - - - - -- - - - - - - - - - -- - - - - - - - - - -- - - - - - - - - - -
                      // TODO :: workaround situation when object has no texture coodinates. FIX IT!!!!
@@ -133,29 +126,26 @@ namespace GTAWorldRenderer.Scenes.Loaders
                Logger.PrintStatistic();
                throw;
             }
+            finally
+            {
+               Log.Instance.SetOutputFilter(MessagesFilter.All);
+            }
          }
       }
 
 
-      private List<ArchiveEntry> LoadMainImgArchive(string path)
+      private List<FileProxy> LoadMainImgArchive(string path)
       {
          IMGArchive archive = new IMGArchive(path, gtaVersion);
          var items = archive.Load();
-         var result = new List<ArchiveEntry>();
+         var result = new List<FileProxy>();
          
-         using (BinaryReader reader = new BinaryReader(new FileStream(path, FileMode.Open)))
+         foreach (var item in items)
          {
-            foreach (var item in items)
-            {
-               if (item.Name.EndsWith(".dff"))
-                  result.Add(item);
-               else if (item.Name.EndsWith(".txd"))
-               {
-                  reader.BaseStream.Seek(item.Offset, SeekOrigin.Begin);
-                  byte[] data = reader.ReadBytes(item.Size);
-                  TexturesStorage.Instance.AddTexturesArchive(data, item.Name, path, item.Offset);
-               }
-            }
+            if (item.Name.EndsWith(".dff"))
+               result.Add(item);
+            else if (item.Name.EndsWith(".txd"))
+               TexturesStorage.Instance.AddTexturesArchive(item);
          }
          
          return result;

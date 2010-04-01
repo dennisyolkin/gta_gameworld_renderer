@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using GTAWorldRenderer.Logging;
-using GTAWorldRenderer.Scenes.ArchivesCommon;
 
 namespace GTAWorldRenderer.Scenes.Loaders
 {
@@ -27,42 +26,27 @@ namespace GTAWorldRenderer.Scenes.Loaders
       }
 
       private BinaryReader fin;
-      private string txdName, txdArchiveFileName, sourceArchiveFilePath;
-      int offsetInFile = 0;
+      private FileProxy archiveFile;
+      private string txdName;
 
-      private List<ArchiveEntry> files = new List<ArchiveEntry>();
+      private List<FileProxy> files = new List<FileProxy>();
 
-      /// <summary>
-      /// Сохдаёт загрузчик TXD архива
-      /// </summary>
-      /// <param name="filePath">Путь к файлу-архиву</param>
+
       public TXDArchive(string filePath)
+         : this(new FileProxy(filePath))
       {
-         txdArchiveFileName = filePath;
-         sourceArchiveFilePath = filePath;
-         txdName = Path.GetFileNameWithoutExtension(filePath);
-         fin = new BinaryReader(new FileStream(filePath, FileMode.Open));
-      }
-
-      /// <summary>
-      /// Сохдаёт загрузчик TXD архива из массива байт.
-      /// Чтение из файла не производится! Имя файла нужно только для протаскивания во все ArchiveEntry
-      /// </summary>
-      /// <param name="data">Данные txd-архива</param>
-      /// <param name="txdArchiveFileName">Имя TXD архива</param>
-      /// <param name="sourceArchivePath">Имя исходного файла-архива, из которого был извлечён этот txd-архив. Будет протаскиваться во все ArchiveEntry</param>
-      /// <param name="offsetInFile">Смещение в исходном файле, по которому начинается этот txd архив</param>
-      public TXDArchive(byte[] data, string txdArchiveFileName, string sourceArchivePath, int offsetInFile)
-      {
-         this.txdArchiveFileName = txdArchiveFileName;
-         this.sourceArchiveFilePath = sourceArchivePath;
-         this.offsetInFile = offsetInFile;
-         txdName = Path.GetFileNameWithoutExtension(txdArchiveFileName);
-         fin = new BinaryReader(new MemoryStream(data));
       }
 
 
-      public IEnumerable<ArchiveEntry> Load()
+      public TXDArchive(FileProxy archiveFile)
+      {
+         txdName = Path.GetFileNameWithoutExtension(archiveFile.Name);
+         this.archiveFile = archiveFile;
+         fin = new BinaryReader(new MemoryStream(archiveFile.GetData()));
+      }
+
+
+      public IEnumerable<FileProxy> Load()
       {
          using (Log.Instance.EnterStage("Loading TXD archive: " + txdName))
          {
@@ -139,10 +123,10 @@ namespace GTAWorldRenderer.Scenes.Loaders
             return txdName + "/" + (Encoding.ASCII.GetString(name, 0, nameLen) + ".gtatexture").ToLower();
          };
 
-         files.Add(new ArchiveEntry(sourceArchiveFilePath, ToFullName(diffuseTextureName), position + offsetInFile, size));
+         files.Add(new FileProxy(archiveFile, ToFullName(diffuseTextureName), position, size));
 
          if (alphaTextureName[0] != 0)
-            files.Add(new ArchiveEntry(sourceArchiveFilePath, ToFullName(alphaTextureName), position + offsetInFile, size));
+            files.Add(new FileProxy(archiveFile, ToFullName(alphaTextureName), position, size));
       }
 
    }

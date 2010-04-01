@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using GTAWorldRenderer.Logging;
-using GTAWorldRenderer.Scenes.ArchivesCommon;
 using System.IO;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -30,7 +29,7 @@ namespace GTAWorldRenderer.Scenes.Loaders
             if (!outputPathPrefix.EndsWith(Path.DirectorySeparatorChar.ToString()))
                outputPathPrefix += Path.DirectorySeparatorChar;
 
-            IEnumerable<ArchiveEntry> entries; ;
+            IEnumerable<FileProxy> entries; ;
             TXDArchive archive = new TXDArchive(txdPath);
             entries = archive.Load();
 
@@ -86,7 +85,7 @@ namespace GTAWorldRenderer.Scenes.Loaders
          using (Log.Instance.EnterStage("Unpacking IMG: " + imgPath))
          {
             IMGArchive archive = new IMGArchive(imgPath, GtaVersion.III);
-            IEnumerable<ArchiveEntry> entries = archive.Load();
+            IEnumerable<FileProxy> entries = archive.Load();
 
             using (BinaryReader reader = new BinaryReader(new FileStream(imgPath, FileMode.Open)))
             {
