@@ -83,7 +83,7 @@ namespace GTAWorldRenderer.Scenes.Loaders
             /*
              * Судя по всему, это нормальная ситуация, когда некоторых текстур не существует.
              */
-            if (Config.Instance.ShowWarningsIfTextureNotFound)
+            if (Config.Instance.Loading.ShowWarningsIfTextureNotFound)
                Log.Instance.Print(String.Format("Texture file {0} does not exists", fullPath), MessageType.Warning);
             ++MissedTextures;
             return null;

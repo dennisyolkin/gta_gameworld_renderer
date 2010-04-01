@@ -80,9 +80,16 @@ namespace GTAWorldRenderer.Logging
 
       private static Log instance = new Log();
       private List<ILogWriter> writers = new List<ILogWriter>();
-      private MessagesFilter messageTypesToOutput = MessagesFilter.All;
+      public MessagesFilter MessagesToOutput { get; set; }
       private int indent = 0;
       private int errors = 0, warnings = 0;
+
+
+      private Log()
+      {
+         MessagesToOutput = MessagesFilter.All;
+      }
+
 
       public static Log Instance
       {
@@ -132,12 +139,6 @@ namespace GTAWorldRenderer.Logging
       }
 
 
-      public void SetOutputFilter(MessagesFilter filter)
-      {
-         messageTypesToOutput = filter;
-      }
-
-
       public void Print(string msg, MessageType type)
       {
          if (type == MessageType.Error)
@@ -146,7 +147,7 @@ namespace GTAWorldRenderer.Logging
             ++warnings;
 
          foreach (ILogWriter writer in writers)
-            if (((int)type & (int)messageTypesToOutput) != 0)
+            if (((int)type & (int)MessagesToOutput) != 0)
                writer.Print(msg, indent, type);
       }
 

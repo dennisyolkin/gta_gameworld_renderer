@@ -43,7 +43,7 @@ namespace GTAWorldRenderer
       protected override void LoadContent()
       {
          Scene scene = new SceneLoader().LoadScene();
-         if (Config.Instance.FullScreenMode)
+         if (Config.Instance.Rendering.FullScreenMode)
          {
             Log.Instance.Print("Switching to fullscreen mode...");
             GraphicsDeviceHolder.DeviceManager.PreferredBackBufferHeight = GraphicsDeviceHolder.Device.DisplayMode.Height;

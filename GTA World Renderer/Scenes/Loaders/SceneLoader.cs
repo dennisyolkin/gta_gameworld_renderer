@@ -32,17 +32,22 @@ namespace GTAWorldRenderer.Scenes.Loaders
       {
          using (Logger.EnterTimingStage("Loading scene"))
          {
-            Log.Instance.SetOutputFilter(MessagesFilter.Warning | MessagesFilter.Error);
+            MessagesFilter? oldMessagesFilter = null;
+            if (!Config.Instance.Loading.DetailedLogOutput)
+            {
+               oldMessagesFilter = Log.Instance.MessagesToOutput;
+               Log.Instance.MessagesToOutput = MessagesFilter.Warning | MessagesFilter.Error;
+            }
             try
             {
                Logger.Print("Switching working directory to GTA folder");
-               System.Environment.CurrentDirectory = Config.Instance.GTAFolderPath;
+               System.Environment.CurrentDirectory = Config.Instance.Global.GTAFolderPath;
 
                gtaVersion = GetGtaVersion();
 
                var loadedModels = new Dictionary<string, ModelEntry>();
 
-               string mainImgPath = Config.Instance.GTAFolderPath + "models/gta3.img";
+               string mainImgPath = Config.Instance.Global.GTAFolderPath + "models/gta3.img";
                var loadedArchiveEntries = LoadMainImgArchive(mainImgPath);
                foreach (var item in loadedArchiveEntries)
                   loadedModels[item.Name.Substring(0, item.Name.Length - 4)] = new ModelEntry(item); // берём название модели без расширения .dff
@@ -55,13 +60,13 @@ namespace GTAWorldRenderer.Scenes.Loaders
 
                foreach (var obj in objPlacements)
                {
-                  if (scene.SceneObjects.Count >= Config.Instance.SceneObjectsAmountLimit)
+                  if (scene.SceneObjects.Count >= Config.Instance.Loading.SceneObjectsAmountLimit)
                   {
                      Logger.Print("Limit for maximum number of objects to load is exceeded", MessageType.Warning);
                      break;
                   }
 
-                  if (obj.Name.StartsWith("lod") != Config.Instance.LowDetailed)
+                  if (obj.Name.StartsWith("lod") != Config.Instance.Loading.LowDetailedScene)
                      continue;
 
                   if (!loadedModels.ContainsKey(obj.Name))
@@ -128,7 +133,8 @@ namespace GTAWorldRenderer.Scenes.Loaders
             }
             finally
             {
-               Log.Instance.SetOutputFilter(MessagesFilter.All);
+               if (oldMessagesFilter != null)
+                  Log.Instance.MessagesToOutput = oldMessagesFilter.Value;
             }
          }
       }

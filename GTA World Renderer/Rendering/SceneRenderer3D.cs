@@ -57,7 +57,7 @@ namespace GTAWorldRenderer.Rendering
          AddSubRenderer(textInfoPanel);
 
          projectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, device.Viewport.AspectRatio, 
-            Config.Instance.NearClippingDistance, Config.Instance.FarClippingDistance);
+            Config.Instance.Rendering.NearClippingDistance, Config.Instance.Rendering.FarClippingDistance);
 
          effect = Content.Load<Effect>("effect");
 

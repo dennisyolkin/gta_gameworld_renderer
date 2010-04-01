@@ -33,13 +33,33 @@ namespace GTAWorldRenderer
          get { return instance; }
       }
 
-      public string GTAFolderPath { private set; get; }
-      public bool ShowWarningsIfTextureNotFound { private set; get; }
-      public bool FullScreenMode { private set; get; }
-      public float NearClippingDistance { private set; get; }
-      public float FarClippingDistance { private set; get; }
-      public bool LowDetailed { private set; get; }
-      public int SceneObjectsAmountLimit { private set; get; }
+      // TODO :: сеттеры в *Params сейчас публичные, и это плохо.
+      // нужно сделать так, чтобы записывать в них можно было только из методов класса Config
+
+      public struct GlobalParams
+      {
+         public string GTAFolderPath { set; get; }
+      }
+
+      public struct LoadingParams
+      {
+         public bool ShowWarningsIfTextureNotFound { set; get; }
+         public bool LowDetailedScene { set; get; }
+         public bool DetailedLogOutput { set; get; }
+         public int SceneObjectsAmountLimit { set; get; }
+      }
+
+      public struct RenderingParams
+      {
+         public bool FullScreenMode { set; get; }
+         public float NearClippingDistance { set; get; }
+         public float FarClippingDistance { set; get; }
+      }
+
+
+      public GlobalParams Global;
+      public LoadingParams Loading;
+      public RenderingParams Rendering;
 
       public Config()
       {
@@ -78,27 +98,29 @@ namespace GTAWorldRenderer
          XmlNamespaceManager nsmgr = new XmlNamespaceManager(doc.NameTable);
          nsmgr.AddNamespace("ns", "gta-gameworld-renderer");
 
-         GTAFolderPath = doc.SelectSingleNode("/ns:GlobalConfig/ns:GtaFolder", nsmgr).InnerText;
-         if (!GTAFolderPath.EndsWith("/") && !GTAFolderPath.EndsWith("\\"))
-            GTAFolderPath += "\\";
-         Logger.Print("GTA Folder: " + GTAFolderPath);
+         Global.GTAFolderPath = doc.SelectSingleNode("/ns:GlobalConfig/ns:GtaFolder", nsmgr).InnerText;
+         if (!Global.GTAFolderPath.EndsWith("/") && !Global.GTAFolderPath.EndsWith("\\"))
+            Global.GTAFolderPath += "\\";
+         Logger.Print("GTA Folder: " + Global.GTAFolderPath);
 
-         ShowWarningsIfTextureNotFound = Boolean.Parse(
+         Loading.ShowWarningsIfTextureNotFound = Boolean.Parse(
             doc.SelectSingleNode("/ns:GlobalConfig/ns:LoadingParams/ns:ShowWarningsIfTextureNotFound", nsmgr).InnerText);
 
-         SceneObjectsAmountLimit = int.Parse(doc.SelectSingleNode("/ns:GlobalConfig/ns:LoadingParams/ns:SceneObjectsAmountLimit", nsmgr).InnerText);
-         if (SceneObjectsAmountLimit == -1)
-            SceneObjectsAmountLimit = int.MaxValue;
+         Loading.SceneObjectsAmountLimit = int.Parse(doc.SelectSingleNode("/ns:GlobalConfig/ns:LoadingParams/ns:SceneObjectsAmountLimit", nsmgr).InnerText);
+         if (Loading.SceneObjectsAmountLimit == -1)
+            Loading.SceneObjectsAmountLimit = int.MaxValue;
 
-         LowDetailed = Boolean.Parse(
-            doc.SelectSingleNode("/ns:GlobalConfig/ns:LoadingParams/ns:LowDetailed", nsmgr).InnerText);
+         Loading.LowDetailedScene = Boolean.Parse(
+            doc.SelectSingleNode("/ns:GlobalConfig/ns:LoadingParams/ns:LowDetailedScene", nsmgr).InnerText);
 
+         Loading.DetailedLogOutput = Boolean.Parse(
+            doc.SelectSingleNode("/ns:GlobalConfig/ns:LoadingParams/ns:DetailedLogOutput", nsmgr).InnerText);
 
-         FullScreenMode = Boolean.Parse(
+         Rendering.FullScreenMode = Boolean.Parse(
             doc.SelectSingleNode("/ns:GlobalConfig/ns:RenderingParams/ns:FullScreen", nsmgr).InnerText);
 
-         NearClippingDistance = float.Parse(doc.SelectSingleNode("/ns:GlobalConfig/ns:RenderingParams/ns:NearClippingDist", nsmgr).InnerText);
-         FarClippingDistance = float.Parse(doc.SelectSingleNode("/ns:GlobalConfig/ns:RenderingParams/ns:FarClippingDist", nsmgr).InnerText);
+         Rendering.NearClippingDistance = float.Parse(doc.SelectSingleNode("/ns:GlobalConfig/ns:RenderingParams/ns:NearClippingDist", nsmgr).InnerText);
+         Rendering.FarClippingDistance = float.Parse(doc.SelectSingleNode("/ns:GlobalConfig/ns:RenderingParams/ns:FarClippingDist", nsmgr).InnerText);
       }
 
 
