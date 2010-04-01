@@ -51,6 +51,13 @@ namespace GTAWorldRenderer.Scenes.Loaders
       {
          var objects = new List<SceneItemPlacement>();
 
+         /*
+          * В GTAIII в этом файле LowDetailed город, и почему-то там в названиях моделей нет
+          * приставки LOD. Игнорируем этот файл в любом случае. В ViceCity и SanAndreas ничего такого нет.
+          */
+         if (gtaVersion == GtaVersion.III && filePath.ToLower().IndexOf("overview.ipl") != -1)
+            return objects;
+
          using (Logger.EnterStage("Reading IPL file: " + filePath))
          {
             using (StreamReader fin = new StreamReader(filePath))
@@ -81,7 +88,6 @@ namespace GTAWorldRenderer.Scenes.Loaders
 
       private void ProcessNewSectionStart(string line)
       {
-         //Trace.Assert(currentSection == IPLSection.END);
          if (line.StartsWith("inst"))
             currentSection = IPLSection.INST;
          else if (line.StartsWith("cull"))
