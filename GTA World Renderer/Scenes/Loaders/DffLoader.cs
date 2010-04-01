@@ -350,7 +350,7 @@ namespace GTAWorldRenderer.Scenes.Loaders
             var x = input.ReadSingle();
             var y = input.ReadSingle(); // y and z coords are exchanged because of different coordinate system
             var z = input.ReadSingle();
-            mesh.Normals.Add(new Vector3(x, z, y));
+            mesh.Normals.Add(new Vector3(x, z, -y));
          }
       }
 
