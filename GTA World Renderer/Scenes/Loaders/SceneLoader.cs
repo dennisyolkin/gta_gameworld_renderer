@@ -127,9 +127,9 @@ namespace GTAWorldRenderer.Scenes.Loaders
                return scene;
 
             }
-            catch (Exception)
+            catch (Exception er)
             {
-               Logger.Print("Failed to load scene", MessageType.Error);
+               Logger.Print("Failed to load scene! " + er, MessageType.Error);
                Logger.PrintStatistic();
                throw;
             }
