@@ -280,6 +280,7 @@ namespace GTAWorldRenderer.Scenes.Loaders
          Logger.Print("Memory used:");
          PrintInfo("vertex buffers", totalVertexBufferBytes);
          PrintInfo("index buffers", totalIndexBufferBytes);
+         PrintInfo("textures", TexturesStorage.Instance.GetMemoryUsed());
       }
 
 

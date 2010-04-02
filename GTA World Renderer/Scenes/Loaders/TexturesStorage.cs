@@ -99,6 +99,26 @@ namespace GTAWorldRenderer.Scenes.Loaders
          return texture;
 
       }
+
+
+      /// <summary>
+      /// Вычисляет количество памяти, занимаемое всеми загруженными текстурами
+      /// </summary>
+      /// <returns></returns>
+      public int GetMemoryUsed()
+      {
+         int totalSize = 0;
+         foreach (var item in textures)
+         {
+            Texture2D texture = item.Value.Texture;
+            if (texture == null)
+               continue;
+            totalSize += texture.Height * texture.Width * 4; // считаем, что каждый пиксель в видеопамяти будет занимать 4 байта
+         }
+         return totalSize;
+      }
+
+
    }
 
 }
