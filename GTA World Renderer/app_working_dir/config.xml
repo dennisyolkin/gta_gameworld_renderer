@@ -11,7 +11,7 @@
    <LoadingParams>
       <ShowWarningsIfTextureNotFound>false</ShowWarningsIfTextureNotFound>
       <LowDetailedScene>false</LowDetailedScene>
-      <DetailedLogOutput>true</DetailedLogOutput>
+      <DetailedLogOutput>false</DetailedLogOutput>
       <SceneObjectsAmountLimit>-1</SceneObjectsAmountLimit>
    </LoadingParams>
    
