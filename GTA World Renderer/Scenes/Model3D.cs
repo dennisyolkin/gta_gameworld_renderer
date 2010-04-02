@@ -33,6 +33,21 @@ namespace GTAWorldRenderer.Scenes
          foreach (var mesh in meshes)
             mesh.Draw(effect, worldMatrix);
       }
+
+
+      public void GetMemoryUsed(out int vertexBufferMemory, out int indexBufferMemory)
+      {
+         vertexBufferMemory = 0;
+         indexBufferMemory = 0;
+
+         foreach (var mesh in meshes)
+         {
+            int curIndSize, curVertSize;
+            mesh.GetMemoryUsed(out curVertSize, out curIndSize);
+            vertexBufferMemory += curVertSize;
+            indexBufferMemory += curIndSize;
+         }
+      }
    }
 
 
@@ -131,6 +146,12 @@ namespace GTAWorldRenderer.Scenes
 
       }
 
+
+      public void GetMemoryUsed(out int vertexBufferMemory, out int indexBufferMemory)
+      {
+         vertexBufferMemory = vertexBuffer.SizeInBytes;
+         indexBufferMemory = indexBuffer.SizeInBytes;
+      }
 
    }
 }
