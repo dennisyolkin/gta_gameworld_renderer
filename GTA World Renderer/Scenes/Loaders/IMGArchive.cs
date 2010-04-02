@@ -75,9 +75,9 @@ namespace GTAWorldRenderer.Scenes.Loaders
             byte[] name = new byte[24];
             input.Read(name, 0, name.Length);
 
-            int nameLen = name.Length;
-            while (nameLen > 0 && name[nameLen - 1] == 0)
-               --nameLen;
+            int nameLen = 0;
+            while (nameLen < name.Length && name[nameLen] != 0)
+               ++nameLen;
 
             string strName = Encoding.ASCII.GetString(name, 0, nameLen).ToLower();
             FileProxy entry = new FileProxy(archiveFile, strName, pos, length);
