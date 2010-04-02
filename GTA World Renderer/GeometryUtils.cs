@@ -9,7 +9,6 @@ namespace GTAWorldRenderer
    static class GeometryUtils
    {
 
-
       public static void EvaluateNormals(ModelMeshData mesh)
       {
          Vector3[] normals = new Vector3[mesh.Vertices.Count];
@@ -22,8 +21,8 @@ namespace GTAWorldRenderer
             int[] idx = { indices[idx1], indices[idx2], indices[idx3] };
             Vector3 side1 = mesh.Vertices[idx[1]] - mesh.Vertices[idx[0]];
             Vector3 side2 = mesh.Vertices[idx[2]] - mesh.Vertices[idx[0]];
-            Vector3 norm = -Vector3.Cross(side1, side2);
-            //norm.Normalize();
+            Vector3 norm = Vector3.Cross(side1, side2);
+            norm.Normalize();
             for (int i = 0 ; i != 3; ++i)
                normals[idx[i]] += norm;
          };
@@ -40,7 +39,7 @@ namespace GTAWorldRenderer
          for (int i = 0; i != normals.Length; ++i)
          {
             normals[i].Normalize();
-            normals[i] = -normals[i];
+            normals[i] = normals[i];
          }
 
          mesh.Normals = new List<Vector3>(normals);
