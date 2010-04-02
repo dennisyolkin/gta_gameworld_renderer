@@ -155,6 +155,10 @@ namespace GTAWorldRenderer.Scenes.Loaders
                   ParseMaterialSplit(header.SectionSize);
                   break;
 
+               case SectionType.Frame:
+                  ParseFrame(header.SectionSize);
+                  break;
+
                case SectionType.Data:
                   ParseDataSection(header.SectionSize, parentType, header.Version);
                   break;
@@ -183,10 +187,51 @@ namespace GTAWorldRenderer.Scenes.Loaders
                ParseMaterial(sectionSize);
                break;
 
+            case SectionType.FrameList:
+               ParseFramesList();
+               break;
+
+            case SectionType.Atomic:
+               ParseAtomic();
+               break;
+
             default:
                input.BaseStream.Seek(sectionSize, SeekOrigin.Current);
                break;
          }
+      }
+
+
+      private void ParseFramesList()
+      {
+         int framesCount = input.ReadInt32();
+         const int frameDescriptionSize = 56;
+
+         // описание фреймов нам сейчас не нужно, интересует только количество
+         // названия фреймов будут считаны в FrameList/Extension/Frame/
+         input.BaseStream.Seek(framesCount * frameDescriptionSize, SeekOrigin.Current);
+
+         modelData.FrameNames = new List<string>(framesCount);
+         modelData.FrameToMesh = new int[framesCount];
+         for (int i = 0; i != modelData.FrameToMesh.Length; ++i)
+            modelData.FrameToMesh[i] = -1;
+      }
+
+
+      private void ParseAtomic()
+      {
+         int frameIdx = input.ReadInt32();
+         int geomIdx = input.ReadInt32();
+         modelData.FrameToMesh[frameIdx] = geomIdx;
+         input.BaseStream.Seek(2 * sizeof(int), SeekOrigin.Current);
+      }
+
+
+      private void ParseFrame(int sectionSize)
+      {
+         byte[] data = input.ReadBytes(sectionSize);
+         string val = Encoding.ASCII.GetString(data).ToLower();
+         modelData.FrameNames.Add(val);
       }
 
 
