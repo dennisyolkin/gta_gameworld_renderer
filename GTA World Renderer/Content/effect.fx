@@ -55,6 +55,20 @@ struct TexturedVSOutput
 };
 // ====================================================================
 
+// ==================== Colored data structures =======================
+struct ColoredVSInput
+{
+   float4         Position   : POSITION;
+   float4         Color      : TEXCOORD1;
+};
+
+struct ColoredVSOutput
+{
+   float4          Position   : POSITION;
+   float4          Color      : TEXCOORD1;
+};
+// ====================================================================
+
 inline CommonVSOutput CommonVertexShader(CommonVSInput input)
 {
    CommonVSOutput output;
@@ -98,14 +112,41 @@ float4 TexturedPixelShader(TexturedVSOutput input) : COLOR0
 }
 
 
+// ============= Colored shaders  =====================================
+ColoredVSOutput ColoredVertexShader(ColoredVSInput input)
+{
+   ColoredVSOutput output;
+   float4 worldPosition = mul(input.Position, xWorld);
+   float4x4 preViewProjection = mul(xView, xProjection);
+
+   output.Position = mul(worldPosition, preViewProjection);
+   output.Color = input.Color;
+   return output;
+}
+
+float4 ColoredPixelShader(ColoredVSOutput input) : COLOR0
+{
+   return input.Color;
+}
+
+
 // ====================================================================
 technique SolidColored // ќтрисовка сплошным заданным цветом
 {
     pass Pass1
     {
         VertexShader = compile vs_2_0 CommonVertexShader();
-        PixelShader = compile ps_2_0 SolidColoredPixelShader();
+        PixelShader = compile ps_2_0  SolidColoredPixelShader();
     }
+}
+
+technique Colored // ќтрисовка, использу€ цвета каждой вершины
+{
+   pass Pass1
+   {
+     VertexShader = compile vs_2_0 ColoredVertexShader();
+     PixelShader = compile ps_2_0  ColoredPixelShader();
+   }
 }
 
 technique Textured // ќтрисовка с наложением текстуры
@@ -113,6 +154,6 @@ technique Textured // ќтрисовка с наложением текстуры
     pass Pass1
     {
         VertexShader = compile vs_2_0 TexturedVertexShader();
-        PixelShader = compile ps_2_0 TexturedPixelShader();
+        PixelShader = compile ps_2_0  TexturedPixelShader();
     }
 }
