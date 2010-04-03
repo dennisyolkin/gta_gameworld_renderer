@@ -3,7 +3,7 @@ float4x4 xView;
 float4x4 xProjection;
 
 Texture xTexture;   // используется при отрисовке техникой Textured
-float4 xSolidColor; // используется при отрисовке техникой Colored
+float4 xSolidColor; // используется при отрисовке техникой SolidColored
 
 sampler TextureSampler = sampler_state { 
    texture = <xTexture>;
@@ -73,7 +73,7 @@ inline CommonVSOutput CommonVertexShader(CommonVSInput input)
 
 // ============= Colored shaders  =====================================
 
-float4 ColoredPixelShader(CommonVSOutput input) : COLOR0
+float4 SolidColoredPixelShader(CommonVSOutput input) : COLOR0
 {
    float4 color = xSolidColor;
    color.rgb *= (input.LightingFactor + AmbientLight);
@@ -99,16 +99,16 @@ float4 TexturedPixelShader(TexturedVSOutput input) : COLOR0
 
 
 // ====================================================================
-technique Colored
+technique SolidColored // Отрисовка сплошным заданным цветом
 {
     pass Pass1
     {
         VertexShader = compile vs_2_0 CommonVertexShader();
-        PixelShader = compile ps_2_0 ColoredPixelShader();
+        PixelShader = compile ps_2_0 SolidColoredPixelShader();
     }
 }
 
-technique Textured
+technique Textured // Отрисовка с наложением текстуры
 {
     pass Pass1
     {

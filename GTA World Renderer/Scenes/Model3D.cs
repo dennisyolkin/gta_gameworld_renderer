@@ -127,7 +127,7 @@ namespace GTAWorldRenderer.Scenes
             }
             else
             {
-               effect.CurrentTechnique = effect.Techniques["Colored"];
+               effect.CurrentTechnique = effect.Techniques["SolidColored"];
                effect.Parameters["xSolidColor"].SetValue(mat.Color.ToVector4());
             }
 
