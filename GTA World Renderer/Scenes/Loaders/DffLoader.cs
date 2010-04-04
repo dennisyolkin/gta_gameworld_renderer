@@ -307,6 +307,8 @@ namespace GTAWorldRenderer.Scenes.Loaders
 
          if ((flags & GeometrySectionFlags.HasColorInfo) != GeometrySectionFlags.None)
             ReadColors(mesh, verticesCount);
+         else
+            FillColors(mesh, verticesCount);
 
          if ((flags & GeometrySectionFlags.HasTextureCoords) != GeometrySectionFlags.None)
             ReadTextureCoords(mesh, verticesCount);
@@ -320,8 +322,6 @@ namespace GTAWorldRenderer.Scenes.Loaders
 
          if ((flags & GeometrySectionFlags.HasNormalsInfo) != GeometrySectionFlags.None)
             ReadNormals(mesh, verticesCount);
-         else
-            GeometryUtils.EvaluateNormals(mesh);
 
          modelData.Meshes.Add(mesh);
       }
@@ -338,6 +338,14 @@ namespace GTAWorldRenderer.Scenes.Loaders
             byte a = input.ReadByte();
             mesh.Colors.Add(new Color(r, g, b, a));
          }
+      }
+
+
+      private void FillColors(ModelMeshData mesh, int verticesCount)
+      {
+         mesh.Colors = new List<Color>(verticesCount);
+         for (int i = 0; i != verticesCount; ++i)
+            mesh.Colors.Add(new Color(0, 0, 0, 1));
       }
 
 

@@ -5,6 +5,10 @@ float4x4 xProjection;
 Texture xTexture;   // используетс€ при отрисовке техникой Textured
 float4 xSolidColor; // используетс€ при отрисовке техникой SolidColored
 
+// ¬еса текстуры и цвета вершины при отрисовке с помощью Textured-техники
+const float TextureColorWeight   = 0.9;
+const float VertexColorWeight    = 0.25;
+
 sampler TextureSampler = sampler_state { 
    texture = <xTexture>;
    magfilter = LINEAR;
@@ -14,16 +18,6 @@ sampler TextureSampler = sampler_state {
    AddressV = wrap;
 };
 
-
-float3 LightSource = float3(10, 10, 10);
-float AmbientLight = 0.30;
-
-
-/*
-TODO :: 
-не повлил€ет ли на эффективность использование CommonVertexShader и соответствующих Common-структур?
-¬озможно, в данном случае "дешевле" продублировать код.
-*/
 
 // ==================== Common data structures =======================
 struct CommonVSInput
@@ -36,7 +30,6 @@ struct CommonVSInput
 struct CommonVSOutput
 {
    float4 Position         : POSITION;
-   float  LightingFactor   : TEXCOORD1;
 };
 
 
@@ -46,12 +39,14 @@ struct TexturedVSInput
 {
    CommonVSInput  Common;
    float2         TexCoords      : TEXCOORD0;
+   float4         Color          : COLOR0;
 };
 
 struct TexturedVSOutput
 {
    CommonVSOutput  Common;
    float2          TexCoords      : TEXCOORD0;
+   float4          Color          : COLOR0;
 };
 // ====================================================================
 
@@ -59,38 +54,34 @@ struct TexturedVSOutput
 struct ColoredVSInput
 {
    float4         Position   : POSITION;
-   float4         Color      : TEXCOORD1;
+   float4         Color      : COLOR0;
 };
 
 struct ColoredVSOutput
 {
    float4          Position   : POSITION;
-   float4          Color      : TEXCOORD1;
+   float4          Color      : COLOR0;
 };
 // ====================================================================
 
 inline CommonVSOutput CommonVertexShader(CommonVSInput input)
 {
    CommonVSOutput output;
-   float4 worldPosition = mul(input.Position, xWorld);
+
    float4x4 preViewProjection = mul(xView, xProjection);
+   float4x4 preWorldViewProjection = mul(xWorld, preViewProjection);
 
-   output.Position = mul(worldPosition, preViewProjection);
-
-   float3 Normal = mul(input.Normal, xWorld);
-   float3 lightVector = normalize(LightSource - worldPosition);
-   output.LightingFactor = saturate(dot(input.Normal, lightVector));
+   output.Position = mul(input.Position, preWorldViewProjection);
 
    return output;
 }
 
 
-// ============= Colored shaders  =====================================
+// ============= Solid Colored shaders  =====================================
 
 float4 SolidColoredPixelShader(CommonVSOutput input) : COLOR0
 {
    float4 color = xSolidColor;
-   color.rgb *= (input.LightingFactor + AmbientLight);
    return color;
 }
 
@@ -101,13 +92,15 @@ TexturedVSOutput TexturedVertexShader(TexturedVSInput input)
    TexturedVSOutput output;
    output.Common = CommonVertexShader(input.Common);
    output.TexCoords = input.TexCoords;
+   output.Color = input.Color;
    return output;
 }
 
 float4 TexturedPixelShader(TexturedVSOutput input) : COLOR0
 {
    float4 color = tex2D(TextureSampler, input.TexCoords);
-   color.rgb *= (input.Common.LightingFactor + AmbientLight);
+   color.rgb *= TextureColorWeight;
+   color.rgb += input.Color * VertexColorWeight;
    return color;
 }
 
@@ -126,7 +119,8 @@ ColoredVSOutput ColoredVertexShader(ColoredVSInput input)
 
 float4 ColoredPixelShader(ColoredVSOutput input) : COLOR0
 {
-   return input.Color;
+   float4 color = input.Color;
+   return color;
 }
 
 

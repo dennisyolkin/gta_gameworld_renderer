@@ -9,12 +9,11 @@ namespace GTAWorldRenderer.Scenes.Loaders
 
       public static ModelMesh3D CreateModelMesh(ModelMeshData mesh)
       {
-         // создаём VertexBuffer
-         VertexPositionNormalTexture[] vertices = new VertexPositionNormalTexture[mesh.Vertices.Count];
+         VertexPositionColorTexture[] vertices = new VertexPositionColorTexture[mesh.Vertices.Count];
          for (var i = 0; i != mesh.Vertices.Count; ++i)
-            vertices[i] = new VertexPositionNormalTexture(mesh.Vertices[i], mesh.Normals[i], mesh.TextureCoords[i]);
+            vertices[i] = new VertexPositionColorTexture(mesh.Vertices[i], mesh.Colors[i], mesh.TextureCoords[i]);
          VertexBuffer vertexBuffer = new VertexBuffer(GraphicsDeviceHolder.Device,
-            mesh.Vertices.Count * VertexPositionNormalTexture.SizeInBytes, BufferUsage.WriteOnly);
+            mesh.Vertices.Count * VertexPositionColorTexture.SizeInBytes, BufferUsage.WriteOnly);
          vertexBuffer.SetData(vertices);
 
          // создаём IndexBuffer
@@ -32,8 +31,8 @@ namespace GTAWorldRenderer.Scenes.Loaders
          if (offset != mesh.SumIndicesCount)
             Utils.TerminateWithError("Incorrect total indices amount!");
 
-         return new ModelMesh3D(new VertexDeclaration(GraphicsDeviceHolder.Device, VertexPositionNormalTexture.VertexElements),
-            vertexBuffer, indexBuffer, mesh.TriangleStrip, VertexPositionNormalTexture.SizeInBytes, mesh.Materials, meshParrts3d);
+         return new ModelMesh3D(new VertexDeclaration(GraphicsDeviceHolder.Device, VertexPositionColorTexture.VertexElements),
+            vertexBuffer, indexBuffer, mesh.TriangleStrip, VertexPositionColorTexture.SizeInBytes, mesh.Materials, meshParrts3d);
       }
 
 
