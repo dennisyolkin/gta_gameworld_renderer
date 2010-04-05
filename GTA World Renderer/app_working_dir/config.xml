@@ -1,23 +1,23 @@
-<?xml version='1.0'?>
+﻿<?xml version='1.0' encoding="utf-8" ?>
 
-<GlobalConfig 
+<ConfigData
    xmlns="gta-gameworld-renderer"
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:schemaLocation="schema.xsd"
-   >
+>
    
-   <GtaFolder>c:\Program Files\GTAIII\</GtaFolder>
+   <GTAFolderPath>c:\Program Files\GTAIII\</GTAFolderPath>
    
-   <LoadingParams>
+   <Loading>
       <ShowWarningsIfTextureNotFound>false</ShowWarningsIfTextureNotFound>
       <LowDetailedScene>false</LowDetailedScene>
       <DetailedLogOutput>false</DetailedLogOutput>
       <SceneObjectsAmountLimit>-1</SceneObjectsAmountLimit>
-   </LoadingParams>
+   </Loading>
    
-   <RenderingParams>
+   <Rendering>
       <FullScreen>true</FullScreen>
-      <NearClippingDist>0.1</NearClippingDist>
-      <FarClippingDist>5000</FarClippingDist>
-   </RenderingParams>
-</GlobalConfig>
+      <NearClippingDistance>0.1</NearClippingDistance>
+      <FarClippingDistance>5000</FarClippingDistance>
+   </Rendering>
+</ConfigData>

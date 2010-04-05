@@ -3,6 +3,7 @@ using GTAWorldRenderer.Logging;
 using System.IO;
 using System.Xml.Schema;
 using System.Xml;
+using System.Xml.Serialization;
 
 namespace GTAWorldRenderer
 {
@@ -10,7 +11,7 @@ namespace GTAWorldRenderer
    /// Предоставляет параметры приложения, считанные из xml-файлов конфигурации
    /// (основной - config.xml)
    /// </summary>
-   class Config
+   public class Config
    {
       public class ConfigInitializationFailedException : ApplicationException
       {
@@ -25,21 +26,49 @@ namespace GTAWorldRenderer
          }
       }
 
-      private static Config instance = new Config();
-      private Log Logger = Log.Instance;
+      private const string ConfigFilePath = "config.xml";
+      private const string SchemaFilePath = "config.xsd";
 
-      public static Config Instance
+      private static ConfigData configData;
+      private static Log Logger = Log.Instance;
+
+      public static ConfigData Instance
       {
-         get { return instance; }
+         get 
+         {
+            if (configData == null)
+            {
+               using (Logger.EnterStage("Reading config file"))
+               {
+                  Logger.Print("Working directory: " + System.Environment.CurrentDirectory);
+                  using (Logger.EnterStage("Parsing " + ConfigFilePath + " file..."))
+                  {
+                     if (!File.Exists(ConfigFilePath))
+                        TerminateWithError("File not found: " + ConfigFilePath);
+                     if (!File.Exists(SchemaFilePath))
+                        TerminateWithError("File not found: " + SchemaFilePath);
+
+                     Logger.Print("Validating file...");
+                     try
+                     {
+                        ValidateXml(ConfigFilePath, SchemaFilePath);
+                     } catch (Exception er)
+                     {
+                        TerminateWithError(String.Format("Content of {0} is not valid! Validation exception details: {1}" ,ConfigFilePath, er.Message), er);
+                     }
+
+                     ReadConfig();
+                  }
+               }
+               Logger.Print("Application configuration was successfully loaded");
+            }
+            return configData;
+         }
       }
 
       // TODO :: сеттеры в *Params сейчас публичные, и это плохо.
       // нужно сделать так, чтобы записывать в них можно было только из методов класса Config
 
-      public struct GlobalParams
-      {
-         public string GTAFolderPath { set; get; }
-      }
 
       public struct LoadingParams
       {
@@ -51,87 +80,47 @@ namespace GTAWorldRenderer
 
       public struct RenderingParams
       {
-         public bool FullScreenMode { set; get; }
+         public bool FullScreen { set; get; }
          public float NearClippingDistance { set; get; }
          public float FarClippingDistance { set; get; }
       }
 
-
-      public GlobalParams Global;
-      public LoadingParams Loading;
-      public RenderingParams Rendering;
-
-      public Config()
+      [XmlRoot(Namespace = "gta-gameworld-renderer")]
+      public class ConfigData
       {
-         using (Logger.EnterStage("Reading config file"))
-         {
-            Logger.Print("Working directory: " + System.Environment.CurrentDirectory);
-            using (Logger.EnterStage("Parsing config.xml file..."))
-            {
-               if (!File.Exists("config.xml"))
-                  TerminateWithError("File not found: config.xml");
-               if (!File.Exists("config.xsd"))
-                  TerminateWithError("File not found: config.xsd");
-
-               Logger.Print("Validating file...");
-               try
-               {
-                  ValidateXml("config.xml", "config.xsd");
-               } catch (Exception er)
-               {
-                  TerminateWithError("Content of config.xml is not valid! Validation exception details: " + er.Message, er);
-               }
-
-               ReadConfig();
-            }
-         }
-         Logger.Print("Application configuration was successfully loaded");
+         public string GTAFolderPath { set; get; }
+         public LoadingParams Loading;
+         public RenderingParams Rendering;
       }
+
 
       /// <summary>
       /// Считывает содержимое конфигурационного файла. Предполагается, что файл точно существует и корректен.
       /// </summary>
-      private void ReadConfig()
+      private static void ReadConfig()
       {
-         XmlDocument doc = new XmlDocument();
-         doc.Load("config.xml");
-         XmlNamespaceManager nsmgr = new XmlNamespaceManager(doc.NameTable);
-         nsmgr.AddNamespace("ns", "gta-gameworld-renderer");
+         configData = new ConfigData();
+         XmlSerializer dsr = new XmlSerializer(configData.GetType());
+         configData = (ConfigData)dsr.Deserialize(new StreamReader(ConfigFilePath));
 
-         Global.GTAFolderPath = doc.SelectSingleNode("/ns:GlobalConfig/ns:GtaFolder", nsmgr).InnerText;
-         if (!Global.GTAFolderPath.EndsWith("/") && !Global.GTAFolderPath.EndsWith("\\"))
-            Global.GTAFolderPath += "\\";
-         Logger.Print("GTA Folder: " + Global.GTAFolderPath);
+         if (!configData.GTAFolderPath.EndsWith("/") && !configData.GTAFolderPath.EndsWith("\\"))
+            configData.GTAFolderPath += "\\";
+         Logger.Print("GTA Folder: " + configData.GTAFolderPath);
 
-         Loading.ShowWarningsIfTextureNotFound = Boolean.Parse(
-            doc.SelectSingleNode("/ns:GlobalConfig/ns:LoadingParams/ns:ShowWarningsIfTextureNotFound", nsmgr).InnerText);
+         if (configData.Loading.SceneObjectsAmountLimit == -1)
+            configData.Loading.SceneObjectsAmountLimit = int.MaxValue;
 
-         Loading.SceneObjectsAmountLimit = int.Parse(doc.SelectSingleNode("/ns:GlobalConfig/ns:LoadingParams/ns:SceneObjectsAmountLimit", nsmgr).InnerText);
-         if (Loading.SceneObjectsAmountLimit == -1)
-            Loading.SceneObjectsAmountLimit = int.MaxValue;
-
-         Loading.LowDetailedScene = Boolean.Parse(
-            doc.SelectSingleNode("/ns:GlobalConfig/ns:LoadingParams/ns:LowDetailedScene", nsmgr).InnerText);
-
-         Loading.DetailedLogOutput = Boolean.Parse(
-            doc.SelectSingleNode("/ns:GlobalConfig/ns:LoadingParams/ns:DetailedLogOutput", nsmgr).InnerText);
-
-         Rendering.FullScreenMode = Boolean.Parse(
-            doc.SelectSingleNode("/ns:GlobalConfig/ns:RenderingParams/ns:FullScreen", nsmgr).InnerText);
-
-         Rendering.NearClippingDistance = float.Parse(doc.SelectSingleNode("/ns:GlobalConfig/ns:RenderingParams/ns:NearClippingDist", nsmgr).InnerText);
-         Rendering.FarClippingDistance = float.Parse(doc.SelectSingleNode("/ns:GlobalConfig/ns:RenderingParams/ns:FarClippingDist", nsmgr).InnerText);
       }
 
 
-      void TerminateWithError(string msg, Exception innerException)
+      private static void TerminateWithError(string msg, Exception innerException)
       {
          Log.Instance.Print(msg, MessageType.Error);
          throw new ConfigInitializationFailedException(msg, innerException);
       }
 
 
-      void TerminateWithError(string error_msg)
+      private static void TerminateWithError(string error_msg)
       {
          TerminateWithError(error_msg, null);
       }
@@ -141,7 +130,7 @@ namespace GTAWorldRenderer
       /// Проверяет соответствие XML файла схеме.
       /// Кидает исключение типа XmlSchemaCalidationFailed, если XML файл не соответствует схеме
       /// </summary>
-      private void ValidateXml(string xml_path, string schema_path)
+      private static void ValidateXml(string xml_path, string schema_path)
       {
          XmlSchemaSet sc = new XmlSchemaSet();
          sc.Add("gta-gameworld-renderer", schema_path);

@@ -41,13 +41,13 @@ namespace GTAWorldRenderer.Scenes.Loaders
             try
             {
                Logger.Print("Switching working directory to GTA folder");
-               System.Environment.CurrentDirectory = Config.Instance.Global.GTAFolderPath;
+               System.Environment.CurrentDirectory = Config.Instance.GTAFolderPath;
 
                gtaVersion = GetGtaVersion();
 
                var loadedModels = new Dictionary<string, ModelEntry>();
 
-               string mainImgPath = Config.Instance.Global.GTAFolderPath + "models/gta3.img";
+               string mainImgPath = Config.Instance.GTAFolderPath + "models/gta3.img";
                var loadedArchiveEntries = LoadMainImgArchive(mainImgPath);
                foreach (var item in loadedArchiveEntries)
                   loadedModels[item.Name.Substring(0, item.Name.Length - 4)] = new ModelEntry(item); // берём название модели без расширения .dff

@@ -4,13 +4,13 @@
    elementFormDefault="qualified"
    targetNamespace="gta-gameworld-renderer"
 >
-   <xsd:element name="GlobalConfig" type="GlobalConfigType"/>
+   <xsd:element name="ConfigData" type="GlobalConfigType"/>
 
    <xsd:complexType name="GlobalConfigType">
       <xsd:sequence>
-         <xsd:element name="GtaFolder" type="xsd:string"/>
-         <xsd:element name="LoadingParams" type="LoadingParamsType"/>
-         <xsd:element name="RenderingParams" type="RenderingParamsType"/>
+         <xsd:element name="GTAFolderPath" type="xsd:string"/>
+         <xsd:element name="Loading" type="LoadingParamsType"/>
+         <xsd:element name="Rendering" type="RenderingParamsType"/>
       </xsd:sequence>
    </xsd:complexType>
 
@@ -26,8 +26,8 @@
    <xsd:complexType name="RenderingParamsType">
       <xsd:sequence>
          <xsd:element name="FullScreen" type="xsd:boolean"/>
-         <xsd:element name="NearClippingDist" type="xsd:float"/>
-         <xsd:element name="FarClippingDist" type="xsd:float"/>
+         <xsd:element name="NearClippingDistance" type="xsd:float"/>
+         <xsd:element name="FarClippingDistance" type="xsd:float"/>
       </xsd:sequence>
    </xsd:complexType>
    
