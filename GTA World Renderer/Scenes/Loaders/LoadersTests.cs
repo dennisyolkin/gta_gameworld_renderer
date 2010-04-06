@@ -33,30 +33,26 @@ namespace GTAWorldRenderer.Scenes.Loaders
             TXDArchive archive = new TXDArchive(txdPath);
             entries = archive.Load();
 
-            using (BinaryReader reader = new BinaryReader(new FileStream(txdPath, FileMode.Open)))
+            foreach (var entry in entries)
             {
-               foreach (var entry in entries)
+               byte[] data = entry.GetData();
+               if (entry.Name.Contains('/')) // имя текстуры в TXD может иметь вид <имя TXD-файла>/<имя текстуры>.gtatexture
                {
-                  reader.BaseStream.Seek(entry.Offset, SeekOrigin.Begin);
-                  byte[] data = reader.ReadBytes(entry.Size);
-
-                  if (entry.Name.Contains('/')) // имя текстуры в TXD может иметь вид <имя TXD-файла>/<имя текстуры>.gtatexture
-                  {
-                     string dir = entry.Name.Substring(0, entry.Name.LastIndexOf('/'));
-                     if (!Directory.Exists(outputPathPrefix + dir))
-                        Directory.CreateDirectory(outputPathPrefix + dir);
-                  }
-                  string path = outputPathPrefix + entry.Name;
-                  while (File.Exists(path))
-                  {
-                     int sep = path.LastIndexOf('.');
-                     path = path.Substring(0, sep) + "_" + path.Substring(sep);
-                  }
-
-                  using (FileStream fout = new FileStream(path, FileMode.CreateNew))
-                     fout.Write(data, 0, data.Length);
+                  string dir = entry.Name.Substring(0, entry.Name.LastIndexOf('/'));
+                  if (!Directory.Exists(outputPathPrefix + dir))
+                     Directory.CreateDirectory(outputPathPrefix + dir);
                }
+               string path = outputPathPrefix + entry.Name;
+               while (File.Exists(path))
+               {
+                  int sep = path.LastIndexOf('.');
+                  path = path.Substring(0, sep) + "_" + path.Substring(sep);
+               }
+
+               using (FileStream fout = new FileStream(path, FileMode.CreateNew))
+                  fout.Write(data, 0, data.Length);
             }
+
          } catch (Exception er)
          {
             Log.Instance.Print("Failed to unpack TXD. Exception occured: " + er.Message, MessageType.Error);
@@ -86,26 +82,21 @@ namespace GTAWorldRenderer.Scenes.Loaders
          {
             IMGArchive archive = new IMGArchive(imgPath, GtaVersion.III);
             IEnumerable<FileProxy> entries = archive.Load();
-
-            using (BinaryReader reader = new BinaryReader(new FileStream(imgPath, FileMode.Open)))
+            foreach (var entry in entries)
             {
-               foreach (var entry in entries)
+               byte[] data = entry.GetData();
+               if (entry.Name.EndsWith(".txd"))
                {
-                  reader.BaseStream.Seek(entry.Offset, SeekOrigin.Begin);
-                  byte[] data = reader.ReadBytes(entry.Size);
-                  if (entry.Name.EndsWith(".txd"))
-                  {
-                     string path = outputPathPrefix + @"\___txds\\" + entry.Name;
-                     using (FileStream fout = new FileStream(path, FileMode.Create))
-                        fout.Write(data, 0, data.Length);
-                     UnpackTxd(path, outputPathPrefix);
-                  }
-                  else
-                  {
-                     string path = outputPathPrefix + entry.Name;
-                     using (FileStream fout = new FileStream(path, FileMode.Create))
-                        fout.Write(data, 0, data.Length);
-                  }
+                  string path = outputPathPrefix + @"\___txds\\" + entry.Name;
+                  using (FileStream fout = new FileStream(path, FileMode.Create))
+                     fout.Write(data, 0, data.Length);
+                  UnpackTxd(path, outputPathPrefix);
+               }
+               else
+               {
+                  string path = outputPathPrefix + entry.Name;
+                  using (FileStream fout = new FileStream(path, FileMode.Create))
+                     fout.Write(data, 0, data.Length);
                }
             }
          }
