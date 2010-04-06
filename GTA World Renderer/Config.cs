@@ -4,6 +4,7 @@ using System.IO;
 using System.Xml.Schema;
 using System.Xml;
 using System.Xml.Serialization;
+using System.Runtime.Serialization;
 
 namespace GTAWorldRenderer
 {
@@ -66,31 +67,73 @@ namespace GTAWorldRenderer
          }
       }
 
-      // TODO :: сеттеры в *Params сейчас публичные, и это плохо.
-      // нужно сделать так, чтобы записывать в них можно было только из методов класса Config
-
-
-      public struct LoadingParams
+      [DataContract(Namespace = "gta-gameworld-renderer")]
+      public class LoadingParams
       {
-         public bool ShowWarningsIfTextureNotFound { set; get; }
-         public bool LowDetailedScene { set; get; }
-         public bool DetailedLogOutput { set; get; }
-         public int SceneObjectsAmountLimit { set; get; }
+         private int _sceneObjectsAmountLimit;
+
+         [DataMember(IsRequired = true, Order = 1)]
+         public bool ShowWarningsIfTextureNotFound { get; private set; }
+
+         [DataMember(IsRequired = true, Order = 2)]
+         public int SceneObjectsAmountLimit
+         {
+            get { return _sceneObjectsAmountLimit; } 
+
+            private set
+            {
+               _sceneObjectsAmountLimit = value == -1? int.MaxValue : value;
+            }
+         }
+
+
+         [DataMember(IsRequired = true, Order = 3)]
+         public bool LowDetailedScene { get; private set; }
+
+         [DataMember(IsRequired = true, Order = 4)]
+         public bool DetailedLogOutput { get; private set; }
+
       }
 
-      public struct RenderingParams
+
+      [DataContract(Namespace = "gta-gameworld-renderer")]
+      public class RenderingParams
       {
-         public bool FullScreen { set; get; }
-         public float NearClippingDistance { set; get; }
-         public float FarClippingDistance { set; get; }
+         [DataMember(IsRequired = true, Order = 1)]
+         public bool FullScreen { get; private set; }
+
+         [DataMember(IsRequired = true, Order = 2)]
+         public float NearClippingDistance { get; private set; }
+
+         [DataMember(IsRequired = true, Order = 3)]
+         public float FarClippingDistance { get; private set; }
       }
 
-      [XmlRoot(Namespace = "gta-gameworld-renderer")]
+
+      [DataContract(Name = "ConfigData", Namespace = "gta-gameworld-renderer")]
       public class ConfigData
       {
-         public string GTAFolderPath { set; get; }
-         public LoadingParams Loading;
-         public RenderingParams Rendering;
+         private string _gtaFolderPath;
+
+         [DataMember(IsRequired = true, Order = 1)]
+         public string GTAFolderPath
+         {
+            get { return _gtaFolderPath; }
+
+            private set
+            {
+               _gtaFolderPath = value;
+               if (!_gtaFolderPath.EndsWith("/") && !_gtaFolderPath.EndsWith("\\"))
+                  _gtaFolderPath += "\\";
+            }
+         }
+
+
+         [DataMember(IsRequired = true, Order = 2)]
+         public LoadingParams Loading { get; private set; }
+
+         [DataMember(IsRequired = true, Order = 3)]
+         public RenderingParams Rendering { get; private set; }
       }
 
 
@@ -99,17 +142,10 @@ namespace GTAWorldRenderer
       /// </summary>
       private static void ReadConfig()
       {
-         configData = new ConfigData();
-         XmlSerializer dsr = new XmlSerializer(configData.GetType());
-         configData = (ConfigData)dsr.Deserialize(new StreamReader(ConfigFilePath));
+         var dsr = new DataContractSerializer(typeof(ConfigData));
+         configData = (ConfigData)dsr.ReadObject(new FileStream(ConfigFilePath, FileMode.Open));
 
-         if (!configData.GTAFolderPath.EndsWith("/") && !configData.GTAFolderPath.EndsWith("\\"))
-            configData.GTAFolderPath += "\\";
          Logger.Print("GTA Folder: " + configData.GTAFolderPath);
-
-         if (configData.Loading.SceneObjectsAmountLimit == -1)
-            configData.Loading.SceneObjectsAmountLimit = int.MaxValue;
-
       }
 
 
@@ -137,8 +173,8 @@ namespace GTAWorldRenderer
          XmlReaderSettings settings = new XmlReaderSettings();
          settings.ValidationType = ValidationType.Schema;
          settings.Schemas = sc;
-         XmlReader reader = XmlReader.Create(xml_path, settings);
-         while (reader.Read()) ;
+         using(XmlReader reader = XmlReader.Create(xml_path, settings))
+            while (reader.Read());
       }
 
    }
