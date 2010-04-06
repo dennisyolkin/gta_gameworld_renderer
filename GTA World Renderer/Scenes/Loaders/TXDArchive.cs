@@ -70,7 +70,7 @@ namespace GTAWorldRenderer.Scenes.Loaders
       {
          int positionEnd = (int)fin.BaseStream.Position + size;
 
-         while (fin.BaseStream.Position < positionEnd)
+         while (fin.BaseStream.Position < positionEnd && fin.BaseStream.Position < fin.BaseStream.Length)
          {
             SectionType sectionType = (SectionType)fin.ReadInt32();
 
