@@ -53,13 +53,13 @@ struct TexturedVSOutput
 // ==================== Colored data structures =======================
 struct ColoredVSInput
 {
-   float4         Position   : POSITION;
+   CommonVSInput  Common;
    float4         Color      : COLOR0;
 };
 
 struct ColoredVSOutput
 {
-   float4          Position   : POSITION;
+   CommonVSOutput  Common;
    float4          Color      : COLOR0;
 };
 // ====================================================================
@@ -109,10 +109,7 @@ float4 TexturedPixelShader(TexturedVSOutput input) : COLOR0
 ColoredVSOutput ColoredVertexShader(ColoredVSInput input)
 {
    ColoredVSOutput output;
-   float4 worldPosition = mul(input.Position, xWorld);
-   float4x4 preViewProjection = mul(xView, xProjection);
-
-   output.Position = mul(worldPosition, preViewProjection);
+   output.Common = CommonVertexShader(input.Common);
    output.Color = input.Color;
    return output;
 }
