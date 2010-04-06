@@ -88,9 +88,12 @@ namespace GTAWorldRenderer.Scenes.Loaders
                if (entry.Name.EndsWith(".txd"))
                {
                   string path = outputPathPrefix + @"\___txds\\" + entry.Name;
-                  using (FileStream fout = new FileStream(path, FileMode.Create))
-                     fout.Write(data, 0, data.Length);
-                  UnpackTxd(path, outputPathPrefix);
+                  if (!File.Exists(path))
+                  {
+                     using (FileStream fout = new FileStream(path, FileMode.Create))
+                        fout.Write(data, 0, data.Length);
+                     UnpackTxd(path, outputPathPrefix);
+                  }
                }
                else
                {
