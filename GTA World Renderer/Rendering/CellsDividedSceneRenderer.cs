@@ -22,7 +22,6 @@ namespace GTAWorldRenderer.Rendering
       private Vector3 cameraPosition = new Vector3(0, DefaultCameraHeight, 0);
       private Matrix projectionMatrix;
       private MouseState oldMouseState;
-      private int oldWheelPos = 0;
 
       public CellsDividedSceneRenderer(ContentManager contentManager, Scene scene) 
          : base(contentManager)
