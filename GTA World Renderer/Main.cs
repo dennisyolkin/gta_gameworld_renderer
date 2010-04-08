@@ -6,14 +6,14 @@ using Microsoft.Xna.Framework;
 using System.Diagnostics;
 using GTAWorldRenderer.Rendering;
 using GTAWorldRenderer.Scenes.Loaders;
+using System.Collections.Generic;
 
 
 namespace GTAWorldRenderer
 {
    public class Main : Microsoft.Xna.Framework.Game
    {
-      Renderer renderer3d;
-      Renderer cellsDividedSceneRenderer;
+      RendererSwitcher renderer;
 
       public Main()
       {
@@ -53,22 +53,20 @@ namespace GTAWorldRenderer
             GraphicsDeviceHolder.DeviceManager.ApplyChanges();
          }
 
-         renderer3d = new SceneRenderer3D(Content, scene);
-         cellsDividedSceneRenderer = new CellsDividedSceneRenderer(Content, scene);
+         renderer = new RendererSwitcher(Content, new SceneRenderer3D(Content, scene));
+         renderer.AddRenderer(new CellsDividedSceneRenderer(Content, scene));
       }
 
 
       protected override void Update(GameTime gameTime)
       {
-         //renderer3d.Update(gameTime);
-         cellsDividedSceneRenderer.Update(gameTime);
+         renderer.Update(gameTime);
       }
 
 
       protected override void Draw(GameTime gameTime)
       {
-         //renderer3d.Draw(gameTime);
-         cellsDividedSceneRenderer.Draw(gameTime);
+         renderer.Draw(gameTime);
 
          base.Draw(gameTime);
       }
