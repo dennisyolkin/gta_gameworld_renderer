@@ -13,6 +13,7 @@ namespace GTAWorldRenderer
    public class Main : Microsoft.Xna.Framework.Game
    {
       Renderer renderer3d;
+      Renderer cellsDividedSceneRenderer;
 
       public Main()
       {
@@ -51,19 +52,23 @@ namespace GTAWorldRenderer
             GraphicsDeviceHolder.DeviceManager.IsFullScreen = true;
             GraphicsDeviceHolder.DeviceManager.ApplyChanges();
          }
+
          renderer3d = new SceneRenderer3D(Content, scene);
+         cellsDividedSceneRenderer = new CellsDividedSceneRenderer(Content, scene);
       }
 
 
       protected override void Update(GameTime gameTime)
       {
-         renderer3d.Update(gameTime);
+         //renderer3d.Update(gameTime);
+         cellsDividedSceneRenderer.Update(gameTime);
       }
 
 
       protected override void Draw(GameTime gameTime)
       {
-         renderer3d.Draw(gameTime);
+         //renderer3d.Draw(gameTime);
+         cellsDividedSceneRenderer.Draw(gameTime);
 
          base.Draw(gameTime);
       }
