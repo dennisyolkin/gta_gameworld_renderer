@@ -13,6 +13,7 @@ namespace GTAWorldRenderer.Scenes.Loaders
       enum IDESection
       {
          OBJS, // описание статических и динамических объектов
+         TOBJ, // описание временных (к примеру, разных для дня и ночи) объектов
          END,
       }
 
@@ -63,6 +64,8 @@ namespace GTAWorldRenderer.Scenes.Loaders
       {
          if (line.StartsWith("objs"))
             currentSection = IDESection.OBJS;
+         else if (line.StartsWith("tobj"))
+            currentSection = IDESection.TOBJ;
       }
 
 
@@ -78,7 +81,7 @@ namespace GTAWorldRenderer.Scenes.Loaders
 
          if (toks.Length < 5)
          {
-            string msg = "Incorrect number of tokens in OBJS section: " + toks.Length.ToString() + ".";
+            string msg = "Incorrect number of tokens in OBJS/TOBJ section: " + toks.Length.ToString() + ".";
             Log.Instance.Print(msg, MessageType.Error);
             throw new LoadingException(msg);
          }
