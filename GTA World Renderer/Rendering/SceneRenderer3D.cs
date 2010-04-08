@@ -68,12 +68,12 @@ namespace GTAWorldRenderer.Rendering
       {
          float timeDifference = (float)gameTime.ElapsedGameTime.TotalMilliseconds / 1000.0f;
 
-         ProcessMouse(gameTime, timeDifference);
-         ProcessKeyboard(gameTime, timeDifference);
+         ProcessMouse(timeDifference);
+         ProcessKeyboard(timeDifference);
       }
 
 
-      private void ProcessMouse(GameTime gameTime, float amount)
+      private void ProcessMouse(float timeDifference)
       {
          if (!usingMouse)
             return;
@@ -83,15 +83,15 @@ namespace GTAWorldRenderer.Rendering
          {
             float xDifference = -currentMouseState.X + originalMouseState.X;
             float yDifference = -currentMouseState.Y + originalMouseState.Y;
-            float leftrightRot = rotationSpeed * xDifference * amount;
-            float updownRot = rotationSpeed * yDifference * amount;
+            float leftrightRot = rotationSpeed * xDifference * timeDifference;
+            float updownRot = rotationSpeed * yDifference * timeDifference;
             camera.UpdateRotation(leftrightRot, updownRot);
          }
          Mouse.SetPosition(Device.Viewport.Width / 2, Device.Viewport.Height / 2);
       }
 
 
-      private void ProcessKeyboard(GameTime gameTime, float amount)
+      private void ProcessKeyboard(float timeDifference)
       {
          Vector3 moveVector = new Vector3(0, 0, 0);
          KeyboardState keyState = Keyboard.GetState();
@@ -125,7 +125,7 @@ namespace GTAWorldRenderer.Rendering
 
          oldKeyboardState = keyState;
 
-         camera.UpdatePosition(moveVector * amount * (fast? fastMoveSpeed : slowMoveSpeed));
+         camera.UpdatePosition(moveVector * timeDifference * (fast? fastMoveSpeed : slowMoveSpeed));
       }
 
 
@@ -140,7 +140,7 @@ namespace GTAWorldRenderer.Rendering
          effect.Parameters["xProjection"].SetValue(projectionMatrix);
 
          foreach (var obj in SceneContent.SceneObjects)
-            obj.Model.Draw(effect, obj.WorldMatrix);
+            obj.Model.Draw(effect, obj.WorldMatrix, true);
       }
    }
 }

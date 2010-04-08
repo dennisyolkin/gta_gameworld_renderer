@@ -28,10 +28,11 @@ namespace GTAWorldRenderer.Scenes
       /// </summary>
       /// <param name="effect">эффект</param>
       /// <param name="worldMatrix">Матрица, определяющая местоположение и поворот объекта. Перекрывает значение свойства WorldMatrix</param>
-      public void Draw(Effect effect, Matrix worldMatrix)
+      /// <param name="useMaterial">Нужно ли накладывать материал</param>
+      public void Draw(Effect effect, Matrix worldMatrix, bool useMaterial)
       {
          foreach (var mesh in meshes)
-            mesh.Draw(effect, worldMatrix);
+            mesh.Draw(effect, worldMatrix, useMaterial);
       }
 
 
@@ -105,7 +106,7 @@ namespace GTAWorldRenderer.Scenes
       /// Отрисовывает объект
       /// </summary>
       /// <param name="effect">Эффект, который должен испльзоваться для отрисовки. Предполагается, что как минимум матрицы xProjection и xView уже заданы!</param>
-      public void Draw(Effect effect, Matrix worldMatrix)
+      public void Draw(Effect effect, Matrix worldMatrix, bool useMaterial)
       {
          GraphicsDevice device = vertexDeclaration.GraphicsDevice;
          device.RenderState.CullMode = CullMode.None; // TODO :: think about it!
@@ -118,17 +119,19 @@ namespace GTAWorldRenderer.Scenes
 
          foreach (ModelMeshPart3D part in meshParts)
          {
-            Material mat = materials[part.MaterialId];
-
-            if (mat.Texture != null)
+            if (useMaterial)
             {
-               effect.CurrentTechnique = effect.Techniques["Textured"];
-               effect.Parameters["xTexture"].SetValue(mat.Texture);
-            }
-            else
-            {
-               effect.CurrentTechnique = effect.Techniques["SolidColored"];
-               effect.Parameters["xSolidColor"].SetValue(mat.Color.ToVector4());
+               Material mat = materials[part.MaterialId];
+               if (mat.Texture != null)
+               {
+                  effect.CurrentTechnique = effect.Techniques["Textured"];
+                  effect.Parameters["xTexture"].SetValue(mat.Texture);
+               }
+               else
+               {
+                  effect.CurrentTechnique = effect.Techniques["SolidColored"];
+                  effect.Parameters["xSolidColor"].SetValue(mat.Color.ToVector4());
+               }
             }
 
             effect.Begin();
