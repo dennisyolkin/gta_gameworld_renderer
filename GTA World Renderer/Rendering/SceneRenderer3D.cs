@@ -15,7 +15,6 @@ namespace GTAWorldRenderer.Rendering
 
       public Scene SceneContent { get; set; }
 
-      GraphicsDevice device;
       Camera camera;
       InfoPanelFor3Dview textInfoPanel;
       Effect effect;
@@ -49,19 +48,18 @@ namespace GTAWorldRenderer.Rendering
 
       public void Initialize()
       {
-         device = GraphicsDeviceHolder.Device;
          camera = new Camera();
 
          textInfoPanel = new InfoPanelFor3Dview(Content);
          textInfoPanel.Camera = camera;
          AddSubRenderer(textInfoPanel);
 
-         projectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, device.Viewport.AspectRatio, 
+         projectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, Device.Viewport.AspectRatio, 
             Config.Instance.Rendering.NearClippingDistance, Config.Instance.Rendering.FarClippingDistance);
 
          effect = Content.Load<Effect>("effect");
 
-         Mouse.SetPosition(device.Viewport.Width / 2, device.Viewport.Height / 2);
+         Mouse.SetPosition(Device.Viewport.Width / 2, Device.Viewport.Height / 2);
          originalMouseState = Mouse.GetState();
       }
 
@@ -89,7 +87,7 @@ namespace GTAWorldRenderer.Rendering
             float updownRot = rotationSpeed * yDifference * amount;
             camera.UpdateRotation(leftrightRot, updownRot);
          }
-         Mouse.SetPosition(device.Viewport.Width / 2, device.Viewport.Height / 2);
+         Mouse.SetPosition(Device.Viewport.Width / 2, Device.Viewport.Height / 2);
       }
 
 
@@ -122,7 +120,7 @@ namespace GTAWorldRenderer.Rendering
          {
             usingMouse = !usingMouse;
             if (usingMouse)
-               Mouse.SetPosition(device.Viewport.Width / 2, device.Viewport.Height / 2);
+               Mouse.SetPosition(Device.Viewport.Width / 2, Device.Viewport.Height / 2);
          }
 
          oldKeyboardState = keyState;
@@ -133,7 +131,7 @@ namespace GTAWorldRenderer.Rendering
 
       public override void DoDraw(GameTime gameTime)
       {
-         device.Clear(Color.Black);
+         Device.Clear(Color.Black);
 
          if (SceneContent == null)
             return;

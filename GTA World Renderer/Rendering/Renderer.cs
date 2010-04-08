@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace GTAWorldRenderer
 {
@@ -9,6 +10,7 @@ namespace GTAWorldRenderer
    abstract class Renderer
    {
       protected ContentManager Content;
+      protected GraphicsDevice Device;
 
       /// <summary>
       /// Конструктор. Должен вызываться тогда, когда уже инициализирован ContentManager и Device
@@ -16,6 +18,7 @@ namespace GTAWorldRenderer
       public Renderer(ContentManager contentManager)
       {
          this.Content = contentManager;
+         this.Device = GraphicsDeviceHolder.Device;
       }
 
       /// <summary>
