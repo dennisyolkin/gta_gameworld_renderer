@@ -19,6 +19,7 @@ namespace GTAWorldRenderer.Rendering
       InfoPanelFor3Dview textInfoPanel;
       Effect effect;
       Matrix projectionMatrix;
+      bool wireframeMode = false;
 
       KeyboardState oldKeyboardState = Keyboard.GetState();
       MouseState originalMouseState;
@@ -123,6 +124,9 @@ namespace GTAWorldRenderer.Rendering
                Mouse.SetPosition(Device.Viewport.Width / 2, Device.Viewport.Height / 2);
          }
 
+         if (KeyPressed(Keys.W))
+            wireframeMode = !wireframeMode;
+
          oldKeyboardState = keyState;
 
          camera.UpdatePosition(moveVector * timeDifference * (fast? fastMoveSpeed : slowMoveSpeed));
@@ -136,11 +140,16 @@ namespace GTAWorldRenderer.Rendering
          if (SceneContent == null)
             return;
 
+         if (wireframeMode)
+            Device.RenderState.FillMode = FillMode.WireFrame;
+
          effect.Parameters["xView"].SetValue(camera.ViewMatrix);
          effect.Parameters["xProjection"].SetValue(projectionMatrix);
 
          foreach (var obj in SceneContent.SceneObjects)
             obj.Model.Draw(effect, obj.WorldMatrix, true);
+
+         Device.RenderState.FillMode = FillMode.Solid;
       }
    }
 }
