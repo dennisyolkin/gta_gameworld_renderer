@@ -5,6 +5,8 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using GTAWorldRenderer.Rendering;
+using System.Collections;
+using GTAWorldRenderer.Logging;
 
 namespace GTAWorldRenderer.Scenes.Rasterization
 {
@@ -17,6 +19,11 @@ namespace GTAWorldRenderer.Scenes.Rasterization
    {
       private List<Line2D> gridLines = new List<Line2D>();
 
+      /// <summary>
+      /// Отсортированный список номеров объектов, лежащих в этой ячейке
+      /// </summary>
+      public List<int> Objects { get; private set; }
+
 
       public Cell(float x, float y)
       {
@@ -28,11 +35,25 @@ namespace GTAWorldRenderer.Scenes.Rasterization
       }
 
 
+      public void SetObjects(List<int> objects)
+      {
+         Objects = objects;
+         Objects.Sort();
+      }
+
+
       public void DrawCellBounds(Effect effect)
       {
          foreach (var line in gridLines)
             line.Draw(effect);
       }
+   }
+
+
+   struct ObjectVertices
+   {
+      public int Idx;
+      public Vector3[] Vertices;
    }
 
 
@@ -52,6 +73,7 @@ namespace GTAWorldRenderer.Scenes.Rasterization
       private List<Line2D> gridLines = new List<Line2D>();
       private readonly float cellSize = Config.Instance.Rasterization.GridCellSize;
       private Cell[,] cells;
+      private float minX, minY;
 
       public Grid(List<RawSceneObject> sceneObjects)
       {
@@ -62,21 +84,74 @@ namespace GTAWorldRenderer.Scenes.Rasterization
 
       public void Build()
       {
-         foreach (var obj in sceneObjects)
-            foreach (var mesh in obj.Model.Meshes)
+         using (Log.Instance.EnterTimingStage("Building grid"))
+         {
+            Log.Instance.Print("Processing vertices...");
+            List<ObjectVertices> objVertices = new List<ObjectVertices>();
+            for (var i = 0; i != sceneObjects.Count; ++i)
             {
-               var vertices = new Vector3[mesh.Vertices.Count];
-               for(var i = 0; i < vertices.Length; ++i)
-                  vertices[i] = Vector3.Transform(mesh.Vertices[i], obj.WorldMatrix);
+               var curObj = new ObjectVertices() { Idx = i };
 
-               var curBox = BoundingBox.CreateFromPoints(vertices);
-               boundingRectangle = BoundingBox.CreateMerged(boundingRectangle, curBox);
+               foreach (var mesh in sceneObjects[i].Model.Meshes)
+               {
+                  curObj.Vertices = new Vector3[mesh.Vertices.Count];
+                  for (var j = 0; j < curObj.Vertices.Length; ++j)
+                     curObj.Vertices[j] = Vector3.Transform(mesh.Vertices[j], sceneObjects[i].WorldMatrix);
+
+                  objVertices.Add(curObj);
+
+                  var curBox = BoundingBox.CreateFromPoints(curObj.Vertices);
+                  boundingRectangle = BoundingBox.CreateMerged(boundingRectangle, curBox);
+               }
             }
 
+            Log.Instance.Print("Creating cells...");
+            CreateCells();
+
+            Log.Instance.Print("Rasterizing objects...");
+            RasterizeObjects(objVertices);
+
+         }
+      }
+
+
+      private void RasterizeObjects(List<ObjectVertices> objects)
+      {
+         HashSet<int>[,] cellsTmp = new HashSet<int>[GridRows, GridColumns];
+         for (int i = 0; i != GridRows; ++i)
+            for (int j = 0; j != GridColumns; ++j)
+               cellsTmp[i, j] = new HashSet<int>();
+
+         foreach (var obj in objects)
+         {
+            foreach (var vert in obj.Vertices)
+            {
+               Point cellIdx = CellByPoint(vert.X, vert.Z);
+               cellsTmp[cellIdx.Y, cellIdx.X].Add(obj.Idx);
+            }
+         }
+
+         for (int i = 0; i != GridRows; ++i)
+            for (int j = 0; j != GridColumns; ++j)
+               cells[i, j].SetObjects(new List<int>(cellsTmp[i, j]));
+
+      }
+
+
+      private Point CellByPoint(float x, float y)
+      {
+         int row = (int)((y - minY) / cellSize);
+         int col = (int)((x - minX) / cellSize);
+         return new Point(col, row);
+      }
+
+
+      private void CreateCells()
+      {
          const float inflateSize = 5;
-         float minX = boundingRectangle.Min.X - inflateSize;
+         minX = boundingRectangle.Min.X - inflateSize;
          float maxX = boundingRectangle.Max.X + inflateSize;
-         float minY = boundingRectangle.Min.Z - inflateSize;
+         minY = boundingRectangle.Min.Z - inflateSize;
          float maxY = boundingRectangle.Max.Z + inflateSize;
 
          GridColumns = (int)((maxX - minX) / cellSize);
@@ -89,7 +164,7 @@ namespace GTAWorldRenderer.Scenes.Rasterization
          GridRows = (int)((maxY - minY) / cellSize);
          if (GridRows * cellSize < maxY - minY)
          {
-            ++GridColumns;
+            ++GridRows;
             maxY = minY + GridRows * cellSize;
          }
 
@@ -104,6 +179,7 @@ namespace GTAWorldRenderer.Scenes.Rasterization
             for (var j = 0; j < GridColumns; ++j)
                cells[i, j] = new Cell(minX + j * cellSize, minY + i * cellSize);
       }
+
 
       /// <summary>
       /// Отрисовывает сетку.
