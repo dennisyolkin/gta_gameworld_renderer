@@ -34,6 +34,7 @@ namespace GTAWorldRenderer.Scenes.Loaders
          }
 
          scene.Grid = new Grid(sceneObjects);
+         scene.Grid.Build();
          return scene;
       }
 

@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using GTAWorldRenderer.Logging;
 
 namespace GTAWorldRenderer.Rendering
 {
@@ -86,6 +87,9 @@ namespace GTAWorldRenderer.Rendering
 
          foreach (var obj in SceneContent.SceneObjects)
             obj.Model.Draw(effect, obj.WorldMatrix, false);
+
+         effect.Parameters["xColor"].SetValue(Color.Yellow.ToVector4());
+         SceneContent.Grid.DrawGridLines(effect);
 
          Device.RenderState.FillMode = FillMode.Solid;
       }

@@ -93,6 +93,7 @@
     <Compile Include="GeometryUtils.cs" />
     <Compile Include="GraphicsDeviceHolder.cs" />
     <Compile Include="Rendering\CellsDividedSceneRenderer.cs" />
+    <Compile Include="Rendering\Line2D.cs" />
     <Compile Include="Rendering\Renderer.cs" />
     <Compile Include="Logging\ConsoleLogWriter.cs" />
     <Compile Include="Logging\FileLogWriter.cs" />
