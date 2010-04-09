@@ -112,6 +112,7 @@
     <Compile Include="Scenes\Loaders\IDEFileLoader.cs" />
     <Compile Include="Scenes\Loaders\IMGArchive.cs" />
     <Compile Include="Scenes\Loaders\IPLFileLoader.cs" />
+    <Compile Include="Scenes\Loaders\SceneObjectsLoader.cs" />
     <Compile Include="Scenes\Loaders\Utils.cs" />
     <Compile Include="Scenes\Material.cs" />
     <Compile Include="Scenes\Model3D.cs" />
