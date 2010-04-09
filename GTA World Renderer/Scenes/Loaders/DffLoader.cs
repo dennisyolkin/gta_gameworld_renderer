@@ -81,10 +81,25 @@ namespace GTAWorldRenderer.Scenes.Loaders
       }
 
 
+      class Atomic
+      {
+         public int FrameIdx { get; private set; }
+         public int MeshIdx { get; private set; }
+
+         public Atomic(int frameIdx, int meshIdx)
+         {
+            this.FrameIdx = frameIdx;
+            this.MeshIdx = meshIdx;
+         }
+      }
+
+
       private string modelName;
       private string texturesFolder;
-      BinaryReader input;
-      ModelData modelData = new ModelData();
+      private BinaryReader input;
+      private ModelData modelData = new ModelData();
+      private List<string> frameNames = new List<string>();
+      private int[] frameToMesh;
 
       public DffLoader(string fileName)
       {
@@ -120,11 +135,38 @@ namespace GTAWorldRenderer.Scenes.Loaders
                SectionHeader header = new SectionHeader();
                header.Read(input);
                ProcessRenderwareSection(header.SectionSize, 0, header.SectionType);
+               ProcessFrames();
             }
 
             input.Close();
             return modelData;
          }
+      }
+
+
+      /// <summary>
+      /// Удалит ненужные меши из модели в соответствии с информацией о фреймах
+      /// </summary>
+      private void ProcessFrames()
+      {
+         var processedMeshes = new List<ModelMeshData>();
+         for (int i = 0; i != frameNames.Count; ++i)
+         {
+            /*
+             * Если модель может преобразовываться (как например фонарный столб, который сначала ровный,
+             * а если в него врезаться, от искривляется), то название фрейма будет оканчиваться на _lx, где x - число.
+             * В этом случае нужно отрисовывать фрейм, оканчивающийся _l0, это недеформированная модель.
+             */
+            string s = frameNames[i];
+            if (s.IndexOf("_l") == s.Length - 3 && s[s.Length - 1] != '0')
+               continue;
+
+            // создаём меш, соответствующий нужному фрейму (если такой меш существует)
+            int meshIdx = frameToMesh[i];
+            if (meshIdx != -1)
+               processedMeshes.Add(modelData.Meshes[meshIdx]);
+         }
+         modelData.Meshes = processedMeshes;
       }
 
 
@@ -211,10 +253,10 @@ namespace GTAWorldRenderer.Scenes.Loaders
          // названия фреймов будут считаны в FrameList/Extension/Frame/
          input.BaseStream.Seek(framesCount * frameDescriptionSize, SeekOrigin.Current);
 
-         modelData.FrameNames = new List<string>(framesCount);
-         modelData.FrameToMesh = new int[framesCount];
-         for (int i = 0; i != modelData.FrameToMesh.Length; ++i)
-            modelData.FrameToMesh[i] = -1;
+         frameNames = new List<string>(framesCount);
+         frameToMesh = new int[framesCount];
+         for (int i = 0; i != frameToMesh.Length; ++i)
+            frameToMesh[i] = -1;
       }
 
 
@@ -222,7 +264,7 @@ namespace GTAWorldRenderer.Scenes.Loaders
       {
          int frameIdx = input.ReadInt32();
          int geomIdx = input.ReadInt32();
-         modelData.FrameToMesh[frameIdx] = geomIdx;
+         frameToMesh[frameIdx] = geomIdx;
          input.BaseStream.Seek(2 * sizeof(int), SeekOrigin.Current);
       }
 
@@ -231,7 +273,7 @@ namespace GTAWorldRenderer.Scenes.Loaders
       {
          byte[] data = input.ReadBytes(sectionSize);
          string val = Encoding.ASCII.GetString(data).ToLower();
-         modelData.FrameNames.Add(val);
+         frameNames.Add(val);
       }
 
 

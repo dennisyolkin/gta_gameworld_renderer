@@ -9,24 +9,9 @@ using Microsoft.Xna.Framework.Graphics;
 namespace GTAWorldRenderer.Scenes.Loaders
 {
 
-   class Atomic
-   {
-      public int FrameIdx { get; private set; }
-      public int MeshIdx { get; private set; }
-
-      public Atomic(int frameIdx, int meshIdx)
-      {
-         this.FrameIdx = frameIdx;
-         this.MeshIdx = meshIdx;
-      }
-   }
-
-
    class ModelData
    {
       public List<ModelMeshData> Meshes { get; set; }
-      public List<string> FrameNames { get; set; }
-      public int[] FrameToMesh { get; set; }
 
       public ModelData()
       {

@@ -7,7 +7,7 @@ namespace GTAWorldRenderer.Scenes.Loaders
    static class Model3dFactory
    {
 
-      public static ModelMesh3D CreateModelMesh(ModelMeshData mesh)
+      private static ModelMesh3D CreateModelMesh(ModelMeshData mesh)
       {
          VertexPositionColorTexture[] vertices = new VertexPositionColorTexture[mesh.Vertices.Count];
          for (var i = 0; i != mesh.Vertices.Count; ++i)
@@ -38,30 +38,10 @@ namespace GTAWorldRenderer.Scenes.Loaders
 
       public static Model3D CreateModel(ModelData modelData)
       {
-         if (modelData.FrameNames == null)
-            Utils.TerminateWithError("Incorrect model! No frames were presented!");
-
          Model3D model = new Model3D();
 
-         for (int i = 0; i != modelData.FrameNames.Count; ++i)
-         {
-            /*
-             * Если модель может преобразовываться (как например фонарный столб, который сначала ровный,
-             * а если в него врезаться, от искривляется), то название фрейма будет оканчиваться на _lx, где x - число.
-             * В этом случае нужно отрисовывать фрейм, оканчивающийся _l0, это недеформированная модель.
-             */
-            string s = modelData.FrameNames[i];
-            if (s.IndexOf("_l") == s.Length - 3 && s[s.Length - 1] != '0')
-               continue;
-
-            // создаём меш, соответствующий нужному фрейму (если такой меш существует)
-            int meshIdx = modelData.FrameToMesh[i];
-            if (meshIdx != -1)
-            {
-               ModelMesh3D mesh = CreateModelMesh(modelData.Meshes[meshIdx]);
-               model.AddMesh(mesh);
-            }
-         }
+         foreach (var mesh in modelData.Meshes)
+            model.AddMesh(CreateModelMesh(mesh));
 
          return model;
       }
