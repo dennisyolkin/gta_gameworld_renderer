@@ -42,7 +42,7 @@ namespace GTAWorldRenderer
                using (Logger.EnterStage("Reading config file"))
                {
                   Logger.Print("Working directory: " + System.Environment.CurrentDirectory);
-                  using (Logger.EnterStage("Parsing " + ConfigFilePath + " file..."))
+                  using (Logger.EnterStage("Parsing " + ConfigFilePath + " file"))
                   {
                      if (!File.Exists(ConfigFilePath))
                         TerminateWithError("File not found: " + ConfigFilePath);
