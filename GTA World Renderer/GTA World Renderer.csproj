@@ -110,6 +110,7 @@
     <Compile Include="Scenes\Loaders\DffLoader.cs" />
     <Compile Include="Scenes\Loaders\FileProxy.cs" />
     <Compile Include="Scenes\Loaders\FileSystemProxy.cs" />
+    <Compile Include="Scenes\Rasterization\Grid.cs" />
     <Compile Include="Scenes\Loaders\GTATextureLoader.cs" />
     <Compile Include="Scenes\Loaders\IDEFileLoader.cs" />
     <Compile Include="Scenes\Loaders\IMGArchive.cs" />

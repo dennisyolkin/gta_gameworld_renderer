@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using GTAWorldRenderer.Logging;
-using System.IO;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
+using GTAWorldRenderer.Scenes.Rasterization;
 
 namespace GTAWorldRenderer.Scenes.Loaders
 {
@@ -18,8 +16,25 @@ namespace GTAWorldRenderer.Scenes.Loaders
          using (Logger.EnterTimingStage("Loading scene"))
          {
             var sceneObjectsLoader = new SceneObjectsLoader();
-            return sceneObjectsLoader.LoadScene();
+            var sceneObjects = sceneObjectsLoader.LoadScene();
+
+            return CreateScene(sceneObjects);
          }
+      }
+
+
+      private Scene CreateScene(List<RawSceneObject> sceneObjects)
+      {
+         var scene = new Scene();
+
+         foreach (var obj in sceneObjects)
+         {
+            var compiledObject = Model3dFactory.CreateModel(obj.Model);
+            scene.SceneObjects.Add(new CompiledSceneObject(compiledObject, obj.WorldMatrix));
+         }
+
+         scene.Grid = new Grid(sceneObjects);
+         return scene;
       }
 
 

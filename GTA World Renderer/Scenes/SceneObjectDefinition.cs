@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using GTAWorldRenderer.Scenes.Loaders;
 
 namespace GTAWorldRenderer.Scenes
 {
@@ -31,16 +32,31 @@ namespace GTAWorldRenderer.Scenes
    /// <summary>
    /// Описание объекта на построенной сцене
    /// </summary>
-   class SceneObject
+   class RawSceneObject
    {
       public Matrix WorldMatrix { get; private set; }
-      public Model3D Model { get; private set; }
+      public ModelData Model { get; private set; }
 
-      public SceneObject(Model3D model, Matrix worldMatrix)
+      public RawSceneObject(ModelData model, Matrix worldMatrix)
       {
          Model = model;
          WorldMatrix = worldMatrix;
       }
-
    }
+
+   /// <summary>
+   /// Описание объекта на построенной сцене
+   /// </summary>
+   class CompiledSceneObject
+   {
+      public Matrix WorldMatrix { get; private set; }
+      public Model3D Model { get; private set; }
+
+      public CompiledSceneObject(Model3D model, Matrix worldMatrix)
+      {
+         Model = model;
+         WorldMatrix = worldMatrix;
+      }
+   }
+
 }

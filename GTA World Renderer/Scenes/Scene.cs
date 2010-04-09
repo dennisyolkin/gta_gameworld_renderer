@@ -1,5 +1,6 @@
 ﻿
 using System.Collections.Generic;
+using GTAWorldRenderer.Scenes.Rasterization;
 
 namespace GTAWorldRenderer.Scenes
 {
@@ -8,12 +9,12 @@ namespace GTAWorldRenderer.Scenes
    /// </summary>
    class Scene
    {
-      public List<SceneObject> SceneObjects{ get; set; }
-
+      public List<CompiledSceneObject> SceneObjects{ get; set; }
+      public Grid Grid { get; set; }
 
       public Scene()
       {
-         SceneObjects = new List<SceneObject>();
+         SceneObjects = new List<CompiledSceneObject>();
       }
    }
 

@@ -23,6 +23,7 @@ namespace GTAWorldRenderer.Rendering
       private Matrix projectionMatrix;
       private MouseState oldMouseState;
 
+
       public CellsDividedSceneRenderer(ContentManager contentManager, Scene scene) 
          : base(contentManager)
       {
