@@ -22,8 +22,9 @@ namespace GTAWorldRenderer.Rendering
       private Effect effect;
       private Vector3 cameraPosition = new Vector3(0, DefaultCameraHeight, 0);
       private Matrix projectionMatrix;
+      private KeyboardState oldKeyboardState = Keyboard.GetState();
       private MouseState oldMouseState;
-
+      private Point selectedGridCell;
 
       public CellsDividedSceneRenderer(ContentManager contentManager, Scene scene) 
          : base(contentManager)
@@ -39,6 +40,8 @@ namespace GTAWorldRenderer.Rendering
          projectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, Device.Viewport.AspectRatio,
             Config.Instance.Rendering.NearClippingDistance, Config.Instance.Rendering.FarClippingDistance);
 
+         selectedGridCell = new Point(SceneContent.Grid.GridRows / 2, SceneContent.Grid.GridColumns / 2);
+
          Mouse.SetPosition(Device.Viewport.Width / 2, Device.Viewport.Height / 2);
          oldMouseState = Mouse.GetState();
       }
@@ -47,11 +50,39 @@ namespace GTAWorldRenderer.Rendering
       public override void DoUpdate(GameTime gameTime)
       {
          float timeDifference = (float)gameTime.ElapsedGameTime.TotalMilliseconds / 1000.0f;
+         ProcessKeyboard();
          ProcessMouse(timeDifference);
       }
 
 
-      void ProcessMouse(float timeDifference)
+      private void ProcessKeyboard()
+      {
+         KeyboardState keyState = Keyboard.GetState();
+         Func<Keys, bool> KeyPressed = key => keyState.IsKeyDown(key) && !oldKeyboardState.IsKeyDown(key);
+
+         if (KeyPressed(Keys.Right))
+            ++selectedGridCell.X;
+         else if (KeyPressed(Keys.Left))
+            --selectedGridCell.X;
+         if (KeyPressed(Keys.Up))
+            --selectedGridCell.Y;
+         else if (KeyPressed(Keys.Down))
+            ++selectedGridCell.Y;
+
+         if (selectedGridCell.X < 0)
+            selectedGridCell.X = 0;
+         else if (selectedGridCell.X >= SceneContent.Grid.GridColumns)
+            selectedGridCell.X = SceneContent.Grid.GridColumns - 1;
+         if (selectedGridCell.Y < 0)
+            selectedGridCell.Y = 0;
+         else if (selectedGridCell.Y >= SceneContent.Grid.GridRows)
+            selectedGridCell.Y = SceneContent.Grid.GridRows - 1;
+
+         oldKeyboardState = keyState;
+      }
+
+
+      private void ProcessMouse(float timeDifference)
       {
          MouseState mouseState = Mouse.GetState();
          if ((mouseState.LeftButton == ButtonState.Pressed && mouseState != oldMouseState) || mouseState.ScrollWheelValue != oldMouseState.ScrollWheelValue)
@@ -90,6 +121,9 @@ namespace GTAWorldRenderer.Rendering
 
          effect.Parameters["xColor"].SetValue(Color.Yellow.ToVector4());
          SceneContent.Grid.DrawGridLines(effect);
+
+         effect.Parameters["xColor"].SetValue(Color.Red.ToVector4());
+         SceneContent.Grid.DrawHighlightedCell(selectedGridCell, effect);
 
          Device.RenderState.FillMode = FillMode.Solid;
       }
