@@ -20,4 +20,8 @@
       <NearClippingDistance>0.1</NearClippingDistance>
       <FarClippingDistance>5000</FarClippingDistance>
    </Rendering>
+   
+   <Rasterization>
+      <GridCellSize>300</GridCellSize>
+   </Rasterization>
 </ConfigData>

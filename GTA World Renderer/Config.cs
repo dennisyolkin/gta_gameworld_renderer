@@ -110,6 +110,14 @@ namespace GTAWorldRenderer
       }
 
 
+      [DataContract(Namespace = "gta-gameworld-renderer")]
+      public class RasterizationParams
+      {
+         [DataMember(IsRequired = true, Order = 1)]
+         public float GridCellSize { get; private set; }
+      }
+
+
       [DataContract(Name = "ConfigData", Namespace = "gta-gameworld-renderer")]
       public class ConfigData
       {
@@ -134,6 +142,9 @@ namespace GTAWorldRenderer
 
          [DataMember(IsRequired = true, Order = 3)]
          public RenderingParams Rendering { get; private set; }
+
+         [DataMember(IsRequired = true, Order = 4)]
+         public RasterizationParams Rasterization { get; private set; }
       }
 
 
