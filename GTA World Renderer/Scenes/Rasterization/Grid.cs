@@ -57,6 +57,19 @@ namespace GTAWorldRenderer.Scenes.Rasterization
    }
 
 
+   class CachedRequest
+   {
+      public Point RequestedCell { get; private set; }
+      public List<int> HighDetailedResult { get; private set; }
+
+      public CachedRequest(Point requestedCell, List<int> highDetailedResult)
+      {
+         this.RequestedCell = requestedCell;
+         this.HighDetailedResult = highDetailedResult;
+      }
+   }
+
+
    /// <summary>
    /// Одномерная регулярная сетка.
    /// По ячейкам сетки будут растеризовываться все объекты.
@@ -74,6 +87,7 @@ namespace GTAWorldRenderer.Scenes.Rasterization
       private readonly float cellSize = Config.Instance.Rasterization.GridCellSize;
       private Cell[,] cells;
       private float minX, minY;
+      private CachedRequest cachedRequest = null;
 
       public Grid(List<RawSceneObject> sceneObjects)
       {
@@ -211,6 +225,9 @@ namespace GTAWorldRenderer.Scenes.Rasterization
 
       public List<int> GetVisibleObjects(Point cellIdx) // TODO :: make it private or remove it
       {
+         if (cachedRequest != null && cachedRequest.RequestedCell == cellIdx)
+            return cachedRequest.HighDetailedResult;
+
          var objectsFromCells = new List<List<int>>();
          var minRow = cellIdx.Y - 1;
          var maxRow = cellIdx.Y + 1;
@@ -226,7 +243,9 @@ namespace GTAWorldRenderer.Scenes.Rasterization
             for (var row = minRow; row <= maxRow; ++row)
                objectsFromCells.Add(cells[row, col].Objects);
 
-         return Utils.MergeSortedLists(objectsFromCells);
+         var result = Utils.MergeSortedLists(objectsFromCells);
+         cachedRequest = new CachedRequest(cellIdx, result);
+         return result;
       }
    }
 }
