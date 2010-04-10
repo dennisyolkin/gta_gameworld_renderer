@@ -54,11 +54,13 @@ namespace GTAWorldRenderer.Scenes.Rasterization
    {
       public Point RequestedCell { get; private set; }
       public List<int> HighDetailedResult { get; private set; }
+      public List<int> LowDetailedResult { get; private set; }
 
-      public CachedRequest(Point requestedCell, List<int> highDetailedResult)
+      public CachedRequest(Point requestedCell, List<int> highDetailedResult, List<int> lowDetailedResult)
       {
          this.RequestedCell = requestedCell;
          this.HighDetailedResult = highDetailedResult;
+         this.LowDetailedResult = lowDetailedResult;
       }
    }
 
@@ -248,7 +250,9 @@ namespace GTAWorldRenderer.Scenes.Rasterization
          bool hasInCache = cachedRequest != null && cachedRequest.RequestedCell == cellIdx;
          if (!hasInCache)
          {
-            var objectsFromCells = new List<List<int>>();
+            var objectsFromCellsHD = new List<List<int>>(); // high-detailed objects
+            var objectsFromCellsLD = new List<List<int>>(); // low-detailed objects
+
             var minRow = cellIdx.Y - 1;
             var maxRow = cellIdx.Y + 1;
             var minCol = cellIdx.X - 1;
@@ -259,15 +263,32 @@ namespace GTAWorldRenderer.Scenes.Rasterization
             if (minCol < 0) minCol = 0;
             if (maxCol >= GridColumns) maxCol = GridColumns - 1;
 
+            // Добавляем HighDetailed-объекты из ячейки, в которой находится камера, и 8ми соседних ячеек
             for (var col = minCol; col <= maxCol; ++col)
                for (var row = minRow; row <= maxRow; ++row)
-                  objectsFromCells.Add(cells[row, col].HighDetailedObjects); // TODO :: fix!!!!!
+                  objectsFromCellsHD.Add(cells[row, col].HighDetailedObjects);
 
-            var result = Utils.MergeLists(objectsFromCells);
-            cachedRequest = new CachedRequest(cellIdx, result);
+            // Добавляем LowDetailed-объекты из всех остальных ячеек
+            for (var col = 0; col < GridColumns; ++col)
+            {
+              // if (col >= minCol && col <= maxCol)
+              //    continue;
+
+               for (var row = 0; row < GridRows; ++row)
+               {
+               //   if (row >= minRow && row <= maxRow)
+               //      continue;
+
+                  objectsFromCellsLD.Add(cells[row, col].LowDetailedObjects);
+               }
+            }
+
+            var resultHD = Utils.MergeLists(objectsFromCellsHD);
+            var resultLD = Utils.MergeLists(objectsFromCellsLD);
+            cachedRequest = new CachedRequest(cellIdx, resultHD, resultLD);
          }
          highDetailedObjects = cachedRequest.HighDetailedResult;
-         lowDetailedObjects = new List<int>();
+         lowDetailedObjects = cachedRequest.LowDetailedResult;
       }
    }
 }
