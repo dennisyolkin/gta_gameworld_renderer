@@ -121,7 +121,10 @@ namespace GTAWorldRenderer.Rendering
             obj.Model.Draw(effect, obj.WorldMatrix, false);
 
          effect.Parameters["xColor"].SetValue(Color.Orange.ToVector4());
-         foreach (var objIdx in SceneContent.Grid.GetVisibleObjects(selectedGridCell))
+         List<int> visibleLowDetailedObjs, visibleHighDetailedObjs;
+         SceneContent.Grid.GetVisibleObjects(selectedGridCell, out visibleHighDetailedObjs, out visibleLowDetailedObjs);
+         
+         foreach (var objIdx in visibleHighDetailedObjs)
          {
             var obj = SceneContent.HighDetailedObjects[objIdx];
             obj.Model.Draw(effect, obj.WorldMatrix, false);

@@ -207,40 +207,45 @@ namespace GTAWorldRenderer.Scenes.Rasterization
          cells[cell.Y, cell.X].DrawCellBounds(effect);
       }
 
+
       /// <summary>
       /// Запрашивает список объектов, видимых из текущей позиции
       /// </summary>
       /// <param name="cameraPos">Текущая позиция камеры</param>
-      /// <returns>Список индексов видимых объектов сцены</returns>
-      public List<int> GetVisibleObjects(Vector3 cameraPos)
+      /// <param name="highDetailedObjects">Список видимых высокодетализированных объектов</param>
+      /// <param name="lowDetailedObjects">Список видимых низкодетализированных объектов</param>
+      /// <returns></returns>
+      public void GetVisibleObjects(Vector3 cameraPos, out List<int> highDetailedObjects, out List<int> lowDetailedObjects)
       {
-         return GetVisibleObjects(CellByPoint(cameraPos.X, cameraPos.Z));
+         GetVisibleObjects(CellByPoint(cameraPos.X, cameraPos.Z), out highDetailedObjects, out lowDetailedObjects);
       }
 
 
-      public List<int> GetVisibleObjects(Point cellIdx) // TODO :: make it private or remove it
+      public void GetVisibleObjects(Point cellIdx, out List<int> highDetailedObjects, out List<int> lowDetailedObjects)
       {
-         if (cachedRequest != null && cachedRequest.RequestedCell == cellIdx)
-            return cachedRequest.HighDetailedResult;
+         bool hasInCache = cachedRequest != null && cachedRequest.RequestedCell == cellIdx;
+         if (!hasInCache)
+         {
+            var objectsFromCells = new List<List<int>>();
+            var minRow = cellIdx.Y - 1;
+            var maxRow = cellIdx.Y + 1;
+            var minCol = cellIdx.X - 1;
+            var maxCol = cellIdx.X + 1;
 
-         var objectsFromCells = new List<List<int>>();
-         var minRow = cellIdx.Y - 1;
-         var maxRow = cellIdx.Y + 1;
-         var minCol = cellIdx.X - 1;
-         var maxCol = cellIdx.X + 1;
+            if (minRow < 0) minRow = 0;
+            if (maxRow >= GridRows) maxRow = GridRows - 1;
+            if (minCol < 0) minCol = 0;
+            if (maxCol >= GridColumns) maxCol = GridColumns - 1;
 
-         if (minRow < 0) minRow = 0;
-         if (maxRow >= GridRows) maxRow = GridRows - 1;
-         if (minCol < 0) minCol = 0;
-         if (maxCol >= GridColumns) maxCol = GridColumns - 1;
+            for (var col = minCol; col <= maxCol; ++col)
+               for (var row = minRow; row <= maxRow; ++row)
+                  objectsFromCells.Add(cells[row, col].Objects);
 
-         for (var col = minCol; col <= maxCol; ++col)
-            for (var row = minRow; row <= maxRow; ++row)
-               objectsFromCells.Add(cells[row, col].Objects);
-
-         var result = Utils.MergeLists(objectsFromCells);
-         cachedRequest = new CachedRequest(cellIdx, result);
-         return result;
+            var result = Utils.MergeLists(objectsFromCells);
+            cachedRequest = new CachedRequest(cellIdx, result);
+         }
+         highDetailedObjects = cachedRequest.HighDetailedResult;
+         lowDetailedObjects = new List<int>();
       }
    }
 }

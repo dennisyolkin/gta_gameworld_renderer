@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
 
 namespace GTAWorldRenderer.Rendering
 {
@@ -146,14 +147,22 @@ namespace GTAWorldRenderer.Rendering
          effect.Parameters["xView"].SetValue(camera.ViewMatrix);
          effect.Parameters["xProjection"].SetValue(projectionMatrix);
 
-         var visibleObjects = SceneContent.Grid.GetVisibleObjects(camera.Position);
-         textInfoPanel.Data["Objects to draw (HD)"] = String.Format("{0} of {1}", visibleObjects.Count, SceneContent.HighDetailedObjects.Count);
-         textInfoPanel.Data["Objects to draw (LD)"] = String.Format("{0} of {1}", 0, SceneContent.LowDetailedObjects.Count);
-         foreach (var objIdx in visibleObjects)
+         List<int> visibleLowDetailedObjs, visibleHighDetailedObjs;
+         SceneContent.Grid.GetVisibleObjects(camera.Position, out visibleHighDetailedObjs, out visibleLowDetailedObjs);
+         textInfoPanel.Data["Objects to draw (HD)"] = String.Format("{0} of {1}", visibleHighDetailedObjs.Count, SceneContent.HighDetailedObjects.Count);
+         textInfoPanel.Data["Objects to draw (LD)"] = String.Format("{0} of {1}", visibleLowDetailedObjs.Count, SceneContent.LowDetailedObjects.Count);
+
+         Action<List<int>, List<CompiledSceneObject>> DrawObjects = delegate(List<int> objIdxs, List<CompiledSceneObject> sceneObjs)
          {
-            var obj = SceneContent.HighDetailedObjects[objIdx];
-            obj.Model.Draw(effect, obj.WorldMatrix, true);
-         }
+            foreach (var objIdx in objIdxs)
+            {
+               var obj = sceneObjs[objIdx];
+               obj.Model.Draw(effect, obj.WorldMatrix, true);
+            }
+         };
+
+         DrawObjects(visibleLowDetailedObjs, SceneContent.LowDetailedObjects);
+         DrawObjects(visibleHighDetailedObjs, SceneContent.HighDetailedObjects);
 
          Device.RenderState.FillMode = FillMode.Solid;
       }
