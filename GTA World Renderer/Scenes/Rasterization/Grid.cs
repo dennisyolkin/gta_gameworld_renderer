@@ -19,11 +19,8 @@ namespace GTAWorldRenderer.Scenes.Rasterization
    {
       private List<Line2D> gridLines = new List<Line2D>();
 
-      /// <summary>
-      /// Отсортированный список номеров объектов, лежащих в этой ячейке
-      /// </summary>
-      public List<int> Objects { get; set; }
-
+      public List<int> HighDetailedObjects { get; set; }
+      public List<int> LowDetailedObjects { get; set; }
 
       public Cell(float x, float y)
       {
@@ -32,6 +29,9 @@ namespace GTAWorldRenderer.Scenes.Rasterization
          gridLines.Add(new Line2D(Utils.Point2ToVector3(x, y), Utils.Point2ToVector3(x, y + cellSize)));
          gridLines.Add(new Line2D(Utils.Point2ToVector3(x + cellSize, y + cellSize), Utils.Point2ToVector3(x + cellSize, y)));
          gridLines.Add(new Line2D(Utils.Point2ToVector3(x + cellSize, y + cellSize), Utils.Point2ToVector3(x, y + cellSize)));
+
+         HighDetailedObjects = new List<int>();
+         LowDetailedObjects = new List<int>();
       }
 
 
@@ -94,37 +94,59 @@ namespace GTAWorldRenderer.Scenes.Rasterization
          using (Log.Instance.EnterTimingStage("Building grid"))
          {
             Log.Instance.Print("Processing vertices...");
-            List<ObjectVertices> objVertices = new List<ObjectVertices>();
-            for (var i = 0; i != sceneObjects.HighDetailedObjects.Count; ++i)
-            {
-               var curObj = new ObjectVertices() { Idx = i };
-
-               foreach (var mesh in sceneObjects.HighDetailedObjects[i].Model.Meshes)
-               {
-                  curObj.Vertices = new Vector3[mesh.Vertices.Count];
-                  for (var j = 0; j < curObj.Vertices.Length; ++j)
-                     curObj.Vertices[j] = Vector3.Transform(mesh.Vertices[j], sceneObjects.HighDetailedObjects[i].WorldMatrix);
-
-                  objVertices.Add(curObj);
-
-                  var curBox = BoundingBox.CreateFromPoints(curObj.Vertices);
-                  boundingRectangle = BoundingBox.CreateMerged(boundingRectangle, curBox);
-               }
-            }
+            var highDetailedObjVertices = PreprocessObjects(sceneObjects.HighDetailedObjects);
+            var lowDetailedObjVertices = PreprocessObjects(sceneObjects.LowDetailedObjects);
 
             Log.Instance.Print("Creating cells...");
             CreateCells();
             Log.Instance.Print(String.Format("Grid size: {0} rows, {1} columns, {2} cells", GridRows, GridColumns, GridRows * GridColumns));
 
             Log.Instance.Print("Rasterizing objects...");
-            RasterizeObjects(objVertices);
 
+            RasterizeObjects(highDetailedObjVertices, delegate(int row, int col)
+               {
+                  return cells[row, col].HighDetailedObjects;
+               }
+            );
+
+            RasterizeObjects(lowDetailedObjVertices, delegate(int row, int col)
+            {
+               return cells[row, col].LowDetailedObjects;
+            }
+            );
          }
          sceneObjects = null; // чтобы освободить память
       }
 
 
-      private void RasterizeObjects(List<ObjectVertices> objects)
+      /// <summary>
+      /// Преобразовывает координаты всех объектов в мировую систему координат,
+      /// обновляет BoundingRectangle
+      /// </summary>
+      private List<ObjectVertices> PreprocessObjects(List<RawSceneObject> objects)
+      {
+         List<ObjectVertices> objVertices = new List<ObjectVertices>();
+         for (var i = 0; i != objects.Count; ++i)
+         {
+            var curObj = new ObjectVertices() { Idx = i };
+
+            foreach (var mesh in sceneObjects.HighDetailedObjects[i].Model.Meshes)
+            {
+               curObj.Vertices = new Vector3[mesh.Vertices.Count];
+               for (var j = 0; j < curObj.Vertices.Length; ++j)
+                  curObj.Vertices[j] = Vector3.Transform(mesh.Vertices[j], sceneObjects.HighDetailedObjects[i].WorldMatrix);
+
+               objVertices.Add(curObj);
+
+               var curBox = BoundingBox.CreateFromPoints(curObj.Vertices);
+               boundingRectangle = BoundingBox.CreateMerged(boundingRectangle, curBox);
+            }
+         }
+         return objVertices;
+      }
+
+
+      private void RasterizeObjects(List<ObjectVertices> objects, Func<int, int, List<int>> cellObjectsList)
       {
          HashSet<int>[,] cellsTmp = new HashSet<int>[GridRows, GridColumns];
          for (int i = 0; i != GridRows; ++i)
@@ -142,7 +164,7 @@ namespace GTAWorldRenderer.Scenes.Rasterization
 
          for (int i = 0; i != GridRows; ++i)
             for (int j = 0; j != GridColumns; ++j)
-               cells[i, j].Objects = new List<int>(cellsTmp[i, j]);
+               cellObjectsList(i, j).AddRange(cellsTmp[i, j]);
 
       }
 
@@ -239,7 +261,7 @@ namespace GTAWorldRenderer.Scenes.Rasterization
 
             for (var col = minCol; col <= maxCol; ++col)
                for (var row = minRow; row <= maxRow; ++row)
-                  objectsFromCells.Add(cells[row, col].Objects);
+                  objectsFromCells.Add(cells[row, col].HighDetailedObjects); // TODO :: fix!!!!!
 
             var result = Utils.MergeLists(objectsFromCells);
             cachedRequest = new CachedRequest(cellIdx, result);
