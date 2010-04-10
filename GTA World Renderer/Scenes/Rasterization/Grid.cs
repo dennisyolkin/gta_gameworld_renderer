@@ -198,10 +198,35 @@ namespace GTAWorldRenderer.Scenes.Rasterization
          cells[cell.Y, cell.X].DrawCellBounds(effect);
       }
 
-
-      public IEnumerable<short> GetVisibleObjects(Vector3 cameraPos)
+      /// <summary>
+      /// Запрашивает список объектов, видимых из текущей позиции
+      /// </summary>
+      /// <param name="cameraPos">Текущая позиция камеры</param>
+      /// <returns>Список индексов видимых объектов сцены</returns>
+      public IEnumerable<int> GetVisibleObjects(Vector3 cameraPos)
       {
-         return null;
+         return GetVisibleObjects(CellByPoint(cameraPos.X, cameraPos.Z));
+      }
+
+
+      public IEnumerable<int> GetVisibleObjects(Point cellIdx) // TODO :: make it private or remove it
+      {
+         var objectsFromCells = new List<List<int>>();
+         var minRow = cellIdx.Y - 1;
+         var maxRow = cellIdx.Y + 1;
+         var minCol = cellIdx.X - 1;
+         var maxCol = cellIdx.X + 1;
+
+         if (minRow < 0) minRow = 0;
+         if (maxRow >= GridRows) maxRow = GridRows - 1;
+         if (minCol < 0) minCol = 0;
+         if (maxCol >= GridColumns) maxCol = GridColumns - 1;
+
+         for (var col = minCol; col <= maxCol; ++col)
+            for (var row = minRow; row <= maxRow; ++row)
+               objectsFromCells.Add(cells[row, col].Objects);
+
+         return Utils.MergeSortedLists(objectsFromCells);
       }
    }
 }
