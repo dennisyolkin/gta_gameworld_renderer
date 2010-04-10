@@ -22,6 +22,6 @@
    </Rendering>
    
    <Rasterization>
-      <GridCellSize>100</GridCellSize>
+      <GridCellSize>250</GridCellSize>
    </Rasterization>
 </ConfigData>

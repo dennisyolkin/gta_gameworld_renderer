@@ -203,13 +203,13 @@ namespace GTAWorldRenderer.Scenes.Rasterization
       /// </summary>
       /// <param name="cameraPos">Текущая позиция камеры</param>
       /// <returns>Список индексов видимых объектов сцены</returns>
-      public IEnumerable<int> GetVisibleObjects(Vector3 cameraPos)
+      public List<int> GetVisibleObjects(Vector3 cameraPos)
       {
          return GetVisibleObjects(CellByPoint(cameraPos.X, cameraPos.Z));
       }
 
 
-      public IEnumerable<int> GetVisibleObjects(Point cellIdx) // TODO :: make it private or remove it
+      public List<int> GetVisibleObjects(Point cellIdx) // TODO :: make it private or remove it
       {
          var objectsFromCells = new List<List<int>>();
          var minRow = cellIdx.Y - 1;

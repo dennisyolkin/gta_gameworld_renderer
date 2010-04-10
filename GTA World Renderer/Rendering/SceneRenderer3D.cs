@@ -146,8 +146,13 @@ namespace GTAWorldRenderer.Rendering
          effect.Parameters["xView"].SetValue(camera.ViewMatrix);
          effect.Parameters["xProjection"].SetValue(projectionMatrix);
 
-         foreach (var obj in SceneContent.SceneObjects)
+         var visibleObjects = SceneContent.Grid.GetVisibleObjects(camera.Position);
+         textInfoPanel.Data["Objects to draw"] = String.Format("{0} of {1}", visibleObjects.Count, SceneContent.SceneObjects.Count);
+         foreach (var objIdx in visibleObjects)
+         {
+            var obj = SceneContent.SceneObjects[objIdx];
             obj.Model.Draw(effect, obj.WorldMatrix, true);
+         }
 
          Device.RenderState.FillMode = FillMode.Solid;
       }
