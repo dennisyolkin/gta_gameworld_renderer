@@ -22,7 +22,7 @@ namespace GTAWorldRenderer.Scenes.Rasterization
       /// <summary>
       /// Отсортированный список номеров объектов, лежащих в этой ячейке
       /// </summary>
-      public List<int> Objects { get; private set; }
+      public List<int> Objects { get; set; }
 
 
       public Cell(float x, float y)
@@ -32,13 +32,6 @@ namespace GTAWorldRenderer.Scenes.Rasterization
          gridLines.Add(new Line2D(Utils.Point2ToVector3(x, y), Utils.Point2ToVector3(x, y + cellSize)));
          gridLines.Add(new Line2D(Utils.Point2ToVector3(x + cellSize, y + cellSize), Utils.Point2ToVector3(x + cellSize, y)));
          gridLines.Add(new Line2D(Utils.Point2ToVector3(x + cellSize, y + cellSize), Utils.Point2ToVector3(x, y + cellSize)));
-      }
-
-
-      public void SetObjects(List<int> objects)
-      {
-         Objects = objects;
-         Objects.Sort();
       }
 
 
@@ -149,7 +142,7 @@ namespace GTAWorldRenderer.Scenes.Rasterization
 
          for (int i = 0; i != GridRows; ++i)
             for (int j = 0; j != GridColumns; ++j)
-               cells[i, j].SetObjects(new List<int>(cellsTmp[i, j]));
+               cells[i, j].Objects = new List<int>(cellsTmp[i, j]);
 
       }
 
@@ -245,7 +238,7 @@ namespace GTAWorldRenderer.Scenes.Rasterization
             for (var row = minRow; row <= maxRow; ++row)
                objectsFromCells.Add(cells[row, col].Objects);
 
-         var result = Utils.MergeSortedLists(objectsFromCells);
+         var result = Utils.MergeLists(objectsFromCells);
          cachedRequest = new CachedRequest(cellIdx, result);
          return result;
       }
