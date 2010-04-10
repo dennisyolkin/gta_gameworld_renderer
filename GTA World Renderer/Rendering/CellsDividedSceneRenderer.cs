@@ -112,12 +112,19 @@ namespace GTAWorldRenderer.Rendering
 
          effect.Parameters["xView"].SetValue(viewMatrix);
          effect.Parameters["xProjection"].SetValue(projectionMatrix);
-         effect.Parameters["xColor"].SetValue(Color.Green.ToVector4());
 
          Device.RenderState.FillMode = FillMode.WireFrame;
 
+         effect.Parameters["xColor"].SetValue(Color.Green.ToVector4());
          foreach (var obj in SceneContent.SceneObjects)
             obj.Model.Draw(effect, obj.WorldMatrix, false);
+
+         effect.Parameters["xColor"].SetValue(Color.Orange.ToVector4());
+         foreach (var objIdx in SceneContent.Grid.GetVisibleObjects(selectedGridCell))
+         {
+            var obj = SceneContent.SceneObjects[objIdx];
+            obj.Model.Draw(effect, obj.WorldMatrix, false);
+         }
 
          effect.Parameters["xColor"].SetValue(Color.Yellow.ToVector4());
          SceneContent.Grid.DrawGridLines(effect);
