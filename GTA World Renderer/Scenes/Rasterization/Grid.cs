@@ -121,6 +121,7 @@ namespace GTAWorldRenderer.Scenes.Rasterization
 
             Log.Instance.Print("Creating cells...");
             CreateCells();
+            Log.Instance.Print(String.Format("Grid size: {0} rows, {1} columns, {2} cells", GridRows, GridColumns, GridRows * GridColumns));
 
             Log.Instance.Print("Rasterizing objects...");
             RasterizeObjects(objVertices);
