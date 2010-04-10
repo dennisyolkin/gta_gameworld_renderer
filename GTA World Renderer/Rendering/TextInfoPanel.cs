@@ -12,7 +12,7 @@ namespace GTAWorldRenderer.Rendering
    /// </summary>
    class TextInfoPanel : Renderer
    {
-      private const int LINE_HEIGHT = 20;
+      private const int LINE_HEIGHT = 16;
 
       public Dictionary<string, object> Data { get; set; }
 

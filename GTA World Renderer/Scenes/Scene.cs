@@ -9,12 +9,14 @@ namespace GTAWorldRenderer.Scenes
    /// </summary>
    class Scene
    {
-      public List<CompiledSceneObject> SceneObjects{ get; set; }
+      public List<CompiledSceneObject> HighDetailedObjects{ get; set; }
+      public List<CompiledSceneObject> LowDetailedObjects { get; set; }
       public Grid Grid { get; set; }
 
       public Scene()
       {
-         SceneObjects = new List<CompiledSceneObject>();
+         HighDetailedObjects = new List<CompiledSceneObject>();
+         LowDetailedObjects = new List<CompiledSceneObject>();
       }
    }
 

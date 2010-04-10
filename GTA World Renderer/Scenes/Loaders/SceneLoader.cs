@@ -17,21 +17,29 @@ namespace GTAWorldRenderer.Scenes.Loaders
          {
             var sceneObjectsLoader = new SceneObjectsLoader();
             var sceneObjects = sceneObjectsLoader.LoadScene();
-
-            return CreateScene(sceneObjects);
+            var scene = CreateScene(sceneObjects);
+            GC.Collect();
+            return scene;
          }
       }
 
 
-      private Scene CreateScene(List<RawSceneObject> sceneObjects)
+      private Scene CreateScene(RawSceneObjectsList sceneObjects)
       {
          var scene = new Scene();
 
-         foreach (var obj in sceneObjects)
-         {
-            var compiledObject = Model3dFactory.CreateModel(obj.Model);
-            scene.SceneObjects.Add(new CompiledSceneObject(compiledObject, obj.WorldMatrix));
-         }
+         Action<List<RawSceneObject>, List<CompiledSceneObject>> CompileObjecstList =
+            delegate(List<RawSceneObject> rawObjects, List<CompiledSceneObject> compiledObjects)
+            {
+               foreach (var obj in rawObjects)
+               {
+                  var compiledObject = Model3dFactory.CreateModel(obj.Model);
+                  compiledObjects.Add(new CompiledSceneObject(compiledObject, obj.WorldMatrix));
+               }
+            };
+
+         CompileObjecstList(sceneObjects.LowDetailedObjects, scene.LowDetailedObjects);
+         CompileObjecstList(sceneObjects.HighDetailedObjects, scene.HighDetailedObjects);
 
          scene.Grid = new Grid(sceneObjects);
          scene.Grid.Build();
@@ -44,13 +52,16 @@ namespace GTAWorldRenderer.Scenes.Loaders
          int totalIndexBufferBytes = 0;
          int totalVertexBufferBytes = 0;
 
-         foreach (var obj in scene.SceneObjects)
+         Action<CompiledSceneObject> CalculateMemoryForObj = delegate(CompiledSceneObject obj)
          {
             int curVertSize, curIndSize;
             obj.Model.GetMemoryUsed(out curVertSize, out curIndSize);
             totalIndexBufferBytes += curIndSize;
             totalVertexBufferBytes += curVertSize;
-         }
+         };
+
+         scene.HighDetailedObjects.ForEach(CalculateMemoryForObj);
+         scene.LowDetailedObjects.ForEach(CalculateMemoryForObj);
 
          Action<string, int> PrintInfo = delegate(string msg, int bytes)
          {

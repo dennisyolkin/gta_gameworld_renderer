@@ -81,7 +81,7 @@ namespace GTAWorldRenderer.Scenes.Rasterization
       public int GridRows { get; private set; }
       public int GridColumns { get; private set; }
 
-      private readonly List<RawSceneObject> sceneObjects;
+      private RawSceneObjectsList sceneObjects;
       private BoundingBox boundingRectangle;
       private List<Line2D> gridLines = new List<Line2D>();
       private readonly float cellSize = Config.Instance.Rasterization.GridCellSize;
@@ -89,7 +89,7 @@ namespace GTAWorldRenderer.Scenes.Rasterization
       private float minX, minY;
       private CachedRequest cachedRequest = null;
 
-      public Grid(List<RawSceneObject> sceneObjects)
+      public Grid(RawSceneObjectsList sceneObjects)
       {
          this.sceneObjects = sceneObjects;
          boundingRectangle = new BoundingBox();
@@ -102,15 +102,15 @@ namespace GTAWorldRenderer.Scenes.Rasterization
          {
             Log.Instance.Print("Processing vertices...");
             List<ObjectVertices> objVertices = new List<ObjectVertices>();
-            for (var i = 0; i != sceneObjects.Count; ++i)
+            for (var i = 0; i != sceneObjects.HighDetailedObjects.Count; ++i)
             {
                var curObj = new ObjectVertices() { Idx = i };
 
-               foreach (var mesh in sceneObjects[i].Model.Meshes)
+               foreach (var mesh in sceneObjects.HighDetailedObjects[i].Model.Meshes)
                {
                   curObj.Vertices = new Vector3[mesh.Vertices.Count];
                   for (var j = 0; j < curObj.Vertices.Length; ++j)
-                     curObj.Vertices[j] = Vector3.Transform(mesh.Vertices[j], sceneObjects[i].WorldMatrix);
+                     curObj.Vertices[j] = Vector3.Transform(mesh.Vertices[j], sceneObjects.HighDetailedObjects[i].WorldMatrix);
 
                   objVertices.Add(curObj);
 
@@ -127,6 +127,7 @@ namespace GTAWorldRenderer.Scenes.Rasterization
             RasterizeObjects(objVertices);
 
          }
+         sceneObjects = null; // чтобы освободить память
       }
 
 

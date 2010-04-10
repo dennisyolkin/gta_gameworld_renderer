@@ -103,6 +103,7 @@ namespace GTAWorldRenderer.Rendering
       }
 
 
+      // Отрисовываются только high-detailed объекты
       public override void DoDraw(GameTime gameTime)
       {
          Device.Clear(Color.Black);
@@ -116,13 +117,13 @@ namespace GTAWorldRenderer.Rendering
          Device.RenderState.FillMode = FillMode.WireFrame;
 
          effect.Parameters["xColor"].SetValue(Color.Green.ToVector4());
-         foreach (var obj in SceneContent.SceneObjects)
+         foreach (var obj in SceneContent.HighDetailedObjects)
             obj.Model.Draw(effect, obj.WorldMatrix, false);
 
          effect.Parameters["xColor"].SetValue(Color.Orange.ToVector4());
          foreach (var objIdx in SceneContent.Grid.GetVisibleObjects(selectedGridCell))
          {
-            var obj = SceneContent.SceneObjects[objIdx];
+            var obj = SceneContent.HighDetailedObjects[objIdx];
             obj.Model.Draw(effect, obj.WorldMatrix, false);
          }
 

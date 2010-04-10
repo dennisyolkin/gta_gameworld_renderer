@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using GTAWorldRenderer.Scenes.Loaders;
+using System.Collections.Generic;
 
 namespace GTAWorldRenderer.Scenes
 {
@@ -56,6 +57,19 @@ namespace GTAWorldRenderer.Scenes
       {
          Model = model;
          WorldMatrix = worldMatrix;
+      }
+   }
+
+
+   class RawSceneObjectsList
+   {
+      public List<RawSceneObject> HighDetailedObjects { get; private set; }
+      public List<RawSceneObject> LowDetailedObjects { get; private set; }
+
+      public RawSceneObjectsList(List<RawSceneObject> highDetailedObjects, List<RawSceneObject> lowDetailedObjects)
+      {
+         this.HighDetailedObjects = highDetailedObjects;
+         this.LowDetailedObjects = lowDetailedObjects;
       }
    }
 

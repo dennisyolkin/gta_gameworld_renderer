@@ -19,7 +19,6 @@
       <xsd:sequence>
          <xsd:element name="ShowWarningsIfTextureNotFound" type="xsd:boolean"/>
          <xsd:element name="SceneObjectsAmountLimit" type="xsd:integer"/> 
-         <xsd:element name="LowDetailedScene" type="xsd:boolean"/>
          <xsd:element name="DetailedLogOutput" type="xsd:boolean"/>
       </xsd:sequence>
    </xsd:complexType>

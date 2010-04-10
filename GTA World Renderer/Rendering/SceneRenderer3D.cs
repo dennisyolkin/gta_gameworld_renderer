@@ -147,10 +147,11 @@ namespace GTAWorldRenderer.Rendering
          effect.Parameters["xProjection"].SetValue(projectionMatrix);
 
          var visibleObjects = SceneContent.Grid.GetVisibleObjects(camera.Position);
-         textInfoPanel.Data["Objects to draw"] = String.Format("{0} of {1}", visibleObjects.Count, SceneContent.SceneObjects.Count);
+         textInfoPanel.Data["Objects to draw (HD)"] = String.Format("{0} of {1}", visibleObjects.Count, SceneContent.HighDetailedObjects.Count);
+         textInfoPanel.Data["Objects to draw (LD)"] = String.Format("{0} of {1}", 0, SceneContent.LowDetailedObjects.Count);
          foreach (var objIdx in visibleObjects)
          {
-            var obj = SceneContent.SceneObjects[objIdx];
+            var obj = SceneContent.HighDetailedObjects[objIdx];
             obj.Model.Draw(effect, obj.WorldMatrix, true);
          }
 

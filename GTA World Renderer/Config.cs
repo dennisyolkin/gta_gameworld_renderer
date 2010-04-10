@@ -86,11 +86,7 @@ namespace GTAWorldRenderer
             }
          }
 
-
          [DataMember(IsRequired = true, Order = 3)]
-         public bool LowDetailedScene { get; private set; }
-
-         [DataMember(IsRequired = true, Order = 4)]
          public bool DetailedLogOutput { get; private set; }
 
       }

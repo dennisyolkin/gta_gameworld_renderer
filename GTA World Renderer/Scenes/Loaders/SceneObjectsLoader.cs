@@ -36,7 +36,7 @@ namespace GTAWorldRenderer.Scenes.Loaders
       private Dictionary<int, SceneItemDefinition> objDefinitions = new Dictionary<int, SceneItemDefinition>();
       private List<SceneItemPlacement> objPlacements = new List<SceneItemPlacement>();
 
-      public List<RawSceneObject> LoadScene()
+      public RawSceneObjectsList LoadScene()
       {
          using (Logger.EnterTimingStage("Loading all data from GTA"))
          {
@@ -63,19 +63,19 @@ namespace GTAWorldRenderer.Scenes.Loaders
                LoadDatFile("data/default.dat");
                LoadDatFile(GetVersionSpecificDatFile(gtaVersion));
 
-               var scene = new List<RawSceneObject>();
+               var sceneLowDetailed = new List<RawSceneObject>();
+               var sceneHighDetailed = new List<RawSceneObject>();
                int missedIDEs = 0;
 
                foreach (var obj in objPlacements)
                {
-                  if (scene.Count >= Config.Instance.Loading.SceneObjectsAmountLimit)
+                  if (sceneLowDetailed.Count + sceneHighDetailed.Count >= Config.Instance.Loading.SceneObjectsAmountLimit)
                   {
                      Logger.Print("Limit for maximum number of objects to load is exceeded", MessageType.Warning);
                      break;
                   }
 
-                  if (obj.Name.StartsWith("lod") != Config.Instance.Loading.LowDetailedScene)
-                     continue;
+                  bool lowDetailedObj = obj.Name.StartsWith("lod");
 
                   if (!loadedModels.ContainsKey(obj.Name))
                      Utils.TerminateWithError("Model " + obj.Name + " is not loaded because it is not found");
@@ -111,7 +111,12 @@ namespace GTAWorldRenderer.Scenes.Loaders
                   }
 
                   Matrix matrix = Matrix.CreateScale(obj.Scale) * Matrix.CreateFromQuaternion(obj.Rotation) * Matrix.CreateTranslation(obj.Position);
-                  scene.Add(new RawSceneObject(modelEntry.Model, matrix));
+
+                  var objToAdd = new RawSceneObject(modelEntry.Model, matrix);
+                  if (lowDetailedObj)
+                     sceneLowDetailed.Add(objToAdd);
+                  else
+                     sceneHighDetailed.Add(objToAdd);
                }
 
                if (missedIDEs != 0)
@@ -129,11 +134,10 @@ namespace GTAWorldRenderer.Scenes.Loaders
 
                Logger.Print("Scene loaded!");
                Logger.PrintStatistic();
-               Logger.Print("Objects located on scene: " + scene.Count);
-               //PrintMemoryUsed(scene); // TODO :: move it somewhere
+               Logger.Print(String.Format("Objects located on scene: {0} high-detailed, {1} low-detailed", sceneHighDetailed.Count, sceneLowDetailed.Count));
                Logger.Flush();
 
-               return scene;
+               return new RawSceneObjectsList(sceneHighDetailed, sceneLowDetailed);
 
             }
             catch (Exception er)
