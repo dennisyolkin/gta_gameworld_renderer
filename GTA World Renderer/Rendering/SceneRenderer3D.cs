@@ -162,6 +162,7 @@ namespace GTAWorldRenderer.Rendering
          };
 
          DrawObjects(visibleLowDetailedObjs, SceneContent.LowDetailedObjects);
+         Device.Clear(ClearOptions.DepthBuffer, Color.Black, 1.0f, 0);
          DrawObjects(visibleHighDetailedObjs, SceneContent.HighDetailedObjects);
 
          Device.RenderState.FillMode = FillMode.Solid;
