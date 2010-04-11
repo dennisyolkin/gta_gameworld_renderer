@@ -146,7 +146,7 @@ namespace GTAWorldRenderer.Scenes.Loaders
             switch (header.RasterFormat)
             {
                case RasterFormat.R5_G5_B5_A1:
-                  format = SurfaceFormat.Bgra5551;
+                  format = header.DXTnumber == 0 ? SurfaceFormat.Bgra5551 : SurfaceFormat.Dxt1;
                   break;
 
                case RasterFormat.R5_G6_B5:
