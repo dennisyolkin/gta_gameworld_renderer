@@ -96,8 +96,8 @@ namespace GTAWorldRenderer.Scenes.Rasterization
          using (Log.Instance.EnterTimingStage("Building grid"))
          {
             Log.Instance.Print("Processing vertices...");
-            var highDetailedObjVertices = PreprocessObjects(sceneObjects.HighDetailedObjects);
             var lowDetailedObjVertices = PreprocessObjects(sceneObjects.LowDetailedObjects);
+            var highDetailedObjVertices = PreprocessObjects(sceneObjects.HighDetailedObjects);
 
             Log.Instance.Print("Creating cells...");
             CreateCells();
@@ -132,11 +132,11 @@ namespace GTAWorldRenderer.Scenes.Rasterization
          {
             var curObj = new ObjectVertices() { Idx = i };
 
-            foreach (var mesh in sceneObjects.HighDetailedObjects[i].Model.Meshes)
+            foreach (var mesh in objects[i].Model.Meshes)
             {
                curObj.Vertices = new Vector3[mesh.Vertices.Count];
                for (var j = 0; j < curObj.Vertices.Length; ++j)
-                  curObj.Vertices[j] = Vector3.Transform(mesh.Vertices[j], sceneObjects.HighDetailedObjects[i].WorldMatrix);
+                  curObj.Vertices[j] = Vector3.Transform(mesh.Vertices[j], objects[i].WorldMatrix);
 
                objVertices.Add(curObj);
 
@@ -271,13 +271,10 @@ namespace GTAWorldRenderer.Scenes.Rasterization
             // Добавляем LowDetailed-объекты из всех остальных ячеек
             for (var col = 0; col < GridColumns; ++col)
             {
-              // if (col >= minCol && col <= maxCol)
-              //    continue;
-
                for (var row = 0; row < GridRows; ++row)
                {
-               //   if (row >= minRow && row <= maxRow)
-               //      continue;
+                  if (row >= minRow && row <= maxRow && col >= minCol && col <= maxCol)
+                     continue;
 
                   objectsFromCellsLD.Add(cells[row, col].LowDetailedObjects);
                }
