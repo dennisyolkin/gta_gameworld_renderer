@@ -121,6 +121,9 @@ namespace GTAWorldRenderer.Scenes.Loaders
          obj.Name = toks[1].ToLower();
          obj.Scale = Vector3.One;
 
+         if (obj.Name.Length == 0) // в GTA VC такое бывает. Если здесь такие объекты не откидывать, упадём при загрузке dff по пустому имени
+            return null;
+
          // y and z coords are exchanged because of different coordinate system !!!
          switch (gtaVersion) 
          {
