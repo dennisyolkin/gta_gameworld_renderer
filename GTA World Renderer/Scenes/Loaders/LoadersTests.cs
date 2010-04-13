@@ -68,7 +68,8 @@ namespace GTAWorldRenderer.Scenes.Loaders
       /// </summary>
       /// <param name="imgPath">Путь к IMG архиву</param>
       /// <param name="outputPathPrefix">Папка, в которую проихводится распаковка. Должна существовать!</param>
-      public static void UnpackImg(string imgPath, string outputPathPrefix)
+      /// <param name="gtaVersion">Версия игры</param>
+      public static void UnpackImg(string imgPath, string outputPathPrefix, GtaVersion gtaVersion)
       {
          try
          {
@@ -80,7 +81,7 @@ namespace GTAWorldRenderer.Scenes.Loaders
 
          using (Log.Instance.EnterStage("Unpacking IMG: " + imgPath))
          {
-            IMGArchive archive = new IMGArchive(imgPath, GtaVersion.III);
+            IMGArchive archive = new IMGArchive(imgPath, gtaVersion);
             IEnumerable<FileProxy> entries = archive.Load();
             foreach (var entry in entries)
             {
@@ -116,12 +117,13 @@ namespace GTAWorldRenderer.Scenes.Loaders
       /// </summary>
       /// <param name="directoryPath">Директория с исходными архивами (к примеру, папка с игрой GTA)</param>
       /// <param name="outptuPathPrefix">Папка, в которую проихводится распаковка. Должна существовать!</param>
-      public static void UnpackAllArchivesInDirectory(string directoryPath, string outptuPathPrefix)
+      /// <param name="gtaVersion">Версия игры</param>
+      public static void UnpackAllArchivesInDirectory(string directoryPath, string outptuPathPrefix, GtaVersion gtaVersion)
       {
          foreach (var path in Directory.GetFiles(directoryPath, "*", SearchOption.AllDirectories))
          {
             if (path.EndsWith(".img"))
-               UnpackImg(path, outptuPathPrefix);
+               UnpackImg(path, outptuPathPrefix, gtaVersion);
             else if (path.EndsWith(".txd"))
                UnpackTxd(path, outptuPathPrefix);
          }
