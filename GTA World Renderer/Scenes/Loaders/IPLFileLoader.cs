@@ -107,7 +107,7 @@ namespace GTAWorldRenderer.Scenes.Loaders
          if (currentSection != IPLSection.INST)
             return null;
 
-         string[] toks = line.Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
+         string[] toks = line.Split(new string[] { ", " }, StringSplitOptions.None);
 
          if (toks.Length != INST_REQUIRED_TOKENS[(int)gtaVersion])
          {
