@@ -208,7 +208,7 @@ namespace GTAWorldRenderer.Scenes.Loaders
             case GtaVersion.ViceCity:
                return "data/gta_vc.dat";
             case GtaVersion.SanAndreas:
-               return "data/gra.dat";
+               return "data/gta.dat";
             default:
                string msg = "Unsopported GTA version: " + gtaVersion.ToString() + ".";
                Logger.Print(msg, MessageType.Error);
