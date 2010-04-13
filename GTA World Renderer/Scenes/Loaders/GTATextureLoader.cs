@@ -103,7 +103,6 @@ namespace GTAWorldRenderer.Scenes.Loaders
       BinaryReader reader;
       Header header;
       SurfaceFormat format;
-      //bool usingAlpha = false;
       Color[] palette;
 
 
@@ -130,50 +129,28 @@ namespace GTAWorldRenderer.Scenes.Loaders
          if (shouldUsePalette)
             ReadPalette(reader, HEADER_SIZE);
 
-         /*
-         if ((header.BitsPerPixel != 32 && header.DXTnumber == 1) || header.DXTnumber == 8 || header.RasterFormat == RasterFormat.R5_G5_B5_A1)
+         switch (header.RasterFormat)
          {
-            format = SurfaceFormat.Dxt1;
-            //if (header.RasterFormat == RasterFormat.R5_G5_B5_A1 && header.RasterFormatEx == RasterFormatEx.MipMap)
-            //   usingAlpha = true;
+            case RasterFormat.R5_G5_B5_A1:
+               format = header.DXTnumber == 0 ? SurfaceFormat.Bgra5551 : SurfaceFormat.Dxt1;
+               break;
+
+            case RasterFormat.R5_G6_B5:
+               format = SurfaceFormat.Dxt1;
+               break;
+
+            case RasterFormat.R4_G4_B4_A4:
+               format = SurfaceFormat.Dxt3;
+               break;
+
+            case RasterFormat.R8_G8_B8_A8:
+               format = SurfaceFormat.Color;
+               break;
+
+            case RasterFormat.R8_G8_B8:
+               format = SurfaceFormat.Color;
+               break;
          }
-         else */if ((header.BitsPerPixel != 32 && header.DXTnumber == 3) || header.DXTnumber == 9)
-         {
-            format = SurfaceFormat.Dxt3;
-         }
-         else
-         {
-            switch (header.RasterFormat)
-            {
-               case RasterFormat.R5_G5_B5_A1:
-                  format = header.DXTnumber == 0 ? SurfaceFormat.Bgra5551 : SurfaceFormat.Dxt1;
-                  break;
-
-               case RasterFormat.R5_G6_B5:
-                  format = SurfaceFormat.Dxt1;
-                  break;
-
-               case RasterFormat.R4_G4_B4_A4:
-                  format = SurfaceFormat.Dxt3;
-                  break;
-
-               case RasterFormat.R8_G8_B8_A8:
-                  format = SurfaceFormat.Color;
-                  //usingAlpha = true;
-                  break;
-
-               case RasterFormat.R8_G8_B8:
-                  format = SurfaceFormat.Color; // странно
-                  //format = SurfaceFormat.Bgr24;
-                  break;
-            }
-         }
-
-         //if (header.BitsPerPixel == 16 && header.DXTnumber == 0)
-         //   format = SurfaceFormat.Color;
-
-         //if (header.AlphaUsed == 1 || header.AlphaUsed == 0x33545844)
-         //   usingAlpha = true;
 
          int dataSize = reader.ReadInt32();
 
@@ -200,6 +177,8 @@ namespace GTAWorldRenderer.Scenes.Loaders
             for (int i = 1; i < header.MipMaps; ++i)
             {
                int size = reader.ReadInt32();
+               if (size == 0)
+                  continue;
                chunk = reader.ReadBytes(size);
                texture.SetData(i, null, chunk, 0, size, SetDataOptions.Discard);
             }
