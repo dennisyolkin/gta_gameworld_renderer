@@ -8,6 +8,7 @@ using System.IO;
 
 namespace GTAWorldRenderer.Scenes.Loaders
 {
+
    /// <summary>
    /// Загружает всю необходимую для построения сцены информацию из файлов GTA, а именно:
    /// <list>
@@ -74,6 +75,15 @@ namespace GTAWorldRenderer.Scenes.Loaders
                      Logger.Print("Limit for maximum number of objects to load is exceeded", MessageType.Warning);
                      break;
                   }
+
+                  // Игнорируем "ночной" вариант модели
+                  if (obj.Name.EndsWith("_nt"))
+                     continue;
+
+                  // в GTA Vice City такие модели дублируют те части сцены, которы и так представлены в LowDetailed.
+                  // из-за них z-fighting и падение fls
+                  if (obj.Name.StartsWith("islandlod"))
+                     continue;
 
                   bool lowDetailedObj = obj.Name.StartsWith("lod");
 
