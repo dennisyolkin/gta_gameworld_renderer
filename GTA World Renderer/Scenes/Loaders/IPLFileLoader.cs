@@ -124,6 +124,14 @@ namespace GTAWorldRenderer.Scenes.Loaders
          if (obj.Name.Length == 0) // в GTA VC такое бывает. Если здесь такие объекты не откидывать, упадём при загрузке dff по пустому имени
             return null;
 
+         if (gtaVersion == GtaVersion.ViceCity || gtaVersion == GtaVersion.SanAndreas)
+         {
+            // нас не интерисуют внутренние интерьеры, загружаем только внешний мир
+            int interiorId = Int32.Parse(toks[2]);
+            if (interiorId != 0 && interiorId != 13) // Похоже, ребята из RockstarGames суеверны :)
+               return null;
+         }
+
          // y and z coords are exchanged because of different coordinate system !!!
          switch (gtaVersion) 
          {
