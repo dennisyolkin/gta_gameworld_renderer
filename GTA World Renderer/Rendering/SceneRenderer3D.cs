@@ -136,7 +136,7 @@ namespace GTAWorldRenderer.Rendering
 
       public override void DoDraw(GameTime gameTime)
       {
-         Device.Clear(Color.Black);
+         Device.Clear(Color.CornflowerBlue);
 
          if (SceneContent == null)
             return;

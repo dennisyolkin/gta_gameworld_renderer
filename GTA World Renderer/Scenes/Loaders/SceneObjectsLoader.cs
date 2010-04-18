@@ -36,6 +36,71 @@ namespace GTAWorldRenderer.Scenes.Loaders
       private GtaVersion gtaVersion;
       private Dictionary<int, SceneItemDefinition> objDefinitions = new Dictionary<int, SceneItemDefinition>();
       private List<SceneItemPlacement> objPlacements = new List<SceneItemPlacement>();
+      private Dictionary<string, ModelEntry> loadedModels = new Dictionary<string, ModelEntry>();
+
+
+      /// <summary>
+      /// Препроцессит объекты сцены.
+      /// Проверяет существование модели, отбрасывает "ночные" (и некоторые другие ненужные) модели,
+      /// а также сортирует объекты так, чтобы модели с полупрозрачностью шли после непрозрачных
+      /// </summary>
+      private void PreprocessIpls()
+      {
+         var filteredObjPlacements = new List<SceneItemPlacement>();
+         foreach (var obj in objPlacements)
+         {
+            if (filteredObjPlacements.Count >= Config.Instance.Loading.SceneObjectsAmountLimit)
+            {
+               Logger.Print("Limit for maximum number of objects to load is exceeded", MessageType.Warning);
+               break;
+            }
+
+            // Игнорируем "ночной" вариант модели
+            if (obj.Name.EndsWith("_nt"))
+               continue;
+
+            // в GTA Vice City такие модели дублируют те части сцены, которы и так представлены в LowDetailed.
+            // из-за них z-fighting и падение fps
+            if (obj.Name.StartsWith("islandlod"))
+               continue;
+
+            if (!loadedModels.ContainsKey(obj.Name))
+               Utils.TerminateWithError("Model " + obj.Name + " is not loaded because it is not found");
+
+            filteredObjPlacements.Add(obj);
+         }
+
+         //За счёт сортировки с учётом флагов в IDE добиваемся того, что объекты с альфой (в частности, тени) будут отрисовываться
+         // после непрозрачных объектов
+         filteredObjPlacements.Sort(delegate(SceneItemPlacement a, SceneItemPlacement b) 
+            {
+               SceneItemDefinition aIde, bIde;
+               objDefinitions.TryGetValue(a.Id, out aIde);
+               objDefinitions.TryGetValue(b.Id, out bIde);
+
+               if ((aIde == null && bIde == null) || (aIde.Flags == bIde.Flags))
+                  return a.Id.CompareTo(b.Id);
+
+               bool aAlpha1 = (aIde.Flags & IdeFlags.AlphaTransparency1) != IdeFlags.None;
+               bool aAlpha2 = (aIde.Flags & IdeFlags.AlphaTransparency2) != IdeFlags.None;
+               bool bAlpha1 = (bIde.Flags & IdeFlags.AlphaTransparency1) != IdeFlags.None;
+               bool bAlpha2 = (bIde.Flags & IdeFlags.AlphaTransparency2) != IdeFlags.None;
+               bool aShadow = (aIde.Flags & IdeFlags.Shadows) != IdeFlags.None;
+               bool bShadow = (aIde.Flags & IdeFlags.Shadows) != IdeFlags.None;
+
+               if (!aShadow && bShadow) return -1;
+               if (aShadow && !bShadow) return 1;
+               if (!aAlpha1 && bAlpha1) return -1;
+               if (aAlpha1 && !bAlpha1) return 1;
+               if (!aAlpha2 && bAlpha2) return -1;
+               if (aAlpha2 && !bAlpha2) return 1;
+
+               return aIde.Flags.CompareTo(bIde.Flags);
+            }
+         );
+         objPlacements = filteredObjPlacements;
+      }
+
 
       public RawSceneObjectsList LoadScene()
       {
@@ -54,8 +119,6 @@ namespace GTAWorldRenderer.Scenes.Loaders
 
                gtaVersion = GetGtaVersion();
 
-               var loadedModels = new Dictionary<string, ModelEntry>();
-
                string mainImgPath = Config.Instance.GTAFolderPath + "models/gta3.img";
                var loadedArchiveEntries = LoadMainImgArchive(mainImgPath);
                foreach (var item in loadedArchiveEntries)
@@ -68,34 +131,20 @@ namespace GTAWorldRenderer.Scenes.Loaders
                var sceneHighDetailed = new List<RawSceneObject>();
                int missedIDEs = 0;
 
+               PreprocessIpls();
+
                foreach (var obj in objPlacements)
                {
-                  if (sceneLowDetailed.Count + sceneHighDetailed.Count >= Config.Instance.Loading.SceneObjectsAmountLimit)
-                  {
-                     Logger.Print("Limit for maximum number of objects to load is exceeded", MessageType.Warning);
-                     break;
-                  }
-
-                  // Игнорируем "ночной" вариант модели
-                  if (obj.Name.EndsWith("_nt"))
-                     continue;
-
-                  // в GTA Vice City такие модели дублируют те части сцены, которы и так представлены в LowDetailed.
-                  // из-за них z-fighting и падение fls
-                  if (obj.Name.StartsWith("islandlod"))
-                     continue;
-
                   bool lowDetailedObj = obj.Name.StartsWith("lod");
-
-                  if (!loadedModels.ContainsKey(obj.Name))
-                     Utils.TerminateWithError("Model " + obj.Name + " is not loaded because it is not found");
 
                   string textureFolder = null;
                   var modelEntry = loadedModels[obj.Name];
                   if (modelEntry.Model == null)
                   {
                      if (objDefinitions.ContainsKey(obj.Id))
+                     {
                         textureFolder = objDefinitions[obj.Id].TextureFolder;
+                     }
                      else
                         ++missedIDEs;
 

@@ -282,6 +282,11 @@ namespace GTAWorldRenderer.Scenes.Rasterization
 
             var resultHD = Utils.MergeLists(objectsFromCellsHD);
             var resultLD = Utils.MergeLists(objectsFromCellsLD);
+
+            // Порядок важен (ввиду наличия полупрозрачных объектов)
+            resultHD.Sort();
+            resultLD.Sort();
+
             cachedRequest = new CachedRequest(cellIdx, resultHD, resultLD);
          }
          highDetailedObjects = cachedRequest.HighDetailedResult;

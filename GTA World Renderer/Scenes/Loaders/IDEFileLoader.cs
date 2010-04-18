@@ -91,6 +91,7 @@ namespace GTAWorldRenderer.Scenes.Loaders
          obj.Name = toks[1];
          obj.TextureFolder = toks[2];
          obj.DrawDistance = float.Parse(toks[4]);
+         obj.Flags = (IdeFlags)int.Parse(toks[5]);
 
          return new KeyValuePair<int, SceneItemDefinition>(id, obj);
       }
