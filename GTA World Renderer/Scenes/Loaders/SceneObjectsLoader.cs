@@ -257,6 +257,9 @@ namespace GTAWorldRenderer.Scenes.Loaders
                      var objs = new IPLFileLoader(fileName, gtaVersion).Load();
                      foreach (var obj in objs)
                         objPlacements.Add(obj);
+                  } else if (line.StartsWith("IMG")) // in SanAndreas only
+                  {
+                     // Ignoring it, there is no interesting information for us
                   }
                   else if (line.StartsWith("SPLASH") || line.StartsWith("COLFILE") || line.StartsWith("MAPZONE") || line.StartsWith("MODELFILE"))
                   {
