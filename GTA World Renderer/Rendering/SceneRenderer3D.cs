@@ -156,15 +156,13 @@ namespace GTAWorldRenderer.Rendering
 
          // ---  отрисовка  ---
 
-         //Device.RenderState.SlopeScaleDepthBias = 0;
-         
          // Рисуем низкодетализированный вариант нужного куска сцены
          foreach (var objIdx in visibleLowDetailedObjs)
          {
             var obj = SceneContent.LowDetailedObjects[objIdx];
             obj.Model.Draw(effect, obj.WorldMatrix, true);
          }
-
+         
          // очищаем z-буффер
          Device.Clear(ClearOptions.DepthBuffer, Color.Black, 1.0f, 0);
 

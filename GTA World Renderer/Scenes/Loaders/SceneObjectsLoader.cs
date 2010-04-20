@@ -190,6 +190,7 @@ namespace GTAWorldRenderer.Scenes.Loaders
                         }
                      if (fail)
                      {
+                        //Logger.Print(obj.Name, MessageType.Warning);
                         Logger.Print("FIXME: Object has no texture coordinates and was IGNORED.", MessageType.Warning);
                         continue;
                      }
