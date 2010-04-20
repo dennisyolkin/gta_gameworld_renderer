@@ -70,15 +70,25 @@ namespace GTAWorldRenderer.Scenes.Loaders
             filteredObjPlacements.Add(obj);
          }
 
-         //За счёт сортировки с учётом флагов в IDE добиваемся того, что объекты с альфой (в частности, тени) будут отрисовываться
+         // За счёт сортировки с учётом флагов в IDE добиваемся того, что объекты с альфой (в частности, тени) будут отрисовываться
          // после непрозрачных объектов
-         filteredObjPlacements.Sort(delegate(SceneItemPlacement a, SceneItemPlacement b) 
+         filteredObjPlacements.Sort(
+            delegate(SceneItemPlacement a, SceneItemPlacement b)
             {
                SceneItemDefinition aIde, bIde;
                objDefinitions.TryGetValue(a.Id, out aIde);
                objDefinitions.TryGetValue(b.Id, out bIde);
 
-               if ((aIde == null && bIde == null) || (aIde.Flags == bIde.Flags))
+               if (aIde == null && bIde == null)
+                  return a.Id.CompareTo(b.Id);
+
+               if (aIde == null) return -1;
+               if (bIde == null) return 1;
+
+               bool aHasShadInName = a.Name.Contains("shad");
+               bool bHasShadInName = b.Name.Contains("shad");
+
+               if (aIde.Flags == bIde.Flags && aHasShadInName == bHasShadInName)
                   return a.Id.CompareTo(b.Id);
 
                bool aAlpha1 = (aIde.Flags & IdeFlags.AlphaTransparency1) != IdeFlags.None;
@@ -86,7 +96,13 @@ namespace GTAWorldRenderer.Scenes.Loaders
                bool bAlpha1 = (bIde.Flags & IdeFlags.AlphaTransparency1) != IdeFlags.None;
                bool bAlpha2 = (bIde.Flags & IdeFlags.AlphaTransparency2) != IdeFlags.None;
                bool aShadow = (aIde.Flags & IdeFlags.Shadows) != IdeFlags.None;
-               bool bShadow = (aIde.Flags & IdeFlags.Shadows) != IdeFlags.None;
+               bool bShadow = (bIde.Flags & IdeFlags.Shadows) != IdeFlags.None;
+
+               if (aShadow && bShadow)
+               {
+                  if (!aHasShadInName && bHasShadInName) return -1;
+                  if (aHasShadInName && !bHasShadInName) return 1;
+               }
 
                if (!aShadow && bShadow) return -1;
                if (aShadow && !bShadow) return 1;
@@ -98,7 +114,17 @@ namespace GTAWorldRenderer.Scenes.Loaders
                return aIde.Flags.CompareTo(bIde.Flags);
             }
          );
+
          objPlacements = filteredObjPlacements;
+      }
+
+
+      private bool isShadow(SceneItemPlacement obj)
+      {
+         SceneItemDefinition ide = null;
+         if (!objDefinitions.TryGetValue(obj.Id, out ide))
+            return false;
+         return ((ide.Flags & IdeFlags.Shadows) != IdeFlags.None) && obj.Name.Contains("shad");
       }
 
 
@@ -133,12 +159,15 @@ namespace GTAWorldRenderer.Scenes.Loaders
 
                PreprocessIpls();
 
+               int shadowMinIdx = int.MaxValue;
+
                foreach (var obj in objPlacements)
                {
                   bool lowDetailedObj = obj.Name.StartsWith("lod");
 
                   string textureFolder = null;
                   var modelEntry = loadedModels[obj.Name];
+
                   if (modelEntry.Model == null)
                   {
                      if (objDefinitions.ContainsKey(obj.Id))
@@ -169,13 +198,21 @@ namespace GTAWorldRenderer.Scenes.Loaders
                      modelEntry.Model = modelData;
                   }
 
+                  // нам не нужны модели без значимой геометрии
+                  if (modelEntry.Model.Meshes.Count == 0)
+                     continue;
+
                   Matrix matrix = Matrix.CreateScale(obj.Scale) * Matrix.CreateFromQuaternion(obj.Rotation) * Matrix.CreateTranslation(obj.Position);
 
                   var objToAdd = new RawSceneObject(modelEntry.Model, matrix);
                   if (lowDetailedObj)
                      sceneLowDetailed.Add(objToAdd);
                   else
+                  {
                      sceneHighDetailed.Add(objToAdd);
+                     if (shadowMinIdx == int.MaxValue && isShadow(obj))
+                        shadowMinIdx = sceneHighDetailed.Count - 1;
+                  }
                }
 
                if (missedIDEs != 0)
@@ -196,7 +233,9 @@ namespace GTAWorldRenderer.Scenes.Loaders
                Logger.Print(String.Format("Objects located on scene: {0} high-detailed, {1} low-detailed", sceneHighDetailed.Count, sceneLowDetailed.Count));
                Logger.Flush();
 
-               return new RawSceneObjectsList(sceneHighDetailed, sceneLowDetailed);
+               var result = new RawSceneObjectsList(sceneHighDetailed, sceneLowDetailed);
+               result.ShadowsStartIdx = shadowMinIdx;
+               return result;
 
             }
             catch (Exception er)

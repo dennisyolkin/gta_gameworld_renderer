@@ -24,7 +24,7 @@ namespace GTAWorldRenderer.Scenes.Loaders
       }
 
 
-      private Scene CreateScene(RawSceneObjectsList sceneObjects)
+      private Scene CreateScene(RawSceneObjectsList rawSceneData)
       {
          var scene = new Scene();
 
@@ -38,10 +38,11 @@ namespace GTAWorldRenderer.Scenes.Loaders
                }
             };
 
-         CompileObjecstList(sceneObjects.LowDetailedObjects, scene.LowDetailedObjects);
-         CompileObjecstList(sceneObjects.HighDetailedObjects, scene.HighDetailedObjects);
+         CompileObjecstList(rawSceneData.LowDetailedObjects, scene.LowDetailedObjects);
+         CompileObjecstList(rawSceneData.HighDetailedObjects, scene.HighDetailedObjects);
 
-         scene.Grid = new Grid(sceneObjects);
+         scene.ShadowsStartIdx = rawSceneData.ShadowsStartIdx;
+         scene.Grid = new Grid(rawSceneData);
          scene.Grid.Build();
          return scene;
       }

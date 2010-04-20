@@ -14,6 +14,8 @@ namespace GTAWorldRenderer.Rendering
       private const float slowMoveSpeed = 50.0f;
       private const float fastMoveSpeed = 500.0f;
 
+      private const float SlopeScaleDepthBiasForShadows = -5f;
+
       public Scene SceneContent { get; set; }
 
       Camera camera;
@@ -152,19 +154,51 @@ namespace GTAWorldRenderer.Rendering
          textInfoPanel.Data["Objects to draw (HD)"] = String.Format("{0} of {1}", visibleHighDetailedObjs.Count, SceneContent.HighDetailedObjects.Count);
          textInfoPanel.Data["Objects to draw (LD)"] = String.Format("{0} of {1}", visibleLowDetailedObjs.Count, SceneContent.LowDetailedObjects.Count);
 
-         Action<List<int>, List<CompiledSceneObject>> DrawObjects = delegate(List<int> objIdxs, List<CompiledSceneObject> sceneObjs)
+         // ---  отрисовка  ---
+
+         //Device.RenderState.SlopeScaleDepthBias = 0;
+         
+         // Рисуем низкодетализированный вариант нужного куска сцены
+         foreach (var objIdx in visibleLowDetailedObjs)
          {
-            foreach (var objIdx in objIdxs)
-            {
-               var obj = sceneObjs[objIdx];
-               obj.Model.Draw(effect, obj.WorldMatrix, true);
-            }
-         };
+            var obj = SceneContent.LowDetailedObjects[objIdx];
+            obj.Model.Draw(effect, obj.WorldMatrix, true);
+         }
 
-         DrawObjects(visibleLowDetailedObjs, SceneContent.LowDetailedObjects);
+         // очищаем z-буффер
          Device.Clear(ClearOptions.DepthBuffer, Color.Black, 1.0f, 0);
-         DrawObjects(visibleHighDetailedObjs, SceneContent.HighDetailedObjects);
 
+         // находим индекс, начиная с которого идут тени
+         int shadowsStartIdx = visibleHighDetailedObjs.BinarySearch(SceneContent.ShadowsStartIdx);
+         if (shadowsStartIdx < 0)
+            shadowsStartIdx = ~shadowsStartIdx;
+
+         // Рисуем высокодетализированный вариант нужного куска сцены  (без теней)
+         for (var i = 0; i < shadowsStartIdx; ++i)
+         {
+            var obj = SceneContent.HighDetailedObjects[visibleHighDetailedObjs[i]];
+            obj.Model.Draw(effect, obj.WorldMatrix, true);
+         }
+
+         // выключаем запись в z-буффер
+         Device.RenderState.DepthBufferWriteEnable = false;
+
+         Device.RenderState.SlopeScaleDepthBias = SlopeScaleDepthBiasForShadows;
+
+         // Рисуем тени
+         for (var i = shadowsStartIdx; i < visibleHighDetailedObjs.Count; ++i)
+         {
+            var obj = SceneContent.HighDetailedObjects[visibleHighDetailedObjs[i]];
+            obj.Model.Draw(effect, obj.WorldMatrix, true);
+         }
+
+         //Device.RenderState.DepthBias = 0;
+         Device.RenderState.SlopeScaleDepthBias = 0;
+
+         // включаем запись в z-буффер
+         Device.RenderState.DepthBufferWriteEnable = true;
+
+         // выключаем WireFrame (он мог быть включен)
          Device.RenderState.FillMode = FillMode.Solid;
       }
    }

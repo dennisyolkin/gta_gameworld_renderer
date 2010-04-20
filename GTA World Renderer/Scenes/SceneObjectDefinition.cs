@@ -96,10 +96,17 @@ namespace GTAWorldRenderer.Scenes
       public List<RawSceneObject> HighDetailedObjects { get; private set; }
       public List<RawSceneObject> LowDetailedObjects { get; private set; }
 
+      /// <summary>
+      /// Индекс, с которого начинаются тени. Тени идут всегда в конце списка.
+      /// Тени учитываются только в HighDetailed!
+      /// </summary>
+      public int ShadowsStartIdx { get; set; }
+
       public RawSceneObjectsList(List<RawSceneObject> highDetailedObjects, List<RawSceneObject> lowDetailedObjects)
       {
          this.HighDetailedObjects = highDetailedObjects;
          this.LowDetailedObjects = lowDetailedObjects;
+         this.ShadowsStartIdx = int.MaxValue;
       }
    }
 
