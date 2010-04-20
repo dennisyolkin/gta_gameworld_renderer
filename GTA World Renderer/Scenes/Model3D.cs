@@ -109,7 +109,7 @@ namespace GTAWorldRenderer.Scenes
       public void Draw(Effect effect, Matrix worldMatrix, bool useMaterial)
       {
          GraphicsDevice device = vertexDeclaration.GraphicsDevice;
-         device.RenderState.CullMode = CullMode.None; // TODO :: think about it!
+         device.RenderState.CullMode = CullMode.None;
 
          effect.Parameters["xWorld"].SetValue(worldMatrix);
 
