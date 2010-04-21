@@ -30,6 +30,8 @@ namespace GTAWorldRenderer.Scenes.Loaders
       private BinaryReader fin;
       private FileProxy archiveFile;
       private string txdName;
+      private short texturesAmount = short.MaxValue; // it will be read from header
+      private short processedTextures = 0;
 
       private Dictionary<string, Texture2D> files = new Dictionary<string, Texture2D>();
 
@@ -62,6 +64,12 @@ namespace GTAWorldRenderer.Scenes.Loaders
 
             fin.Close();
 
+            if (processedTextures != texturesAmount)
+            {
+               Utils.TerminateWithError(String.Format("Something failed during TXD loading. Textures in archive header: {0}, found textures: {1}", 
+                  texturesAmount, processedTextures));
+            }
+
             Log.Instance.Print(String.Format("Loaded {0} entries", files.Count));
             return files;
          }
@@ -72,7 +80,8 @@ namespace GTAWorldRenderer.Scenes.Loaders
       {
          int positionEnd = (int)fin.BaseStream.Position + size;
 
-         while (fin.BaseStream.Position < positionEnd && fin.BaseStream.Position < fin.BaseStream.Length)
+         while (fin.BaseStream.Position < positionEnd && fin.BaseStream.Position < fin.BaseStream.Length 
+            && processedTextures < texturesAmount)
          {
             SectionType sectionType = (SectionType)fin.ReadInt32();
 
@@ -83,7 +92,12 @@ namespace GTAWorldRenderer.Scenes.Loaders
             {
                case SectionType.Data:
                   if (parentType == SectionType.TextureNative)
-                     ParseDataSection(sectionSize, parentType);
+                     ReadTexture(sectionSize, parentType);
+                  else if (parentType == SectionType.Dictionary)
+                  {
+                     texturesAmount = fin.ReadInt16();
+                     fin.BaseStream.Seek(sizeof(short), SeekOrigin.Current);
+                  }
                   else
                      fin.BaseStream.Seek(sectionSize, SeekOrigin.Current);
                   break;
@@ -104,7 +118,7 @@ namespace GTAWorldRenderer.Scenes.Loaders
       }
 
 
-      void ParseDataSection(int size, SectionType type)
+      void ReadTexture(int size, SectionType type)
       {
          int position = (int)fin.BaseStream.Position;
 
@@ -127,7 +141,9 @@ namespace GTAWorldRenderer.Scenes.Loaders
          files[ToFullName(diffuseTextureName)] = texture;
 
          if (alphaTextureName[0] != 0)
-            files[ToFullName(alphaTextureName)] = texture; // TODO :: is it necessary??
+            files[ToFullName(alphaTextureName)] = texture;
+
+         ++processedTextures;
       }
 
    }
