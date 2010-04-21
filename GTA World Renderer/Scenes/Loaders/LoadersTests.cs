@@ -24,39 +24,40 @@ namespace GTAWorldRenderer.Scenes.Loaders
       /// <param name="outputPathPrefix">Папка, в которую проихводится распаковка. Должна существовать!</param>
       public static void UnpackTxd(string txdPath, string outputPathPrefix)
       {
-         try
-         {
-            if (!outputPathPrefix.EndsWith(Path.DirectorySeparatorChar.ToString()))
-               outputPathPrefix += Path.DirectorySeparatorChar;
+         throw new NotImplementedException();
+      //   try
+      //   {
+      //      if (!outputPathPrefix.EndsWith(Path.DirectorySeparatorChar.ToString()))
+      //         outputPathPrefix += Path.DirectorySeparatorChar;
 
-            IEnumerable<FileProxy> entries; ;
-            TXDArchive archive = new TXDArchive(txdPath);
-            entries = archive.Load();
+      //      IEnumerable<FileProxy> entries; ;
+      //      TXDArchive archive = new TXDArchive(txdPath);
+      //      entries = archive.Load();
 
-            foreach (var entry in entries)
-            {
-               byte[] data = entry.GetData();
-               if (entry.Name.Contains('/')) // имя текстуры в TXD может иметь вид <имя TXD-файла>/<имя текстуры>.gtatexture
-               {
-                  string dir = entry.Name.Substring(0, entry.Name.LastIndexOf('/'));
-                  if (!Directory.Exists(outputPathPrefix + dir))
-                     Directory.CreateDirectory(outputPathPrefix + dir);
-               }
-               string path = outputPathPrefix + entry.Name;
-               while (File.Exists(path))
-               {
-                  int sep = path.LastIndexOf('.');
-                  path = path.Substring(0, sep) + "_" + path.Substring(sep);
-               }
+      //      foreach (var entry in entries)
+      //      {
+      //         byte[] data = entry.GetData();
+      //         if (entry.Name.Contains('/')) // имя текстуры в TXD может иметь вид <имя TXD-файла>/<имя текстуры>.gtatexture
+      //         {
+      //            string dir = entry.Name.Substring(0, entry.Name.LastIndexOf('/'));
+      //            if (!Directory.Exists(outputPathPrefix + dir))
+      //               Directory.CreateDirectory(outputPathPrefix + dir);
+      //         }
+      //         string path = outputPathPrefix + entry.Name;
+      //         while (File.Exists(path))
+      //         {
+      //            int sep = path.LastIndexOf('.');
+      //            path = path.Substring(0, sep) + "_" + path.Substring(sep);
+      //         }
 
-               using (FileStream fout = new FileStream(path, FileMode.CreateNew))
-                  fout.Write(data, 0, data.Length);
-            }
+      //         using (FileStream fout = new FileStream(path, FileMode.CreateNew))
+      //            fout.Write(data, 0, data.Length);
+      //      }
 
-         } catch (Exception er)
-         {
-            Log.Instance.Print("Failed to unpack TXD. Exception occured: " + er.Message, MessageType.Error);
-         }
+      //   } catch (Exception er)
+      //   {
+      //      Log.Instance.Print("Failed to unpack TXD. Exception occured: " + er.Message, MessageType.Error);
+      //   }
       }
 
       /// <summary>

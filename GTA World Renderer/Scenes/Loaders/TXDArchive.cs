@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using GTAWorldRenderer.Logging;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace GTAWorldRenderer.Scenes.Loaders
 {
@@ -25,11 +26,12 @@ namespace GTAWorldRenderer.Scenes.Loaders
          Unknown = 42134213 // I hope no section will have such identifier for its type :)
       }
 
+
       private BinaryReader fin;
       private FileProxy archiveFile;
       private string txdName;
 
-      private List<FileProxy> files = new List<FileProxy>();
+      private Dictionary<string, Texture2D> files = new Dictionary<string, Texture2D>();
 
 
       public TXDArchive(string filePath)
@@ -46,7 +48,7 @@ namespace GTAWorldRenderer.Scenes.Loaders
       }
 
 
-      public IEnumerable<FileProxy> Load()
+      public Dictionary<string, Texture2D> Load()
       {
          using (Log.Instance.EnterStage("Loading TXD archive: " + txdName))
          {
@@ -113,8 +115,7 @@ namespace GTAWorldRenderer.Scenes.Loaders
          fin.Read(diffuseTextureName, 0, diffuseTextureName.Length);
          fin.Read(alphaTextureName, 0, alphaTextureName.Length);
 
-         int headerSize = 8 + diffuseTextureName.Length + alphaTextureName.Length;
-         fin.BaseStream.Seek(size - headerSize, SeekOrigin.Current);
+         var texture = new GTATextureLoader(fin).Load();
 
          Func<byte[], string> ToFullName = delegate(byte[] name) 
          {
@@ -123,10 +124,10 @@ namespace GTAWorldRenderer.Scenes.Loaders
             return txdName + "/" + (Encoding.ASCII.GetString(name, 0, nameLen) + ".gtatexture").ToLower();
          };
 
-         files.Add(new FileProxy(archiveFile, ToFullName(diffuseTextureName), position, size));
+         files[ToFullName(diffuseTextureName)] = texture;
 
          if (alphaTextureName[0] != 0)
-            files.Add(new FileProxy(archiveFile, ToFullName(alphaTextureName), position, size));
+            files[ToFullName(alphaTextureName)] = texture; // TODO :: is it necessary??
       }
 
    }

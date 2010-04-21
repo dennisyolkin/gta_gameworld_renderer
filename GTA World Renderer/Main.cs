@@ -43,6 +43,14 @@ namespace GTAWorldRenderer
 
       protected override void LoadContent()
       {
+
+         var arch = new TXDArchive(@"c:\home\tmp\root-vc\___txds\sabre.txd");
+         foreach (var key in arch.Load().Keys)
+            Log.Instance.Print(key, MessageType.Warning);
+
+         Log.Instance.Flush();
+         System.Environment.Exit(0);
+
          Scene scene = new SceneLoader().LoadScene();
          if (Config.Instance.Rendering.FullScreen)
          {

@@ -47,22 +47,16 @@ namespace GTAWorldRenderer.Scenes.Loaders
       /// </summary>
       static class HeaderFieldOffset
       {
-         public const int PlatformId = 0;  // uint32
-         public const int FilterFlags = 4;  // uint16
-         public const int TextureWrapV = 6;  // byte
-         public const int TextureWrapU = 7;  // byte
-         public const int DiffuseTextureName = 8;  // byte[32]
-         public const int AlphaTextureName = 40; // byte[32]
-         public const int RasterFormat = 72; // uint32
-         public const int AlphaOrFourCC = 76; // uint32
-         public const int ImageWidth = 80; // uint16
-         public const int ImageHeight = 82; // uint16
-         public const int BitsPerPixel = 84; // byte
-         public const int MipMapCount = 85; // byte
-         public const int RasterType = 86; // byte
-         public const int DxtCompressionType = 87; // byte
+         public const int RasterFormat = 0; // uint32
+         public const int AlphaOrFourCC = 4; // uint32
+         public const int ImageWidth = 8; // uint16
+         public const int ImageHeight = 10; // uint16
+         public const int BitsPerPixel = 12; // byte
+         public const int MipMapCount = 13; // byte
+         public const int RasterType = 14; // byte
+         public const int DxtCompressionType = 15; // byte
       }
-      const int HEADER_SIZE = 88;
+      const int HEADER_SIZE = 16;
 
       class Header
       {
@@ -78,7 +72,6 @@ namespace GTAWorldRenderer.Scenes.Loaders
 
          public Header(BinaryReader reader)
          {
-            reader.BaseStream.Seek(HeaderFieldOffset.RasterFormat, SeekOrigin.Current);
             RasterFormatSource = reader.ReadInt32();
 
             RasterFormat = (RasterFormat)(RasterFormatSource % 0x1000);
@@ -91,7 +84,7 @@ namespace GTAWorldRenderer.Scenes.Loaders
             BitsPerPixel = reader.ReadByte();
             MipMaps = reader.ReadByte();
 
-            reader.BaseStream.Seek(HeaderFieldOffset.DxtCompressionType, SeekOrigin.Begin);
+            reader.BaseStream.Seek(HeaderFieldOffset.DxtCompressionType - HeaderFieldOffset.RasterType, SeekOrigin.Current);
             DXTnumber = reader.ReadByte();
 
             if (!Enum.IsDefined(typeof(RasterFormat), RasterFormat) || !Enum.IsDefined(typeof(RasterFormatEx), RasterFormatEx))

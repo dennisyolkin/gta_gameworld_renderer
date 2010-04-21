@@ -11,8 +11,9 @@ namespace GTAWorldRenderer.Scenes.Loaders
 
    /// <summary>
    /// Хранит загруженные текстуры.
-   /// Загружает текстуры "лениво", т.е. только по первому требованию.
-   /// Загруженные текстуры всегда остаются в памяти.
+   /// 
+   /// TODO :: правильный комментарий!
+   /// 
    /// Реализует паттерн Синглтон.
    /// </summary>
    class TexturesStorage
@@ -70,7 +71,9 @@ namespace GTAWorldRenderer.Scenes.Loaders
          IEnumerable<FileProxy> archiveItems;
          try
          {
-            archiveItems = archive.Load();
+            throw new NotImplementedException();
+            // archiveItems = archive.Load(); // TODO :: implement
+            // TODO :: сразу загружать все текстуры, а не только их заголовки
          } catch (Exception er)
          {
             Log.Instance.Print("Failed to load TXD archive. " + er.Message, MessageType.Error);
@@ -99,9 +102,7 @@ namespace GTAWorldRenderer.Scenes.Loaders
 
          if (!textures.ContainsKey(fullPath))
          {
-            /*
-             * Судя по всему, это нормальная ситуация, когда некоторых текстур не существует.
-             */
+            // Судя по всему, это нормальная ситуация, когда некоторых текстур не существует.
             if (Config.Instance.Loading.ShowWarningsIfTextureNotFound)
                Log.Instance.Print(String.Format("Texture file {0} does not exists", fullPath), MessageType.Warning);
             ++MissedTextures;
