@@ -18,19 +18,8 @@ namespace GTAWorldRenderer.Scenes.Loaders
    /// </summary>
    class TexturesStorage
    {
-      class TextureEntry
-      {
-         public FileProxy FileProxy { get; private set; }
-         public Texture2D Texture{ get; set; }
-
-         public TextureEntry(FileProxy fileProxy)
-         {
-            this.FileProxy = fileProxy;
-         }
-      }
-
       private static TexturesStorage me = new TexturesStorage();
-      private Dictionary<string, TextureEntry> textures = new Dictionary<string, TextureEntry>();
+      private Dictionary<string, Texture2D> textures = new Dictionary<string, Texture2D>();
       HashSet<string> loadedArchives = new HashSet<string>();
 
       /// <summary>
@@ -68,20 +57,18 @@ namespace GTAWorldRenderer.Scenes.Loaders
           * 
           * http://github.com/dennisyolkin/gta_gameworld_renderer/issues/issue/14
           */
-         IEnumerable<FileProxy> archiveItems;
+         Dictionary<string, Texture2D> archiveItems;
          try
          {
-            throw new NotImplementedException();
-            // archiveItems = archive.Load(); // TODO :: implement
-            // TODO :: сразу загружать все текстуры, а не только их заголовки
+            archiveItems = archive.Load();
          } catch (Exception er)
          {
-            Log.Instance.Print("Failed to load TXD archive. " + er.Message, MessageType.Error);
+            Log.Instance.Print(String.Format("Failed to load TXD archive {0} ({1}). {2}", fileProxy.FilePath, fileProxy.Name, er.Message), MessageType.Error);
             return;
          }
 
          foreach (var item in archiveItems)
-            textures[item.Name.ToLower()] = new TextureEntry(item);
+            textures[item.Key] = item.Value;
       }
 
 
@@ -109,15 +96,7 @@ namespace GTAWorldRenderer.Scenes.Loaders
             return null;
          }
 
-         TextureEntry textureEntry = textures[fullPath];
-
-         if (textureEntry.Texture != null)
-            return textureEntry.Texture;
-
-         Texture2D texture = new GTATextureLoader(textureEntry.FileProxy.GetData()).Load();
-         textureEntry.Texture = texture;
-         return texture;
-
+         return textures[fullPath];
       }
 
 
@@ -128,13 +107,10 @@ namespace GTAWorldRenderer.Scenes.Loaders
       public int GetMemoryUsed()
       {
          int totalSize = 0;
-         foreach (var item in textures)
-         {
-            Texture2D texture = item.Value.Texture;
-            if (texture == null)
-               continue;
+
+         foreach (var texture in textures.Values)
             totalSize += texture.Height * texture.Width * 4; // считаем, что каждый пиксель в видеопамяти будет занимать 4 байта
-         }
+
          return totalSize;
       }
 

@@ -135,7 +135,7 @@ namespace GTAWorldRenderer.Scenes.Loaders
          {
             int nilIdx = Array.IndexOf(name, (byte)0);
             int nameLen = nilIdx == -1 ? name.Length : nilIdx;
-            return txdName + "/" + (Encoding.ASCII.GetString(name, 0, nameLen) + ".gtatexture").ToLower();
+            return (txdName + "/" + Encoding.ASCII.GetString(name, 0, nameLen) + ".gtatexture").ToLower();
          };
 
          files[ToFullName(diffuseTextureName)] = texture;
