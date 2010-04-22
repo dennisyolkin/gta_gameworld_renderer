@@ -47,16 +47,8 @@ namespace GTAWorldRenderer.Scenes.Loaders
       public void AddTexturesArchive(FileProxy fileProxy)
       {
          loadedArchives.Add(Path.GetFileNameWithoutExtension(fileProxy.Name).ToLower());
-         TXDArchive archive = new TXDArchive(fileProxy);
+         var archive = new TXDArchive(fileProxy);
 
-         /*
-          * TODO ::
-          * Из-за того, что в некоторых TXD архивах некорректно установлены размеры секций, в ViceCity
-          * падает загрузка некоторых архивов. Это можно обойти, если при чтении TXD архива не ориентироваться
-          * на размер секции, а сразу считатывать текстуру (в текстуре размер данных правильно установлен).
-          * 
-          * http://github.com/dennisyolkin/gta_gameworld_renderer/issues/issue/14
-          */
          Dictionary<string, Texture2D> archiveItems;
          try
          {
