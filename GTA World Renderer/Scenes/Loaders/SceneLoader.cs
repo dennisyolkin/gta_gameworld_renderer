@@ -17,6 +17,7 @@ namespace GTAWorldRenderer.Scenes.Loaders
          {
             var sceneObjectsLoader = new SceneObjectsLoader();
             var sceneObjects = sceneObjectsLoader.LoadScene();
+            // TODO :: reset TextureStorage
             var scene = CreateScene(sceneObjects);
             GC.Collect();
             return scene;

@@ -84,7 +84,7 @@ namespace GTAWorldRenderer.Scenes.Loaders
             foreach (var entry in entries)
             {
                byte[] data = entry.GetData();
-               if (entry.Name.EndsWith(".txd"))
+               if (entry.Name.ToLower().EndsWith(".txd"))
                {
                   string path = outputPathPrefix + @"\___txds\\" + entry.Name;
                   if (!File.Exists(path))

@@ -50,10 +50,23 @@ namespace GTAWorldRenderer.Scenes.Loaders
       }
 
 
+      private bool ArchiveShouldBeIgnored()
+      {
+         /*
+          * В GTAIII этот файл имеет какую-то неправильную структуру и не может корректно зугрузиться.
+          * Судя по всему, в нём не содержится ничего ценного (вероятно, только текстуры для low-detailed).
+          */
+         return archiveFile.Name == "islandlodcomindnt.txd";
+      }
+
+
       public Dictionary<string, Texture2D> Load()
       {
          using (Log.Instance.EnterStage("Loading TXD archive: " + txdName))
          {
+            if (ArchiveShouldBeIgnored())
+               return files;
+
             // There is only one root node in file, read it
             SectionType sectionType = (SectionType)fin.ReadInt32();
             int sectionSize = fin.ReadInt32();
@@ -121,7 +134,6 @@ namespace GTAWorldRenderer.Scenes.Loaders
       void ReadTexture(int size, SectionType type)
       {
          int position = (int)fin.BaseStream.Position;
-
          fin.BaseStream.Seek(8, SeekOrigin.Current);
 
          byte[] diffuseTextureName = new byte[32];
