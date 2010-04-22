@@ -28,6 +28,7 @@
          <xsd:element name="FullScreen" type="xsd:boolean"/>
          <xsd:element name="NearClippingDistance" type="xsd:float"/>
          <xsd:element name="FarClippingDistance" type="xsd:float"/>
+         <xsd:element name="EnableWater" type="xsd:boolean"/>
       </xsd:sequence>
    </xsd:complexType>
    

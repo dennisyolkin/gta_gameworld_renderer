@@ -43,7 +43,7 @@ namespace GTAWorldRenderer
 
       protected override void LoadContent()
       {
-         Scene scene = new SceneLoader().LoadScene();
+         var scene = new SceneLoader().LoadScene();
          if (Config.Instance.Rendering.FullScreen)
          {
             Log.Instance.Print("Switching to fullscreen mode...");

@@ -23,6 +23,9 @@ namespace GTAWorldRenderer.Rendering
       Effect effect;
       Matrix projectionMatrix;
       bool wireframeMode = false;
+      DepthStencilBuffer secondDepthBuffer; // используется для сохранения карты глубин воды
+
+      private Renderer waterRenderer;
 
       KeyboardState oldKeyboardState = Keyboard.GetState();
       MouseState originalMouseState;
@@ -62,6 +65,9 @@ namespace GTAWorldRenderer.Rendering
             Config.Instance.Rendering.NearClippingDistance, Config.Instance.Rendering.FarClippingDistance);
 
          effect = Content.Load<Effect>("effect");
+
+         waterRenderer = new WaterRenderer(Content, SceneContent, effect);
+         secondDepthBuffer = new DepthStencilBuffer(Device, Device.PresentationParameters.BackBufferWidth, Device.PresentationParameters.BackBufferHeight, Device.DepthStencilBuffer.Format);
 
          Mouse.SetPosition(Device.Viewport.Width / 2, Device.Viewport.Height / 2);
          originalMouseState = Mouse.GetState();
@@ -139,7 +145,7 @@ namespace GTAWorldRenderer.Rendering
       public override void DoDraw(GameTime gameTime)
       {
          Device.Clear(Color.CornflowerBlue);
-
+         
          if (SceneContent == null)
             return;
 
@@ -156,15 +162,30 @@ namespace GTAWorldRenderer.Rendering
 
          // ---  отрисовка  ---
 
+         DepthStencilBuffer oldDepthBuffer = null;
+
+         // рисуем воду
+         if (Config.Instance.Rendering.EnableWater)
+         {
+            waterRenderer.Draw(gameTime);
+            oldDepthBuffer = Device.DepthStencilBuffer;
+            Device.DepthStencilBuffer = secondDepthBuffer;
+            Device.Clear(ClearOptions.DepthBuffer, Color.Black, 1.0f, 0);
+            waterRenderer.Draw(gameTime);
+         }
+
          // Рисуем низкодетализированный вариант нужного куска сцены
          foreach (var objIdx in visibleLowDetailedObjs)
          {
             var obj = SceneContent.LowDetailedObjects[objIdx];
             obj.Model.Draw(effect, obj.WorldMatrix, true);
          }
-         
-         // очищаем z-буффер
-         Device.Clear(ClearOptions.DepthBuffer, Color.Black, 1.0f, 0);
+
+         // очищаем DepthBuffer от low-detailed объектов
+         if (Config.Instance.Rendering.EnableWater)
+            Device.DepthStencilBuffer = oldDepthBuffer;
+         else
+            Device.Clear(ClearOptions.DepthBuffer, Color.Black, 1.0f, 0);
 
          // находим индекс, начиная с которого идут тени
          int shadowsStartIdx = visibleHighDetailedObjs.BinarySearch(SceneContent.ShadowsStartIdx);

@@ -108,6 +108,7 @@
     <Compile Include="Rendering\RendererSwitcher.cs" />
     <Compile Include="Rendering\SceneRenderer3D.cs" />
     <Compile Include="Rendering\TextInfoPanel.cs" />
+    <Compile Include="Rendering\WaterRenderer.cs" />
     <Compile Include="Scenes\Loaders\DffLoader.cs" />
     <Compile Include="Scenes\Loaders\FileProxy.cs" />
     <Compile Include="Scenes\Loaders\FileSystemProxy.cs" />
@@ -128,6 +129,7 @@
     <Compile Include="Scenes\Loaders\LoadersTests.cs" />
     <Compile Include="Scenes\Loaders\TexturesStorage.cs" />
     <Compile Include="Scenes\Loaders\TXDArchive.cs" />
+    <Compile Include="Scenes\Water.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -7,6 +7,8 @@
 >
    
    <GTAFolderPath>c:\Program Files\GTAIII\</GTAFolderPath>
+   <!--<GTAFolderPath>c:\Program Files\GTA Vice City - Deluxe\</GTAFolderPath>-->
+   <!--<GTAFolderPath>c:\Program Files\GTA San Andreas\</GTAFolderPath>-->
    
    <Loading>
       <ShowWarningsIfTextureNotFound>false</ShowWarningsIfTextureNotFound>
@@ -18,6 +20,7 @@
       <FullScreen>true</FullScreen>
       <NearClippingDistance>0.1</NearClippingDistance>
       <FarClippingDistance>5000</FarClippingDistance>
+      <EnableWater>true</EnableWater>
    </Rendering>
    
    <Rasterization>

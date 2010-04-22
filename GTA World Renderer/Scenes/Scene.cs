@@ -33,6 +33,10 @@ namespace GTAWorldRenderer.Scenes
       /// </summary>
       public int ShadowsStartIdx { get; set; }
 
+      /// <summary>
+      /// Вода (моря, океаны) на сцене
+      /// </summary>
+      public Water Water { get; set; }
 
 
       public Scene()

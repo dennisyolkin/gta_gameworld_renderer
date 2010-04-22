@@ -2,6 +2,8 @@
 using GTAWorldRenderer.Logging;
 using System.Collections.Generic;
 using GTAWorldRenderer.Scenes.Rasterization;
+using GTAWorldRenderer.Rendering;
+using System.IO;
 
 namespace GTAWorldRenderer.Scenes.Loaders
 {
@@ -15,13 +17,46 @@ namespace GTAWorldRenderer.Scenes.Loaders
       {
          using (Logger.EnterTimingStage("Loading scene"))
          {
-            var sceneObjectsLoader = new SceneObjectsLoader();
+            Logger.Print("Switching working directory to GTA folder");
+            System.Environment.CurrentDirectory = Config.Instance.GTAFolderPath;
+
+            var gtaVersion = GetGtaVersion();
+
+            var water = new Water(gtaVersion);
+            var sceneObjectsLoader = new SceneObjectsLoader(gtaVersion);
             var sceneObjects = sceneObjectsLoader.LoadScene();
             TexturesStorage.Instance.Reset();
             var scene = CreateScene(sceneObjects);
+            scene.Water = water;
             GC.Collect();
             return scene;
          }
+      }
+
+
+      private static GtaVersion GetGtaVersion()
+      {
+         Log.Instance.Print("Determining GTA version...");
+         if (File.Exists("gta3.exe"))
+         {
+            Log.Instance.Print("... version is GTA III");
+            return GtaVersion.III;
+         }
+         else if (File.Exists("gta-vc.exe"))
+         {
+            Log.Instance.Print("... version is GTA Vice City");
+            return GtaVersion.ViceCity;
+         }
+         else if (File.Exists("gta_sa.exe"))
+         {
+            Log.Instance.Print("... version is GTA San Andreas");
+            return GtaVersion.SanAndreas;
+         }
+         else
+         {
+            Utils.TerminateWithError("Unknown or unsopported version of GTA.");
+         }
+         return GtaVersion.Unknown;
       }
 
 

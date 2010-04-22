@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using GTAWorldRenderer.Logging;
 using Microsoft.Xna.Framework;
 using System.IO;
@@ -30,6 +28,11 @@ namespace GTAWorldRenderer.Scenes.Loaders
          {
             this.FileProxy = fileProxy;
          }
+      }
+
+      public SceneObjectsLoader(GtaVersion gtaVersion)
+      {
+         this.gtaVersion = gtaVersion;
       }
 
       private static Log Logger = Log.Instance;
@@ -140,11 +143,6 @@ namespace GTAWorldRenderer.Scenes.Loaders
             }
             try
             {
-               Logger.Print("Switching working directory to GTA folder");
-               System.Environment.CurrentDirectory = Config.Instance.GTAFolderPath;
-
-               gtaVersion = GetGtaVersion();
-
                string mainImgPath = Config.Instance.GTAFolderPath + "models/gta3.img";
                var loadedArchiveEntries = LoadMainImgArchive(mainImgPath);
                foreach (var item in loadedArchiveEntries)
@@ -269,32 +267,6 @@ namespace GTAWorldRenderer.Scenes.Loaders
          }
 
          return result;
-      }
-
-
-      private static GtaVersion GetGtaVersion()
-      {
-         Logger.Print("Determining GTA version...");
-         if (File.Exists("gta3.exe"))
-         {
-            Logger.Print("... version is GTA III");
-            return GtaVersion.III;
-         }
-         else if (File.Exists("gta-vc.exe"))
-         {
-            Logger.Print("... version is GTA Vice City");
-            return GtaVersion.ViceCity;
-         }
-         else if (File.Exists("gta_sa.exe"))
-         {
-            Logger.Print("... version is GTA San Andreas");
-            return GtaVersion.SanAndreas;
-         }
-         else
-         {
-            Utils.TerminateWithError("Unknown or unsopported version of GTA.");
-         }
-         return GtaVersion.Unknown;
       }
 
 
