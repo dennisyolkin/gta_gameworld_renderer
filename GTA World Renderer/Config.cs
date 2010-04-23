@@ -109,6 +109,9 @@ namespace GTAWorldRenderer
 
          [DataMember(IsRequired = true, Order = 5)]
          public bool ShowSky { get; private set; }
+
+         [DataMember(IsRequired = true, Order = 6)]
+         public bool Fog { get; private set; }
       }
 
 

@@ -30,6 +30,7 @@
          <xsd:element name="FarClippingDistance" type="xsd:float"/>
          <xsd:element name="ShowWater" type="xsd:boolean"/>
          <xsd:element name="ShowSky" type="xsd:boolean"/>
+         <xsd:element name="Fog" type="xsd:boolean"/>
       </xsd:sequence>
    </xsd:complexType>
    

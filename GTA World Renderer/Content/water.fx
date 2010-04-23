@@ -1,7 +1,7 @@
 float4x4 xView;
 float4x4 xProjection;
 Texture xBumpTexture;
-
+float4 xTime;
 
 sampler BumpTextureSampler = sampler_state 
 {
@@ -13,7 +13,6 @@ sampler BumpTextureSampler = sampler_state
    AddressV = mirror;
 };
 
-//float4 waterColor = float4(32 / 255.0, 57 / 255.0, 87 / 255.0, 1);
 
 struct VSOutput
 {
@@ -36,7 +35,7 @@ VSOutput WaterVertexShader(float4 inPos : POSITION, float2 inTexCoords : TEXCOOR
 
 float4 WaterPixelShader(VSOutput input) : COLOR0
 {
-   float4 color = tex2D(BumpTextureSampler, input.BumpSamplingPos);
+   float4 color = tex2D(BumpTextureSampler, input.BumpSamplingPos - xTime);
    return color;
 }
 

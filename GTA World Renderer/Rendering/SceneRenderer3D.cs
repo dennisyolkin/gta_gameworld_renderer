@@ -197,14 +197,11 @@ namespace GTAWorldRenderer.Rendering
          Device.RenderState.DestinationBlend = Blend.InverseSourceAlpha;
          Device.RenderState.SeparateAlphaBlendEnabled = false;
 
-         // TODO :: а надо ли оно?
-         //Device.RenderState.FogColor = Color.WhiteSmoke;
-         //Device.RenderState.FogStart = 50.0f;
-         //Device.RenderState.FogEnd = 5000.0f;
-         //Device.RenderState.FogTableMode = FogMode.Linear;
-         //Device.RenderState.FogVertexMode = FogMode.None;
-         //Device.RenderState.FogDensity = 1.0f;
-         //Device.RenderState.FogEnable = true;
+         // туман
+         if (Config.Instance.Rendering.Fog)
+            SetFog();
+         SetFog();
+
 
 
          // Рисуем низкодетализированный вариант нужного куска сцены
@@ -252,6 +249,17 @@ namespace GTAWorldRenderer.Rendering
 
          // выключаем WireFrame (он мог быть включен)
          Device.RenderState.FillMode = FillMode.Solid;
+      }
+
+      private void SetFog()
+      {
+         Device.RenderState.FogColor = Color.WhiteSmoke;
+         Device.RenderState.FogStart = 50.0f;
+         Device.RenderState.FogEnd = 5000.0f;
+         Device.RenderState.FogTableMode = FogMode.Linear;
+         Device.RenderState.FogVertexMode = FogMode.None;
+         Device.RenderState.FogDensity = 1.0f;
+         Device.RenderState.FogEnable = true;
       }
    }
 }
