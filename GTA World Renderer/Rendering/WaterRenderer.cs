@@ -10,14 +10,17 @@ namespace GTAWorldRenderer.Rendering
       private Color LightingColor = new Color(128, 128, 128, 255);
 
       private Effect effect;
+      Camera camera;
       private VertexDeclaration vertexDeclaration;
       private VertexBuffer vertexBuffer;
       private int primitivesToDraw;
+      Matrix projectionMatrix;
 
-      public WaterRenderer(ContentManager contentManager, Scene scene, Effect effect)
+      public WaterRenderer(ContentManager contentManager, Scene scene, Camera camera)
          : base(contentManager)
       {
-         this.effect = effect;
+         effect = Content.Load<Effect>("water");
+         this.camera = camera;
 
          var vertices = new VertexPositionColor[6 * scene.Water.WaterQuads.Count];
          int idx = 0;
@@ -36,6 +39,9 @@ namespace GTAWorldRenderer.Rendering
          vertexBuffer.SetData(vertices);
          vertexDeclaration = new VertexDeclaration(Device, VertexPositionColor.VertexElements);
          primitivesToDraw = scene.Water.WaterQuads.Count * 2;
+
+         projectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, Device.Viewport.AspectRatio,
+            Config.Instance.Rendering.NearClippingDistance, Config.Instance.Rendering.FarClippingDistance);
       }
 
 
@@ -48,9 +54,9 @@ namespace GTAWorldRenderer.Rendering
       public override void Draw(GameTime gameTime)
       {
          Device.RenderState.CullMode = CullMode.None;
-         effect.Parameters["xWorld"].SetValue(Matrix.Identity);
-         effect.Parameters["xSolidColor"].SetValue(Color.DarkBlue.ToVector4());
-         effect.CurrentTechnique = effect.Techniques["SolidColored"];
+         effect.Parameters["xView"].SetValue(camera.ViewMatrix);
+         effect.Parameters["xProjection"].SetValue(projectionMatrix);
+         effect.CurrentTechnique = effect.Techniques["Water"];
          Device.VertexDeclaration = vertexDeclaration;
          Device.Vertices[0].SetSource(vertexBuffer, 0, VertexPositionColor.SizeInBytes);
 

@@ -67,7 +67,7 @@ namespace GTAWorldRenderer.Rendering
 
          effect = Content.Load<Effect>("effect");
 
-         waterRenderer = new WaterRenderer(Content, SceneContent, effect);
+         waterRenderer = new WaterRenderer(Content, SceneContent, camera);
          skyRenderer = new SkyRenderer(Content, camera);
          secondDepthBuffer = new DepthStencilBuffer(Device, Device.PresentationParameters.BackBufferWidth, Device.PresentationParameters.BackBufferHeight, Device.DepthStencilBuffer.Format);
 
