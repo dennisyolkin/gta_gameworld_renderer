@@ -107,6 +107,7 @@
     <Compile Include="Rendering\InfoPanelFor3Dview.cs" />
     <Compile Include="Rendering\RendererSwitcher.cs" />
     <Compile Include="Rendering\SceneRenderer3D.cs" />
+    <Compile Include="Rendering\Sky.cs" />
     <Compile Include="Rendering\TextInfoPanel.cs" />
     <Compile Include="Rendering\WaterRenderer.cs" />
     <Compile Include="Scenes\Loaders\DffLoader.cs" />

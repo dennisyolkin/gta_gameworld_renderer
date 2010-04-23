@@ -26,6 +26,7 @@ namespace GTAWorldRenderer.Rendering
       DepthStencilBuffer secondDepthBuffer; // используется для сохранения карты глубин воды
 
       private Renderer waterRenderer;
+      private Renderer skyRenderer;
 
       KeyboardState oldKeyboardState = Keyboard.GetState();
       MouseState originalMouseState;
@@ -67,6 +68,7 @@ namespace GTAWorldRenderer.Rendering
          effect = Content.Load<Effect>("effect");
 
          waterRenderer = new WaterRenderer(Content, SceneContent, effect);
+         skyRenderer = new SkyRenderer(Content, camera);
          secondDepthBuffer = new DepthStencilBuffer(Device, Device.PresentationParameters.BackBufferWidth, Device.PresentationParameters.BackBufferHeight, Device.DepthStencilBuffer.Format);
 
          Mouse.SetPosition(Device.Viewport.Width / 2, Device.Viewport.Height / 2);
@@ -77,6 +79,12 @@ namespace GTAWorldRenderer.Rendering
       public override void DoUpdate(GameTime gameTime)
       {
          float timeDifference = (float)gameTime.ElapsedGameTime.TotalMilliseconds / 1000.0f;
+
+         if (Config.Instance.Rendering.ShowWater)
+            waterRenderer.Update(gameTime);
+
+         if (Config.Instance.Rendering.ShowSky)
+            skyRenderer.Update(gameTime);
 
          ProcessMouse(timeDifference);
          ProcessKeyboard(timeDifference);
@@ -144,8 +152,6 @@ namespace GTAWorldRenderer.Rendering
 
       public override void DoDraw(GameTime gameTime)
       {
-         Device.Clear(Color.CornflowerBlue);
-         
          if (SceneContent == null)
             return;
 
@@ -154,7 +160,7 @@ namespace GTAWorldRenderer.Rendering
 
          effect.Parameters["xView"].SetValue(camera.ViewMatrix);
          effect.Parameters["xProjection"].SetValue(projectionMatrix);
-
+         
          List<int> visibleLowDetailedObjs, visibleHighDetailedObjs;
          SceneContent.Grid.GetVisibleObjects(camera.Position, out visibleHighDetailedObjs, out visibleLowDetailedObjs);
          textInfoPanel.Data["Objects to draw (HD)"] = String.Format("{0} of {1}", visibleHighDetailedObjs.Count, SceneContent.HighDetailedObjects.Count);
@@ -162,10 +168,18 @@ namespace GTAWorldRenderer.Rendering
 
          // ---  отрисовка  ---
 
+         // рисуем небо
+         if (Config.Instance.Rendering.ShowSky)
+            skyRenderer.Draw(gameTime);
+         else
+            Device.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.CornflowerBlue, 1.0f, 0);
+
          DepthStencilBuffer oldDepthBuffer = null;
 
+         Device.RenderState.DepthBufferEnable = true;
+
          // рисуем воду
-         if (Config.Instance.Rendering.EnableWater)
+         if (Config.Instance.Rendering.ShowWater)
          {
             waterRenderer.Draw(gameTime);
             oldDepthBuffer = Device.DepthStencilBuffer;
@@ -173,6 +187,25 @@ namespace GTAWorldRenderer.Rendering
             Device.Clear(ClearOptions.DepthBuffer, Color.Black, 1.0f, 0);
             waterRenderer.Draw(gameTime);
          }
+
+         // настраиваем RenderState
+         Device.RenderState.AlphaBlendEnable = true;
+         Device.RenderState.AlphaTestEnable = true;
+         Device.RenderState.AlphaFunction = CompareFunction.Greater;
+         Device.RenderState.AlphaBlendOperation = BlendFunction.Add;
+         Device.RenderState.SourceBlend = Blend.SourceAlpha;
+         Device.RenderState.DestinationBlend = Blend.InverseSourceAlpha;
+         Device.RenderState.SeparateAlphaBlendEnabled = false;
+
+         // TODO :: а надо ли оно?
+         //Device.RenderState.FogColor = Color.WhiteSmoke;
+         //Device.RenderState.FogStart = 50.0f;
+         //Device.RenderState.FogEnd = 5000.0f;
+         //Device.RenderState.FogTableMode = FogMode.Linear;
+         //Device.RenderState.FogVertexMode = FogMode.None;
+         //Device.RenderState.FogDensity = 1.0f;
+         //Device.RenderState.FogEnable = true;
+
 
          // Рисуем низкодетализированный вариант нужного куска сцены
          foreach (var objIdx in visibleLowDetailedObjs)
@@ -182,7 +215,7 @@ namespace GTAWorldRenderer.Rendering
          }
 
          // очищаем DepthBuffer от low-detailed объектов
-         if (Config.Instance.Rendering.EnableWater)
+         if (Config.Instance.Rendering.ShowWater)
             Device.DepthStencilBuffer = oldDepthBuffer;
          else
             Device.Clear(ClearOptions.DepthBuffer, Color.Black, 1.0f, 0);

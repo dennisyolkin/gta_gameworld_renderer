@@ -67,14 +67,13 @@ namespace GTAWorldRenderer.Rendering
          int y = 5;
          spriteBatch.DrawString(font, String.Format("FPS: {0}", fps), new Vector2(5, y), Color.Yellow);
 
-         foreach(var item in Data)
+         foreach (var item in Data)
          {
             y += LINE_HEIGHT;
             spriteBatch.DrawString(font, String.Format("{0}: {1}", item.Key, item.Value), new Vector2(5, y), Color.Yellow);
          }
 
          spriteBatch.End();
-         GraphicsDeviceHolder.Device.RenderState.DepthBufferEnable = true;
       }
    }
 }

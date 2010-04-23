@@ -20,7 +20,8 @@
       <FullScreen>true</FullScreen>
       <NearClippingDistance>0.1</NearClippingDistance>
       <FarClippingDistance>5000</FarClippingDistance>
-      <EnableWater>true</EnableWater>
+      <ShowWater>true</ShowWater>
+      <ShowSky>true</ShowSky>
    </Rendering>
    
    <Rasterization>

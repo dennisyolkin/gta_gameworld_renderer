@@ -105,7 +105,10 @@ namespace GTAWorldRenderer
          public float FarClippingDistance { get; private set; }
 
          [DataMember(IsRequired = true, Order = 4)]
-         public bool EnableWater { get; private set; }
+         public bool ShowWater { get; private set; }
+
+         [DataMember(IsRequired = true, Order = 5)]
+         public bool ShowSky { get; private set; }
       }
 
 
