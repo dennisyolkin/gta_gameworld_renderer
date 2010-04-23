@@ -57,6 +57,7 @@ namespace GTAWorldRenderer.Rendering
       public void Initialize()
       {
          camera = new Camera();
+         camera.UpdatePosition(new Vector3(0, 100, 0));
 
          textInfoPanel = new InfoPanelFor3Dview(Content);
          textInfoPanel.Camera = camera;
