@@ -177,22 +177,16 @@ namespace GTAWorldRenderer.Scenes.Loaders
 
                      var modelData = new DffLoader(modelEntry.FileProxy.GetData(), modelEntry.FileProxy.Name, textureFolder).Load();
 
-                     // - - - - - - - - - - -- - - - - - - - - - -- - - - - - - - - - -- - - - - - - - - - -- - - - - - - - - - -
-                     // TODO :: workaround situation when object has no texture coodinates. FIX IT!!!!
-                     bool fail = false;
+                     // ignore object that has no texture coordinates
+                     bool no_texture_coords = false;
                      foreach (var mesh in modelData.Meshes)
                         if (mesh.TextureCoords == null)
                         {
-                           fail = true;
+                           no_texture_coords = true;
                            break;
                         }
-                     if (fail)
-                     {
-                        //Logger.Print(obj.Name, MessageType.Warning);
-                        Logger.Print("FIXME: Object has no texture coordinates and was IGNORED.", MessageType.Warning);
+                     if (no_texture_coords)
                         continue;
-                     }
-                     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
                      modelEntry.Model = modelData;
                   }
