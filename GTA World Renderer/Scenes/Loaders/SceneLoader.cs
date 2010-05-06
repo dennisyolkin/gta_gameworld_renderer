@@ -21,6 +21,8 @@ namespace GTAWorldRenderer.Scenes.Loaders
             System.Environment.CurrentDirectory = Config.Instance.GTAFolderPath;
 
             var gtaVersion = GetGtaVersion();
+            if (gtaVersion == GtaVersion.SanAndreas)
+               Utils.TerminateWithError("GTA San Andreas is not supported");
 
             var water = new Water(gtaVersion);
             var sceneObjectsLoader = new SceneObjectsLoader(gtaVersion);
