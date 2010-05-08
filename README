@@ -28,6 +28,9 @@ Mouse (with left button pressed): rotate camera
 W: switch between normal mode and wireframe mode
 F5: switch to 2D view (for debug purposes only)
 
+NOTE: water rendering is very slow now, so if you want to increase FPS you should
+turn off water rendering in config file!
+
 --------------------------------------------------------------------------------
 
 [Note] encoding in most of files is cp1251 (Windows-Cyrillic).
